@@ -1,0 +1,45 @@
+﻿cmake_minimum_required (VERSION 3.8)
+
+project(Playground VERSION 1.0 LANGUAGES CXX)
+
+include_directories(components/include)
+
+if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
+	link_directories(components/lib/vc16/debug)
+else()   
+	link_directories(components/lib/vc16/release)
+endif()
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /W3 /GR /EHsc /DUNICODE")
+set(CMAKE_CXX_FLAGS_DEBUG "/MDd /Zi /Ob0 /Od /RTC1")
+set(CMAKE_CXX_FLAGS_RELEASE "/MD /O2 /Ob2 /DNDEBUG")
+
+add_compile_definitions(ZMQ_STATIC)
+
+add_executable(Playground "src/Playground.h" "src/Playground.cpp")
+
+if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
+  target_link_libraries(Playground libhdf5_D log4cplusSUD cnpy 
+  uSockets uv_a userenv  
+  opencv_core451d ippicvmt ippiwd ittnotifyd zlibd 
+  libzmq-v142-mt-sgd-4_3_4 ws2_32 wsock32 Iphlpapi)
+else()   
+	target_link_libraries(Playground libhdf5 log4cplusSU cnpy 
+	uSockets uv_a iphlpapi userenv psapi 
+	opencv_core451 ippicvmt ippiw ittnotify zlib  
+	libzmq-v142-mt-s-4_3_4 ws2_32 wsock32 Iphlpapi)
+endif()
+
+enable_testing()
+add_executable(PlaygroundTest "src/PlaygroundTest.h" "src/PlaygroundTest.cpp")
+
+if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
+  target_link_libraries(PlaygroundTest 
+  gtestd gtest_maind)
+else()   
+	target_link_libraries(PlaygroundTest 
+	gtest gtest_main)
+endif()
+
+add_test(PlaygroundTest PlaygroundTest)
