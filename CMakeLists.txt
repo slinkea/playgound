@@ -17,7 +17,14 @@ set(CMAKE_CXX_FLAGS_RELEASE "/MD /O2 /Ob2 /DNDEBUG")
 
 add_compile_definitions(ZMQ_STATIC)
 
-add_executable(Playground "src/Playground.h" "src/Playground.cpp")
+file(GLOB
+  _Src
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp 
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h 
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp
+)
+
+add_executable(Playground ${_Src})
 
 if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
   target_link_libraries(Playground libhdf5_D log4cplusSUD cnpy 
@@ -32,7 +39,7 @@ else()
 endif()
 
 enable_testing()
-add_executable(PlaygroundTest "src/PlaygroundTest.h" "src/PlaygroundTest.cpp")
+add_executable(PlaygroundTest "src/tests/PlaygroundTest.h" "src/tests/PlaygroundTest.cpp")
 
 if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
   target_link_libraries(PlaygroundTest 

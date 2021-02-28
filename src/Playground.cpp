@@ -22,12 +22,29 @@ struct us_listen_socket_t* global_listen_socket;
 
 int main(int argc, char* argv[])
 {
-  Playground p;
+  CycleDataDescriptor cdd1;
+  CycleDataDescriptor cdd2;
+  cdd2 = std::move(cdd1);
+  auto p = std::make_unique<Playground>(std::move(cdd1));
 
   std::cout << "Yo" << std::endl;
   std::cin.ignore();
 
   return 0;
+}
+
+Playground::Playground(CycleDataDescriptor&& cdd) noexcept
+  : m_cdd(std::move(cdd))
+{
+}
+
+Playground& Playground::operator=(Playground&& other) noexcept
+{
+  if (this != &other)
+  {
+
+  }
+  return *this;
 }
 
 Playground::Playground()
