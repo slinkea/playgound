@@ -1,7 +1,6 @@
 #include <iostream>
 #include <zmq/zmq.h>
 #include <cnpy/cnpy.h>
-#include <hdf5/hdf5.h>
 #include <log4cplus/log4cplus.h>
 #include <rapidjson/document.h>
 #include <boost/asio.hpp>
@@ -15,20 +14,30 @@
 #pragma warning(pop)
 
 #include "Playground.h"
+#include "FileStorage.hpp"
+#include "CudaKernels.cuh"
 
 
-constexpr char FILENAME[] = "ref.h5";
 struct us_listen_socket_t* global_listen_socket;
 
 int main(int argc, char* argv[])
 {
-  CycleDataDescriptor cdd1;
-  CycleDataDescriptor cdd2;
-  cdd2 = std::move(cdd1);
-  auto p = std::make_unique<Playground>(std::move(cdd1));
+  try
+  {
+    CudaKernel ck;
+    FileStorage fs(ck);
 
-  std::cout << "Yo" << std::endl;
-  std::cin.ignore();
+    CycleDataDescriptor cdd1;
+    CycleDataDescriptor cdd2;
+    cdd2 = std::move(cdd1);
+    auto p = std::make_unique<Playground>(std::move(cdd1));
+
+    std::cin.ignore();
+  }
+  catch (const std::exception& ex)
+  {
+    std::cout << ex.what() << std::endl;
+  }
 
   return 0;
 }
@@ -52,11 +61,6 @@ Playground::Playground()
   // Log4cplus //
 
   log4cplus::initialize();
-
-
-  // HDF5 //
-
-  hid_t file_id = H5Fcreate(FILENAME, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 
 
   // ZeroMQ //

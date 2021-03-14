@@ -1,14 +1,15 @@
 #pragma once
-#include "A.hpp"
+#include "ContainerDescriptor.hpp"
 
 class Playground
 {
 public:
-	Playground();
-	~Playground();
 
 	Playground(const Playground&) = delete;
 	Playground& operator=(const Playground&) = delete;
+
+	Playground();
+	~Playground();
 
 	// Move constructor.
 	Playground(CycleDataDescriptor&&) noexcept;
