@@ -27,8 +27,14 @@ int main(int argc, char* argv[])
   {
     SaveImage saveImage;
 
+    FileStorage fs;
+
+    fs.Write();
+    fs.ReadSlice();
+    
     CudaKernel ck;
-    FileStorage fs(ck);
+    fs.WriteOneGB();
+    fs.Read(ck);
 
     CycleDataDescriptor cdd1;
     CycleDataDescriptor cdd2;
