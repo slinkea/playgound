@@ -10,11 +10,11 @@ class FileStorage
 public:
   FileStorage(CudaKernel& ck)
   {
-    if (0)
+    if (1)
     {
       hid_t fileId = H5Fcreate(FILENAME, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 
-      hsize_t dims[3] = { 256, 512, 4096 };      
+      hsize_t dims[3] = { 256, 512, 4096 }; // Scan, Index, Ultrasound
       hid_t spaceId = H5Screate_simple(3, dims, NULL);
       hid_t dsetId = H5Dcreate(fileId, "DS1", H5T_STD_I16LE, spaceId, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 
@@ -34,7 +34,7 @@ public:
       status = H5Fclose(fileId);
     }
 
-    if (1)
+    if (0)
     {
       std::cout << "Opening file..." << std::endl;
       hid_t fileId = H5Fopen(FILENAME, H5F_ACC_RDONLY, H5P_DEFAULT);

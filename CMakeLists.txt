@@ -38,12 +38,14 @@ set_target_properties(Playground PROPERTIES LINK_FLAGS "/ignore:4099")
 if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
   target_link_libraries(Playground libhdf5_D log4cplusSUD cnpy 
   uSockets uv_a userenv  
-  opencv_core451d ippicvmt ippiwd ittnotifyd zlibd 
+  opencv_core451d opencv_imgproc451d opencv_imgcodecs451d 
+  ippicvmt ippiwd ittnotifyd zlibd libpngd IlmImfd libjpeg-turbod libopenjp2d libtiffd libwebpd 
   libzmq-v142-mt-sgd-4_3_4 ws2_32 wsock32 Iphlpapi)
 else()   
 	target_link_libraries(Playground libhdf5 log4cplusSU cnpy 
 	uSockets uv_a iphlpapi userenv psapi 
-	opencv_core451 ippicvmt ippiw ittnotify zlib  
+	opencv_core451 opencv_imgproc451 opencv_imgcodecs451 
+	ippicvmt ippiw ittnotify zlib libpng IlmImf libjpeg-turbo libopenjp2 libtiff libwebp 
 	libzmq-v142-mt-s-4_3_4 ws2_32 wsock32 Iphlpapi)
 endif()
 

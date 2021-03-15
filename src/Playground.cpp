@@ -16,6 +16,7 @@
 #include "Playground.h"
 #include "FileStorage.hpp"
 #include "CudaKernels.cuh"
+#include "SaveImage.hpp"
 
 
 struct us_listen_socket_t* global_listen_socket;
@@ -24,6 +25,8 @@ int main(int argc, char* argv[])
 {
   try
   {
+    SaveImage saveImage;
+
     CudaKernel ck;
     FileStorage fs(ck);
 
