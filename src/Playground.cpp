@@ -25,13 +25,15 @@ int main(int argc, char* argv[])
 {
   try
   {
-    SaveImage saveImage;
-
     FileStorage fs;
 
-    fs.Write();
-    fs.ReadSlice();
-    
+    //fs.Write();
+    std::vector<int8_t> dataSlice = fs.ReadSliceFpd();
+   
+    SaveImage saveImage(dataSlice);
+
+    return 0;
+
     CudaKernel ck;
     fs.WriteOneGB();
     fs.Read(ck);
