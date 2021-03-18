@@ -27,10 +27,12 @@ int main(int argc, char* argv[])
   {
     FileStorage fs;
 
+    fs.CompressFile();
+
     //fs.Write();
-    std::vector<int8_t> dataSlice = fs.ReadSliceFpd();
+    //std::vector<int8_t> dataSlice = fs.ReadSliceFpd();
    
-    SaveImage saveImage(dataSlice);
+    //SaveImage saveImage(dataSlice);
 
     return 0;
 
