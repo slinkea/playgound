@@ -6,9 +6,8 @@
 class DataSet
 {
 protected:
-  DataSet(hid_t id_, const std::wstring& configName_)
-    : m_id(id_)
-    , m_configName(configName_)
+  DataSet(const std::wstring& configName_)
+    : m_configName(configName_)
   {
   }
 

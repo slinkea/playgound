@@ -79,10 +79,11 @@ struct DataDimensions
   DataDimensions(size_t x_, size_t y_)
     : X(x_)
     , Y(y_)
+    , Z(1)
   {
   }
 
-  size_t X{ 1 };
-  size_t Y{ 1 };
-  size_t Z{ 1 };
+  size_t X{};
+  size_t Y{};
+  size_t Z{};
 };

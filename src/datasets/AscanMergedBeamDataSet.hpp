@@ -7,7 +7,7 @@ class AscanMergedBeamDataSet : public AscanDataSet, public IAscanDataSet
 {
 public:
   AscanMergedBeamDataSet(hid_t id_, const std::wstring& configName_)
-  : AscanDataSet(id_, configName_)
+    : AscanDataSet(id_, configName_)
   {
   }
 
@@ -31,11 +31,5 @@ public:
 
   void Read(const void* dataOut_) const override
   {
-  }
-
-protected:
-  void Fetch()
-  {
-
   }
 };

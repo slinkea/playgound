@@ -17,32 +17,32 @@ class FileStorage
 public:
   FileStorage()
   {
-    hid_t fileId = H5Fopen(FILENAME_FPD, H5F_ACC_RDONLY, H5P_DEFAULT);
-    hid_t dsetId = H5Dopen(fileId, "DS1", H5P_DEFAULT);
+    //hid_t fileId = H5Fopen(FILENAME_FPD, H5F_ACC_RDONLY, H5P_DEFAULT);
+    //hid_t dsetId = H5Dopen(fileId, "DS1", H5P_DEFAULT);
 
-    IDataSet* x = new AscanMergedBeamDataSet(dsetId, L"");
-    IDataSet* y = new AscanBeamDataSet(dsetId, L"", 0);
+    //IDataSet* x = new AscanMergedBeamDataSet(dsetId, L"");
+    //IDataSet* y = new AscanBeamDataSet(dsetId, L"", 0);
 
-    auto ascanDataSet = dynamic_cast<IAscanDataSet*>(x);
-    
-    auto ascanBeamDataSet = dynamic_cast<IAscanBeamDataSet*>(x);
-    
-    auto ascanDataSet2 = dynamic_cast<IAscanDataSet*>(y);
-    auto ascanBeamDataSet2 = dynamic_cast<IAscanBeamDataSet*>(y);
-    
+    //auto ascanDataSet = dynamic_cast<IAscanDataSet*>(x);
+    //
+    //auto ascanBeamDataSet = dynamic_cast<IAscanBeamDataSet*>(x);
+    //
+    //auto ascanDataSet2 = dynamic_cast<IAscanDataSet*>(y);
+    //auto ascanBeamDataSet2 = dynamic_cast<IAscanBeamDataSet*>(y);
+    //
 
-    DataSets dataSets;
-    dataSets.Add(std::move(std::make_unique<AscanMergedBeamDataSet>(dsetId, L"")));
-    dataSets.Add(std::move(std::make_unique<AscanBeamDataSet>(dsetId, L"", 0)));
+    //DataSets dataSets;
+    //dataSets.Add(std::move(std::make_unique<AscanMergedBeamDataSet>(dsetId, L"")));
+    //dataSets.Add(std::move(std::make_unique<AscanBeamDataSet>(dsetId, L"", 0)));
 
 
-    IDataSet* cx = new CscanBeamDataSet(dsetId, L"", 0, L"");
-    IDataSet* cy = new CscanMergedBeamDataSet(dsetId, L"", L"");
+    //IDataSet* cx = new CscanBeamDataSet(dsetId, L"", 0, L"");
+    //IDataSet* cy = new CscanMergedBeamDataSet(dsetId, L"", L"");
 
-    dataSets.Add(std::move(std::make_unique<CscanBeamDataSet>(dsetId, L"", 0,  L"")));
-    dataSets.Add(std::move(std::make_unique<CscanMergedBeamDataSet>(dsetId, L"", L"")));
+    //dataSets.Add(std::move(std::make_unique<CscanBeamDataSet>(dsetId, L"", 0,  L"")));
+    //dataSets.Add(std::move(std::make_unique<CscanMergedBeamDataSet>(dsetId, L"", L"")));
 
-    auto cs = dataSets.CScans(L"");
+    //auto cs = dataSets.CScans(L"");
 
     //AscanMergedBeamDataSet ads(dsetId);
     //AscanBeamDataSet abds;
@@ -50,6 +50,51 @@ public:
 
   ~FileStorage() = default;
   
+
+  void ReadBig()
+  {
+    std::cout << "Opening file..." << std::endl;
+    hid_t fileId = H5Fopen(FILENAME_BIG, H5F_ACC_RDONLY, H5P_DEFAULT);
+    hid_t dsetId = H5Dopen(fileId, "DS1", H5P_DEFAULT);
+
+    hid_t propLists = H5Dget_create_plist(dsetId);
+
+    if (H5Pget_layout(propLists) == H5D_CHUNKED)
+    {
+      hid_t dspaceId = H5Dget_space(dsetId);
+      const int ndims = H5Sget_simple_extent_ndims(dspaceId);
+
+      hsize_t* chunkDims = new hsize_t[ndims]{};
+      int rankChunk = H5Pget_chunk(propLists, ndims, chunkDims);
+      delete[] chunkDims;
+
+      size_t nelmts{};
+      unsigned int flags{};
+      unsigned int filterInfo{};
+
+      H5Z_filter_t filterType = H5Pget_filter(propLists, 0, &flags, &nelmts, nullptr, 0, nullptr, &filterInfo);
+
+      switch (filterType) {
+      case H5Z_FILTER_DEFLATE:
+        break;
+      case H5Z_FILTER_SHUFFLE:
+        break;
+      case H5Z_FILTER_FLETCHER32:
+        break;
+      case H5Z_FILTER_SZIP:
+        break;
+      case H5Z_FILTER_NBIT:
+        break;
+      case H5Z_FILTER_SCALEOFFSET:
+        break;
+      }
+
+      unsigned filter_vals[1];
+      herr_t err = H5Pget_filter_by_id2(propLists, H5Z_FILTER_DEFLATE, NULL, &nelmts, filter_vals, 0, NULL, NULL);
+      err = 0;
+    }
+  }
+
   void Read(CudaKernel& ck)
   {
     std::cout << "Opening file..." << std::endl;
@@ -101,8 +146,6 @@ public:
 
   std::vector<uint16_t> ReadSlice()
   {
-    
-
     std::cout << "Opening file..." << std::endl;
     hid_t fileId = H5Fopen(FILENAME_SLICE, H5F_ACC_RDONLY, H5P_DEFAULT);
     hid_t dsetId = H5Dopen(fileId, "DS1", H5P_DEFAULT);

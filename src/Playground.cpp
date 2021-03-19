@@ -19,39 +19,39 @@
 #include "CudaKernels.cuh"
 
 
+//constexpr char FILENAME[] = "big.h5";
+constexpr char FILENAME[] = "ThinBlade.h5";
+
+
 struct us_listen_socket_t* global_listen_socket;
 
 int main(int argc, char* argv[])
 {
   try
   {
-    AcquiredData();
+    //FileStorage fs;
+    //fs.ReadBig();
+    //fs.CompressFile();
 
-    return 0;
+    auto x = AcquiredData(FILENAME);
 
-
-
-    FileStorage fs;
-
-    fs.CompressFile();
 
     //fs.Write();
     //std::vector<int8_t> dataSlice = fs.ReadSliceFpd();
    
     //SaveImage saveImage(dataSlice);
 
-    return 0;
+    //CudaKernel ck;
+    //FileStorage fs;
+    //fs.WriteOneGB();
+    //fs.Read(ck);
 
-    CudaKernel ck;
-    fs.WriteOneGB();
-    fs.Read(ck);
+    //CycleDataDescriptor cdd1;
+    //CycleDataDescriptor cdd2;
+    //cdd2 = std::move(cdd1);
+    //auto p = std::make_unique<Playground>(std::move(cdd1));
 
-    CycleDataDescriptor cdd1;
-    CycleDataDescriptor cdd2;
-    cdd2 = std::move(cdd1);
-    auto p = std::make_unique<Playground>(std::move(cdd1));
-
-    std::cin.ignore();
+    //std::cin.ignore();
   }
   catch (const std::exception& ex)
   {

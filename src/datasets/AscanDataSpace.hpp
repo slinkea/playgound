@@ -11,8 +11,6 @@ public:
   {
   }
 
-  AscanDataSpace(const AscanDataSpace&) = delete;
-  AscanDataSpace& operator=(const AscanDataSpace&) = delete;
   virtual ~AscanDataSpace() = default;
 
   const DataDimensions& Dimensions() const {
