@@ -1,5 +1,4 @@
 #pragma once
-#include <memory>
 #include "DataSet.hpp"
 #include "AscanDataSpace.hpp"
 
@@ -31,6 +30,6 @@ protected:
 
   }
 
-  AscanDataSpace m_dataSpace;
   AscanAttributes m_attributes;
+  AscanDataSpace m_dataSpace;
 };

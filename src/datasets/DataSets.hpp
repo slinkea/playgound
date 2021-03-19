@@ -1,6 +1,7 @@
 #pragma once
 #include "Container.hpp"
 #include "IAscanDataSet.h"
+#include "IAscanBeamDataSet.h"
 
 
 class DataSets : public ONDTLib::Container<IDataSet>
@@ -18,8 +19,8 @@ public:
       {
         if (auto ascanDataSet = dynamic_cast<IAscanDataSet*>(item_.get()))
           return ascanDataSet->Name() == name_;
-        //else if (auto ascanBeamDataSet = dynamic_cast<AscanBeamDataSet*>(item_.get()))
-        //  return ascanBeamDataSet->Name() == name_;
+        else if (auto ascanBeamDataSet = dynamic_cast<IAscanBeamDataSet*>(item_.get()))
+          return ascanBeamDataSet->Name() == name_;
 
         return false;
       });

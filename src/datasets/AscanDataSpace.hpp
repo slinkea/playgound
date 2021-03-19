@@ -6,8 +6,8 @@ class AscanDataSpace
 {
 public:
   AscanDataSpace() = default;
-  AscanDataSpace(const DataDimensions& dataDimensions_)
-    : m_dataDimensions(dataDimensions_)
+  AscanDataSpace(const DataDimensions& dimensions_)
+    : m_dimensions(dimensions_)
   {
   }
 
@@ -16,9 +16,9 @@ public:
   virtual ~AscanDataSpace() = default;
 
   const DataDimensions& Dimensions() const {
-    return m_dataDimensions;
+    return m_dimensions;
   }
 
 private:
-  DataDimensions m_dataDimensions;
+  DataDimensions m_dimensions;
 };
