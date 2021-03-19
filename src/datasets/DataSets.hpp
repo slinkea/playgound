@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
 #include "Container.hpp"
-#include "IAscanDataSet.h"
 #include "IAscanBeamDataSet.h"
+#include "IAscanMergedBeamDataSet.h"
 #include "ICscanDataSet.h"
 #include "ICscanBeamDataSet.h"
 
@@ -18,16 +18,19 @@ public:
   DataSets() = default;
   virtual ~DataSets() {}
 
-  size_t Count(const std::wstring& configName_) const
+  TIDataSets AScans(const std::wstring& configName_) const
   {
-    return TSuper::Count([&configName_](const TItemPtr& item_)
+    return TSuper::Select([&configName_](const TItemPtr& item_)
       {
-        if (auto ascanDataSet = dynamic_cast<IAscanDataSet*>(item_.get()))
+        if (auto ascanDataSet = dynamic_cast<IAscanBeamDataSet*>(item_.get())) {
           return ascanDataSet->ConfigName() == configName_;
-        else if (auto ascanBeamDataSet = dynamic_cast<IAscanBeamDataSet*>(item_.get()))
+        }
+        else if (auto ascanBeamDataSet = dynamic_cast<IAscanMergedBeamDataSet*>(item_.get())) {
           return ascanBeamDataSet->ConfigName() == configName_;
-
-        return false;
+        }
+        else {
+          return false;
+        }
       });
   }
 

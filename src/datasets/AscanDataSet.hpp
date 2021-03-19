@@ -13,7 +13,7 @@ protected:
     : DataSet(configName_)
   {
     m_id = H5Dopen(id_, ASCAN_DATASET, H5P_DEFAULT);
-    m_id = H5Dopen(id_, ASCAN_STATUS_DATASET, H5P_DEFAULT);
+    //m_id = H5Dopen(id_, ASCAN_STATUS_DATASET, H5P_DEFAULT);
 
     hid_t dspaceId = H5Dget_space(m_id);
     const int ndims = H5Sget_simple_extent_ndims(dspaceId);

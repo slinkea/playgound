@@ -1,9 +1,9 @@
 #pragma once
 #include "AscanDataSet.hpp"
-#include "IAscanDataSet.h"
+#include "IAscanMergedBeamDataSet.h"
 
 
-class AscanMergedBeamDataSet : public AscanDataSet, public IAscanDataSet
+class AscanMergedBeamDataSet : public AscanDataSet, public IAscanMergedBeamDataSet
 {
 public:
   AscanMergedBeamDataSet(hid_t id_, const std::wstring& configName_)

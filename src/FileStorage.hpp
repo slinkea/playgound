@@ -17,23 +17,23 @@ class FileStorage
 public:
   FileStorage()
   {
-    //hid_t fileId = H5Fopen(FILENAME_FPD, H5F_ACC_RDONLY, H5P_DEFAULT);
-    //hid_t dsetId = H5Dopen(fileId, "DS1", H5P_DEFAULT);
+    hid_t fileId = H5Fopen(FILENAME_FPD, H5F_ACC_RDONLY, H5P_DEFAULT);
+    hid_t dataGroupId = H5Gopen(fileId, "/Data/Default PA", H5P_DEFAULT);
 
-    //IDataSet* x = new AscanMergedBeamDataSet(dsetId, L"");
-    //IDataSet* y = new AscanBeamDataSet(dsetId, L"", 0);
+    IDataSet* x = new AscanMergedBeamDataSet(dataGroupId, L"Default PA");
+    IDataSet* y = new AscanBeamDataSet(dataGroupId, L"Default PA", 0);
 
-    //auto ascanDataSet = dynamic_cast<IAscanDataSet*>(x);
-    //
-    //auto ascanBeamDataSet = dynamic_cast<IAscanBeamDataSet*>(x);
-    //
-    //auto ascanDataSet2 = dynamic_cast<IAscanDataSet*>(y);
-    //auto ascanBeamDataSet2 = dynamic_cast<IAscanBeamDataSet*>(y);
-    //
+    auto ascanDataSet = dynamic_cast<IAscanDataSet*>(x);
+    auto ascanBeamDataSet = dynamic_cast<IAscanBeamDataSet*>(x);
+    auto ascanMergedBeamDataSet = dynamic_cast<IAscanMergedBeamDataSet*>(x);
+    
+    auto ascanDataSet2 = dynamic_cast<IAscanDataSet*>(y);
+    auto ascanBeamDataSet2 = dynamic_cast<IAscanBeamDataSet*>(y);
+    auto ascanMergedBeamDataSet2 = dynamic_cast<IAscanMergedBeamDataSet*>(y);
 
-    //DataSets dataSets;
-    //dataSets.Add(std::move(std::make_unique<AscanMergedBeamDataSet>(dsetId, L"")));
-    //dataSets.Add(std::move(std::make_unique<AscanBeamDataSet>(dsetId, L"", 0)));
+    DataSets dataSets;
+    dataSets.Add(std::move(std::make_unique<AscanMergedBeamDataSet>(dataGroupId, L"Default PA")));
+    dataSets.Add(std::move(std::make_unique<AscanBeamDataSet>(dataGroupId, L"Default PA", 0)));
 
 
     //IDataSet* cx = new CscanBeamDataSet(dsetId, L"", 0, L"");
