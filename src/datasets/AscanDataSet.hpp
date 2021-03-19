@@ -7,7 +7,7 @@ class AscanDataSet : public DataSet
 {
 protected:
   AscanDataSet(hid_t id_, const std::wstring& configName_)
-  : DataSet(id_, configName_)
+    : DataSet(id_, configName_)
   {
   }
 

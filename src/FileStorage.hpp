@@ -21,7 +21,7 @@ public:
     hid_t dsetId = H5Dopen(fileId, "DS1", H5P_DEFAULT);
 
     IDataSet* x = new AscanMergedBeamDataSet(dsetId, L"");
-    IDataSet* y = new AscanBeamDataSet(dsetId, L"");
+    IDataSet* y = new AscanBeamDataSet(dsetId, L"", 0);
 
     auto ascanDataSet = dynamic_cast<IAscanDataSet*>(x);
     
@@ -33,14 +33,14 @@ public:
 
     DataSets dataSets;
     dataSets.Add(std::move(std::make_unique<AscanMergedBeamDataSet>(dsetId, L"")));
-    dataSets.Add(std::move(std::make_unique<AscanBeamDataSet>(dsetId, L"")));
+    dataSets.Add(std::move(std::make_unique<AscanBeamDataSet>(dsetId, L"", 0)));
 
 
-    IDataSet* cx = new CscanBeamDataSet(dsetId);
-    IDataSet* cy = new CscanMergedBeamDataSet(dsetId);
+    IDataSet* cx = new CscanBeamDataSet(dsetId, L"", 0, L"");
+    IDataSet* cy = new CscanMergedBeamDataSet(dsetId, L"", L"");
 
-    dataSets.Add(std::move(std::make_unique<CscanBeamDataSet>(dsetId)));
-    dataSets.Add(std::move(std::make_unique<CscanMergedBeamDataSet>(dsetId)));
+    dataSets.Add(std::move(std::make_unique<CscanBeamDataSet>(dsetId, L"", 0,  L"")));
+    dataSets.Add(std::move(std::make_unique<CscanMergedBeamDataSet>(dsetId, L"", L"")));
 
     auto cs = dataSets.CScans(L"");
 

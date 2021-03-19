@@ -6,8 +6,9 @@
 class CscanDataSet : public DataSet
 {
 protected:
-  CscanDataSet(hid_t id_)
-  : DataSet(id_, L"")
+  CscanDataSet(hid_t id_, const std::wstring& configName_, const std::wstring& sourceName_)
+    : DataSet(id_, configName_)
+    , m_sourceName(sourceName_)
   {
   }
 
@@ -30,6 +31,7 @@ protected:
 
   }
 
-  CscanAttributes m_attributes;
   CscanDataSpace m_dataSpace;
+  CscanAttributes m_attributes;
+  const std::wstring m_sourceName;
 };

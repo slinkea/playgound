@@ -6,8 +6,9 @@
 class CscanBeamDataSet : public CscanDataSet, public ICscanBeamDataSet
 {
 public:
-  CscanBeamDataSet(hid_t id_)
-  : CscanDataSet(id_)
+  CscanBeamDataSet(hid_t id_, const std::wstring& configName_, size_t beamIdx_, const std::wstring& sourceName_)
+    : CscanDataSet(id_, configName_, sourceName_)
+    , m_beamIdx(beamIdx_)
   {
   }
 
@@ -21,7 +22,7 @@ public:
   };
 
   size_t BeamIndex() const override {
-    return m_beamIndex; 
+    return m_beamIdx;
   };
 
   const CscanAttributes& Attributes() const override {
@@ -37,5 +38,5 @@ public:
   }
 
 protected:
-  size_t m_beamIndex{};  
+  size_t m_beamIdx{};
 };

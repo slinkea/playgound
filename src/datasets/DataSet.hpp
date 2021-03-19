@@ -23,5 +23,5 @@ protected:
   };
 
   hid_t m_id{};
-  std::wstring m_configName;
+  const std::wstring m_configName;
 };

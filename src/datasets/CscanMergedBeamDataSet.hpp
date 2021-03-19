@@ -6,8 +6,8 @@
 class CscanMergedBeamDataSet : public CscanDataSet, public ICscanDataSet
 {
 public:
-  CscanMergedBeamDataSet(hid_t id_)
-  : CscanDataSet(id_)
+  CscanMergedBeamDataSet(hid_t id_, const std::wstring& configName_, const std::wstring& sourceName_)
+    : CscanDataSet(id_, configName_, sourceName_)
   {
   }
 
@@ -31,11 +31,5 @@ public:
 
   void Read(const void* dataOut_) const override
   {
-  }
-
-protected:
-  void Fetch()
-  {
-
   }
 };

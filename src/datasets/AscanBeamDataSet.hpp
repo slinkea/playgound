@@ -6,8 +6,9 @@
 class AscanBeamDataSet : public AscanDataSet, public IAscanBeamDataSet
 {
 public:
-  AscanBeamDataSet(hid_t id_, const std::wstring& configName_)
-  : AscanDataSet(id_, configName_)
+  AscanBeamDataSet(hid_t id_, const std::wstring& configName_, size_t beamIdx_)
+    : AscanDataSet(id_, configName_)
+    , m_beamIdx(beamIdx_)
   {
   }
 
@@ -21,7 +22,7 @@ public:
   };
 
   size_t BeamIndex() const override {
-    return m_beamIndex; 
+    return m_beamIdx;
   };
 
   const AscanAttributes& Attributes() const override {
@@ -37,5 +38,5 @@ public:
   }
 
 protected:
-  size_t m_beamIndex{};  
+  const size_t m_beamIdx{};  
 };
