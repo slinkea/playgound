@@ -5,6 +5,7 @@ project(Playground VERSION 1.0 LANGUAGES CXX CUDA)
 find_package(CUDA 11.1 REQUIRED)
 
 include_directories(components/include)
+include_directories(components/include/hdf5)
 include_directories(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
 
 if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
@@ -30,7 +31,14 @@ file(GLOB
   ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cuh
 )
 
-add_executable(Playground ${_Src})
+file(GLOB
+  _Datasets
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/datasets/*.cpp 
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/datasets/*.h 
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/datasets/*.hpp
+)
+
+add_executable(Playground ${_Src} ${_Datasets})
 
 #set_target_properties(Playground PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 set_target_properties(Playground PROPERTIES LINK_FLAGS "/ignore:4099")

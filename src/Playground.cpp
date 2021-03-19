@@ -16,7 +16,6 @@
 #include "Playground.h"
 #include "FileStorage.hpp"
 #include "CudaKernels.cuh"
-#include "SaveImage.hpp"
 
 
 struct us_listen_socket_t* global_listen_socket;

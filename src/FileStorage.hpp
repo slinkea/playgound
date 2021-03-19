@@ -1,18 +1,42 @@
 #pragma once
 #include <hdf5/hdf5.h>
 #include "CudaKernels.cuh"
-
+#include "datasets/AscanDataSet.hpp"
+#include "datasets/AscanBeamDataSet.hpp"
+#include "datasets/DataSets.hpp"
 
 constexpr char FILENAME_BIG[] = "big.h5";
 constexpr char FILENAME_SLICE[] = "slice.h5";
 constexpr char FILENAME_FPD[] = "ThinBlade.h5";
-constexpr char FILENAME_FPD2[] = "?????.h5";
 
 
 class FileStorage
 {
 public:
-  FileStorage() = default;
+  FileStorage()
+  {
+    hid_t fileId = H5Fopen(FILENAME_FPD, H5F_ACC_RDONLY, H5P_DEFAULT);
+    hid_t dsetId = H5Dopen(fileId, "DS1", H5P_DEFAULT);
+
+    IDataSet* x = new AscanDataSet(dsetId);
+    IDataSet* y = new AscanBeamDataSet(dsetId, 0);
+
+    auto ascanDataSet = dynamic_cast<IAscanDataSet*>(x);
+    
+    auto ascanBeamDataSet = dynamic_cast<IAscanBeamDataSet*>(x);
+    
+    auto ascanDataSet2 = dynamic_cast<IAscanDataSet*>(y);
+    auto ascanBeamDataSet2 = dynamic_cast<IAscanBeamDataSet*>(y);
+    
+
+    DataSets dataSets;
+    dataSets.Add(std::move(std::make_unique<AscanDataSet>(dsetId)));
+    dataSets.Add(std::move(std::make_unique<AscanBeamDataSet>(dsetId, 0)));
+
+    //AscanDataSet ads(dsetId);
+    //AscanBeamDataSet abds;
+  }
+
   ~FileStorage() = default;
   
   void Read(CudaKernel& ck)
@@ -177,7 +201,7 @@ public:
 
   void CompressFile()
   {
-    hid_t fileId = H5Fopen(FILENAME_FPD2, H5F_ACC_RDONLY, H5P_DEFAULT);
+    hid_t fileId = H5Fopen(FILENAME_FPD, H5F_ACC_RDONLY, H5P_DEFAULT);
     hid_t dsetId = H5Dopen(fileId, "/Data/Default PA/Ascan Data", H5P_DEFAULT);
 
     const hsize_t height(699);
