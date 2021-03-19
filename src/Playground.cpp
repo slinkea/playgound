@@ -14,6 +14,7 @@
 #pragma warning(pop)
 
 #include "Playground.h"
+#include "AcquiredData.hpp"
 #include "FileStorage.hpp"
 #include "CudaKernels.cuh"
 
@@ -24,6 +25,12 @@ int main(int argc, char* argv[])
 {
   try
   {
+    AcquiredData();
+
+    return 0;
+
+
+
     FileStorage fs;
 
     fs.CompressFile();

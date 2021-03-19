@@ -1,9 +1,9 @@
 #pragma once
 #include <hdf5/hdf5.h>
 #include "CudaKernels.cuh"
-#include "datasets/AscanDataSet.hpp"
+#include "datasets/AscanMergedBeamDataSet.hpp"
 #include "datasets/AscanBeamDataSet.hpp"
-#include "datasets/CscanDataSet.hpp"
+#include "datasets/CscanMergedBeamDataSet.hpp"
 #include "datasets/CscanBeamDataSet.hpp"
 #include "datasets/DataSets.hpp"
 
@@ -20,8 +20,8 @@ public:
     hid_t fileId = H5Fopen(FILENAME_FPD, H5F_ACC_RDONLY, H5P_DEFAULT);
     hid_t dsetId = H5Dopen(fileId, "DS1", H5P_DEFAULT);
 
-    IDataSet* x = new AscanDataSet(dsetId);
-    IDataSet* y = new AscanBeamDataSet(dsetId);
+    IDataSet* x = new AscanMergedBeamDataSet(dsetId, L"");
+    IDataSet* y = new AscanBeamDataSet(dsetId, L"");
 
     auto ascanDataSet = dynamic_cast<IAscanDataSet*>(x);
     
@@ -32,19 +32,19 @@ public:
     
 
     DataSets dataSets;
-    dataSets.Add(std::move(std::make_unique<AscanDataSet>(dsetId)));
-    dataSets.Add(std::move(std::make_unique<AscanBeamDataSet>(dsetId)));
+    dataSets.Add(std::move(std::make_unique<AscanMergedBeamDataSet>(dsetId, L"")));
+    dataSets.Add(std::move(std::make_unique<AscanBeamDataSet>(dsetId, L"")));
 
 
-    IDataSet* cx = new CscanDataSet(dsetId);
-    IDataSet* cy = new CscanBeamDataSet(dsetId);
+    IDataSet* cx = new CscanBeamDataSet(dsetId);
+    IDataSet* cy = new CscanMergedBeamDataSet(dsetId);
 
-    dataSets.Add(std::move(std::make_unique<CscanDataSet>(dsetId)));
     dataSets.Add(std::move(std::make_unique<CscanBeamDataSet>(dsetId)));
+    dataSets.Add(std::move(std::make_unique<CscanMergedBeamDataSet>(dsetId)));
 
-    auto cs = dataSets.CScans("");
+    auto cs = dataSets.CScans(L"");
 
-    //AscanDataSet ads(dsetId);
+    //AscanMergedBeamDataSet ads(dsetId);
     //AscanBeamDataSet abds;
   }
 

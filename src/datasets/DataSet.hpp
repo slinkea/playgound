@@ -6,8 +6,9 @@
 class DataSet
 {
 protected:
-  DataSet(hid_t id_)
+  DataSet(hid_t id_, const std::wstring& configName_)
     : m_id(id_)
+    , m_configName(configName_)
   {
   }
 
@@ -17,6 +18,10 @@ protected:
 
   virtual ~DataSet() = default;
 
-  hid_t m_id;
-  std::string m_name;
+  const std::wstring& ConfigName() const {
+    return m_configName;
+  };
+
+  hid_t m_id{};
+  std::wstring m_configName;
 };

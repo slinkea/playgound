@@ -1,27 +1,24 @@
 #pragma once
 #include "CscanDataSet.hpp"
-#include "ICscanBeamDataSet.h"
+#include "ICscanDataSet.h"
 
 
-class CscanBeamDataSet : public CscanDataSet, public ICscanBeamDataSet
+class CscanMergedBeamDataSet : public CscanDataSet, public ICscanDataSet
 {
 public:
-  CscanBeamDataSet(hid_t id_)
+  CscanMergedBeamDataSet(hid_t id_)
   : CscanDataSet(id_)
   {
   }
 
-  CscanBeamDataSet() = delete;
-  CscanBeamDataSet(const CscanBeamDataSet&) = delete;
-  CscanBeamDataSet& operator=(const CscanBeamDataSet&) = delete;
-  virtual ~CscanBeamDataSet() = default;
+  CscanMergedBeamDataSet() = delete;
+  CscanMergedBeamDataSet(const CscanMergedBeamDataSet&) = delete;
+  CscanMergedBeamDataSet& operator=(const CscanMergedBeamDataSet&) = delete;
+
+  virtual ~CscanMergedBeamDataSet() = default;
 
   const std::wstring& ConfigName() const override {
     return DataSet::ConfigName();
-  };
-
-  size_t BeamIndex() const override {
-    return m_beamIndex; 
   };
 
   const CscanAttributes& Attributes() const override {
@@ -37,5 +34,8 @@ public:
   }
 
 protected:
-  size_t m_beamIndex{};  
+  void Fetch()
+  {
+
+  }
 };

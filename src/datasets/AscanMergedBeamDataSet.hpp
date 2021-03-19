@@ -1,27 +1,24 @@
 #pragma once
 #include "AscanDataSet.hpp"
-#include "IAscanBeamDataSet.h"
+#include "IAscanDataSet.h"
 
 
-class AscanBeamDataSet : public AscanDataSet, public IAscanBeamDataSet
+class AscanMergedBeamDataSet : public AscanDataSet, public IAscanDataSet
 {
 public:
-  AscanBeamDataSet(hid_t id_, const std::wstring& configName_)
+  AscanMergedBeamDataSet(hid_t id_, const std::wstring& configName_)
   : AscanDataSet(id_, configName_)
   {
   }
 
-  AscanBeamDataSet() = delete;
-  AscanBeamDataSet(const AscanBeamDataSet&) = delete;
-  AscanBeamDataSet& operator=(const AscanBeamDataSet&) = delete;
-  virtual ~AscanBeamDataSet() = default;
+  AscanMergedBeamDataSet() = delete;
+  AscanMergedBeamDataSet(const AscanMergedBeamDataSet&) = delete;
+  AscanMergedBeamDataSet& operator=(const AscanMergedBeamDataSet&) = delete;
+
+  virtual ~AscanMergedBeamDataSet() = default;
 
   const std::wstring& ConfigName() const override {
     return DataSet::ConfigName();
-  };
-
-  size_t BeamIndex() const override {
-    return m_beamIndex; 
   };
 
   const AscanAttributes& Attributes() const override {
@@ -37,5 +34,8 @@ public:
   }
 
 protected:
-  size_t m_beamIndex{};  
+  void Fetch()
+  {
+
+  }
 };

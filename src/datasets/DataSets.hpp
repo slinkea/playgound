@@ -3,6 +3,8 @@
 #include "Container.hpp"
 #include "IAscanDataSet.h"
 #include "IAscanBeamDataSet.h"
+#include "ICscanDataSet.h"
+#include "ICscanBeamDataSet.h"
 
 
 using TIDataSets = std::vector<IDataSet*>;
@@ -16,27 +18,27 @@ public:
   DataSets() = default;
   virtual ~DataSets() {}
 
-  size_t Count(const std::string& name_) const
+  size_t Count(const std::wstring& configName_) const
   {
-    return TSuper::Count([&name_](const TItemPtr& item_)
+    return TSuper::Count([&configName_](const TItemPtr& item_)
       {
         if (auto ascanDataSet = dynamic_cast<IAscanDataSet*>(item_.get()))
-          return ascanDataSet->Name() == name_;
+          return ascanDataSet->ConfigName() == configName_;
         else if (auto ascanBeamDataSet = dynamic_cast<IAscanBeamDataSet*>(item_.get()))
-          return ascanBeamDataSet->Name() == name_;
+          return ascanBeamDataSet->ConfigName() == configName_;
 
         return false;
       });
   }
 
-  TIDataSets CScans(const std::string& name_) const
+  TIDataSets CScans(const std::wstring& configName_) const
   {
-    return TSuper::Select([&name_](const TItemPtr& item_)
+    return TSuper::Select([&configName_](const TItemPtr& item_)
     {
-      if (auto cscanDataSet = dynamic_cast<CscanDataSet*>(item_.get()))
-        return cscanDataSet->Name() == name_;
-      else if (auto cscanBeamDataSet = dynamic_cast<CscanBeamDataSet*>(item_.get()))
-        return cscanBeamDataSet->Name() == name_;
+      if (auto cscanDataSet = dynamic_cast<ICscanDataSet*>(item_.get()))
+        return cscanDataSet->ConfigName() == configName_;
+      else if (auto cscanBeamDataSet = dynamic_cast<ICscanBeamDataSet*>(item_.get()))
+        return cscanBeamDataSet->ConfigName() == configName_;
 
       return false;
     });

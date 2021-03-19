@@ -1,13 +1,13 @@
 #pragma once
-#include "AscanBaseDataSet.hpp"
-#include "IAscanDataSet.h"
+#include "DataSet.hpp"
+#include "AscanDataSpace.hpp"
 
 
-class AscanDataSet : public AscanBaseDataSet, public IAscanDataSet
+class AscanDataSet : public DataSet
 {
-public:
-  AscanDataSet(hid_t id_)
-  : AscanBaseDataSet(id_)
+protected:
+  AscanDataSet(hid_t id_, const std::wstring& configName_)
+  : DataSet(id_, configName_)
   {
   }
 
@@ -17,25 +17,19 @@ public:
 
   virtual ~AscanDataSet() = default;
 
-  const std::string& Name() const override {
-    return m_name;
-  };
-
-  const AscanAttributes& Attributes() const override {
+  const AscanAttributes& Attributes() const {
     return m_attributes;
   }
 
-  const AscanDataSpace& DataSpace() const override {
+  const AscanDataSpace& DataSpace() const {
     return m_dataSpace;
   };
 
-  void Read(const void* dataOut_) const override
-  {
-  }
-
-protected:
   void Fetch()
   {
 
   }
+
+  AscanAttributes m_attributes;
+  AscanDataSpace m_dataSpace;
 };

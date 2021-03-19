@@ -1,13 +1,13 @@
 #pragma once
-#include "CscanBaseDataSet.hpp"
-#include "ICscanDataSet.h"
+#include "DataSet.hpp"
+#include "CscanDataSpace.hpp"
 
 
-class CscanDataSet : public CscanBaseDataSet, public ICscanDataSet
+class CscanDataSet : public DataSet
 {
-public:
+protected:
   CscanDataSet(hid_t id_)
-  : CscanBaseDataSet(id_)
+  : DataSet(id_, L"")
   {
   }
 
@@ -17,25 +17,19 @@ public:
 
   virtual ~CscanDataSet() = default;
 
-  const std::string& Name() const override {
-    return m_name;
-  };
-
-  const CscanAttributes& Attributes() const override {
+  const CscanAttributes& Attributes() const {
     return m_attributes;
   }
 
-  const CscanDataSpace& DataSpace() const override {
+  const CscanDataSpace& DataSpace() const {
     return m_dataSpace;
   };
 
-  void Read(const void* dataOut_) const override
-  {
-  }
-
-protected:
   void Fetch()
   {
 
   }
+
+  CscanAttributes m_attributes;
+  CscanDataSpace m_dataSpace;
 };
