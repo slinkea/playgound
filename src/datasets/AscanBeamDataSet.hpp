@@ -6,9 +6,8 @@
 class AscanBeamDataSet : public AscanBaseDataSet, public IAscanBeamDataSet
 {
 public:
-  AscanBeamDataSet(hid_t id_, size_t beamIndex_)
+  AscanBeamDataSet(hid_t id_)
   : AscanBaseDataSet(id_)
-  , m_beamIndex(beamIndex_)
   {
   }
 

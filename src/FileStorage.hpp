@@ -3,6 +3,8 @@
 #include "CudaKernels.cuh"
 #include "datasets/AscanDataSet.hpp"
 #include "datasets/AscanBeamDataSet.hpp"
+#include "datasets/CscanDataSet.hpp"
+#include "datasets/CscanBeamDataSet.hpp"
 #include "datasets/DataSets.hpp"
 
 constexpr char FILENAME_BIG[] = "big.h5";
@@ -19,7 +21,7 @@ public:
     hid_t dsetId = H5Dopen(fileId, "DS1", H5P_DEFAULT);
 
     IDataSet* x = new AscanDataSet(dsetId);
-    IDataSet* y = new AscanBeamDataSet(dsetId, 0);
+    IDataSet* y = new AscanBeamDataSet(dsetId);
 
     auto ascanDataSet = dynamic_cast<IAscanDataSet*>(x);
     
@@ -31,7 +33,16 @@ public:
 
     DataSets dataSets;
     dataSets.Add(std::move(std::make_unique<AscanDataSet>(dsetId)));
-    dataSets.Add(std::move(std::make_unique<AscanBeamDataSet>(dsetId, 0)));
+    dataSets.Add(std::move(std::make_unique<AscanBeamDataSet>(dsetId)));
+
+
+    IDataSet* cx = new CscanDataSet(dsetId);
+    IDataSet* cy = new CscanBeamDataSet(dsetId);
+
+    dataSets.Add(std::move(std::make_unique<CscanDataSet>(dsetId)));
+    dataSets.Add(std::move(std::make_unique<CscanBeamDataSet>(dsetId)));
+
+    auto cs = dataSets.CScans("");
 
     //AscanDataSet ads(dsetId);
     //AscanBeamDataSet abds;

@@ -17,14 +17,6 @@ protected:
 
   virtual ~AscanBaseDataSet() = default;
 
-  const AscanAttributes& Attributes() const {
-    return m_attributes;
-  }
-
-  const AscanDataSpace& DataSpace() const {
-    return m_dataSpace;
-  };
-
   void Fetch()
   {
 

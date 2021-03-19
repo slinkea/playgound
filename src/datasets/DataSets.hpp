@@ -1,8 +1,11 @@
 #pragma once
+#include <string>
 #include "Container.hpp"
 #include "IAscanDataSet.h"
 #include "IAscanBeamDataSet.h"
 
+
+using TIDataSets = std::vector<IDataSet*>;
 
 class DataSets : public ONDTLib::Container<IDataSet>
 {
@@ -24,5 +27,18 @@ public:
 
         return false;
       });
+  }
+
+  TIDataSets CScans(const std::string& name_) const
+  {
+    return TSuper::Select([&name_](const TItemPtr& item_)
+    {
+      if (auto cscanDataSet = dynamic_cast<CscanDataSet*>(item_.get()))
+        return cscanDataSet->Name() == name_;
+      else if (auto cscanBeamDataSet = dynamic_cast<CscanBeamDataSet*>(item_.get()))
+        return cscanBeamDataSet->Name() == name_;
+
+      return false;
+    });
   }
 };
