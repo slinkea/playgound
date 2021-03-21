@@ -62,16 +62,16 @@ namespace ONDTLib
 
     TItems Select(const TFindPredicate& predicate_) const
     {
-      TItems seleted;
+      TItems selected;
 
       auto itr = std::find_if(m_items.begin(), m_items.end(), predicate_);
       while (itr != m_items.end())
       {
-        seleted.push_back((*itr).get());
+        selected.push_back((*itr).get());
         itr = std::find_if(std::next(itr), m_items.end(), predicate_);
       }
 
-      return seleted;
+      return selected;
     }
 
     void Erase(const TFindPredicate& predicate_)

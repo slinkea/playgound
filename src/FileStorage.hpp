@@ -32,9 +32,11 @@ public:
     auto ascanMergedBeamDataSet2 = dynamic_cast<IAscanMergedBeamDataSet*>(y);
 
     DataSets dataSets;
-    dataSets.Add(std::move(std::make_unique<AscanMergedBeamDataSet>(dataGroupId, L"Default PA")));
-    dataSets.Add(std::move(std::make_unique<AscanBeamDataSet>(dataGroupId, L"Default PA", 0)));
+    dataSets.Add(std::make_unique<AscanMergedBeamDataSet>(dataGroupId, L"Default PA"));
+    dataSets.Add(std::make_unique<AscanBeamDataSet>(dataGroupId, L"Default PAAAA", 0));
 
+    std::vector<IDataSet*> ascans = dataSets.AScans(L"Default PA");
+    auto zz = ascans.size();
 
     //IDataSet* cx = new CscanBeamDataSet(dsetId, L"", 0, L"");
     //IDataSet* cy = new CscanMergedBeamDataSet(dsetId, L"", L"");
