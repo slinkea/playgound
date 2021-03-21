@@ -1,10 +1,10 @@
 #pragma once
-#include "IAscanDataSet.h"
+#include "IAscanDataset.h"
 
 
-class IAscanMergedBeamDataSet : public IAscanDataSet
+class IAscanMergedBeamDataset : public IAscanDataset
 {
 public:
-  virtual ~IAscanMergedBeamDataSet() = default;
+  virtual ~IAscanMergedBeamDataset() = default;
 
 };

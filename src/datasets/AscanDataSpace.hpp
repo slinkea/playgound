@@ -2,16 +2,16 @@
 #include "DataAccess.h"
 
 
-class AscanDataSpace
+class AscanDataspace
 {
 public:
-  AscanDataSpace() = default;
-  AscanDataSpace(const DataDimensions& dimensions_)
+  AscanDataspace() = default;
+  AscanDataspace(const DataDimensions& dimensions_)
     : m_dimensions(dimensions_)
   {
   }
 
-  virtual ~AscanDataSpace() = default;
+  virtual ~AscanDataspace() = default;
 
   const DataDimensions& Dimensions() const {
     return m_dimensions;

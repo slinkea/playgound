@@ -3,19 +3,20 @@
 #include <hdf5/H5Cpp.h>
 
 
-class DataSet
+class Dataset
 {
 protected:
-  DataSet(const std::wstring& configName_)
+  Dataset(hid_t id_, const std::wstring& configName_)
     : m_configName(configName_)
+    , m_id(id_)
   {
   }
 
-  DataSet() = delete;
-  DataSet(const DataSet&) = delete;
-  DataSet& operator=(const DataSet&) = delete;
+  Dataset() = delete;
+  Dataset(const Dataset&) = delete;
+  Dataset& operator=(const Dataset&) = delete;
 
-  virtual ~DataSet() = default;
+  virtual ~Dataset() = default;
 
   const std::wstring& ConfigName() const {
     return m_configName;

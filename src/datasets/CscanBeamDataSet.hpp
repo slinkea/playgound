@@ -1,24 +1,24 @@
 #pragma once
-#include "CscanDataSet.hpp"
-#include "ICscanBeamDataSet.h"
+#include "CscanDataset.hpp"
+#include "ICscanBeamDataset.h"
 
 
-class CscanBeamDataSet : public CscanDataSet, public ICscanBeamDataSet
+class CscanBeamDataset : public CscanDataset, public ICscanBeamDataset
 {
 public:
-  CscanBeamDataSet(hid_t id_, const std::wstring& configName_, size_t beamIdx_, const std::wstring& sourceName_)
-    : CscanDataSet(id_, configName_, sourceName_)
+  CscanBeamDataset(hid_t id_, const std::wstring& configName_, size_t beamIdx_, const std::wstring& sourceName_)
+    : CscanDataset(id_, configName_, sourceName_)
     , m_beamIdx(beamIdx_)
   {
   }
 
-  CscanBeamDataSet() = delete;
-  CscanBeamDataSet(const CscanBeamDataSet&) = delete;
-  CscanBeamDataSet& operator=(const CscanBeamDataSet&) = delete;
-  virtual ~CscanBeamDataSet() = default;
+  CscanBeamDataset() = delete;
+  CscanBeamDataset(const CscanBeamDataset&) = delete;
+  CscanBeamDataset& operator=(const CscanBeamDataset&) = delete;
+  virtual ~CscanBeamDataset() = default;
 
   const std::wstring& ConfigName() const override {
-    return DataSet::ConfigName();
+    return Dataset::ConfigName();
   };
 
   size_t BeamIndex() const override {
@@ -26,11 +26,11 @@ public:
   };
 
   const CscanAttributes& Attributes() const override {
-    return CscanDataSet::Attributes();
+    return CscanDataset::Attributes();
   }
 
-  const CscanDataSpace& DataSpace() const override {
-    return CscanDataSet::DataSpace();
+  const CscanDataspace& Dataspace() const override {
+    return CscanDataset::Dataspace();
   };
 
   void Read(const void* dataOut_) const override

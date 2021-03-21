@@ -1,16 +1,16 @@
 #pragma once
-#include "IDataSet.h"
+#include "IDataset.h"
 
 
 struct AscanAttributes;
-class AscanDataSpace;
+class AscanDataspace;
 
-class IAscanDataSet : public IDataSet
+class IAscanDataset : public IDataset
 {
 public:
-  virtual ~IAscanDataSet() = default;
+  virtual ~IAscanDataset() = default;
   
   virtual const AscanAttributes& Attributes() const = 0;
-  virtual const AscanDataSpace& DataSpace() const = 0;
+  virtual const AscanDataspace& Dataspace() const = 0;
   virtual void Read(const void* dataOut_) const = 0;
 };

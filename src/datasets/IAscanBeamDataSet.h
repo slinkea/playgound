@@ -1,11 +1,11 @@
 #pragma once
-#include "IAscanDataSet.h"
+#include "IAscanDataset.h"
 
 
-class IAscanBeamDataSet : public IAscanDataSet
+class IAscanBeamDataset : public IAscanDataset
 {
 public:
-  virtual ~IAscanBeamDataSet() = default;
+  virtual ~IAscanBeamDataset() = default;
   
   virtual size_t BeamIndex() const = 0;
 };

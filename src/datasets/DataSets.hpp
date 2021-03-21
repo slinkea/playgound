@@ -1,26 +1,26 @@
 #pragma once
 #include <string>
 #include "Container.hpp"
-#include "IAscanDataSet.h"
-#include "ICscanDataSet.h"
+#include "IAscanDataset.h"
+#include "ICscanDataset.h"
 
 
-using TIDataSets = std::vector<IDataSet*>;
+using TIDatasets = std::vector<IDataset*>;
 
-class DataSets : public ONDTLib::Container<IDataSet>
+class Datasets : public ONDTLib::Container<IDataset>
 {
-  using TSuper = ONDTLib::Container<IDataSet>;
+  using TSuper = ONDTLib::Container<IDataset>;
 public:
-  DataSets(const DataSets&) = delete;
-  DataSets& operator=(const DataSets&) = delete;
-  DataSets() = default;
-  virtual ~DataSets() {}
+  Datasets(const Datasets&) = delete;
+  Datasets& operator=(const Datasets&) = delete;
+  Datasets() = default;
+  virtual ~Datasets() {}
 
-  TIDataSets AScans(const std::wstring& configName_) const
+  TIDatasets AScans(const std::wstring& configName_) const
   {
     return TSuper::Select([&configName_](const TItemPtr& item_) {
-      if (auto ascanDataSet = dynamic_cast<IAscanDataSet*>(item_.get())) {
-        return ascanDataSet->ConfigName() == configName_;
+      if (auto ascanDataset = dynamic_cast<IAscanDataset*>(item_.get())) {
+        return ascanDataset->ConfigName() == configName_;
       }
       else {
         return false;
@@ -28,11 +28,11 @@ public:
     });
   }
 
-  TIDataSets CScans(const std::wstring& configName_) const
+  TIDatasets CScans(const std::wstring& configName_) const
   {
     return TSuper::Select([&configName_](const TItemPtr& item_) {
-      if (auto cscanDataSet = dynamic_cast<ICscanDataSet*>(item_.get())) {
-        return cscanDataSet->ConfigName() == configName_;
+      if (auto cscanDataset = dynamic_cast<ICscanDataset*>(item_.get())) {
+        return cscanDataset->ConfigName() == configName_;
       }
       else {
         return false;

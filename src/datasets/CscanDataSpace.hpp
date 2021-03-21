@@ -2,18 +2,18 @@
 #include "DataAccess.h"
 
 
-class CscanDataSpace
+class CscanDataspace
 {
 public:
-  CscanDataSpace() = default;
-  CscanDataSpace(const DataDimensions& dimensions_)
+  CscanDataspace() = default;
+  CscanDataspace(const DataDimensions& dimensions_)
     : m_dimensions(dimensions_)
   {
   }
 
-  CscanDataSpace(const CscanDataSpace&) = delete;
-  CscanDataSpace& operator=(const CscanDataSpace&) = delete;
-  virtual ~CscanDataSpace() = default;
+  CscanDataspace(const CscanDataspace&) = delete;
+  CscanDataspace& operator=(const CscanDataspace&) = delete;
+  virtual ~CscanDataspace() = default;
 
   const DataDimensions& Dimensions() const {
     return m_dimensions;

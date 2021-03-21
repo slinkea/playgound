@@ -1,11 +1,11 @@
 #pragma once
 #include <hdf5/hdf5.h>
 #include "CudaKernels.cuh"
-#include "datasets/AscanMergedBeamDataSet.hpp"
-#include "datasets/AscanBeamDataSet.hpp"
-#include "datasets/CscanMergedBeamDataSet.hpp"
-#include "datasets/CscanBeamDataSet.hpp"
-#include "datasets/DataSets.hpp"
+#include "datasets/AscanMergedBeamDataset.hpp"
+#include "datasets/AscanBeamDataset.hpp"
+#include "datasets/CscanMergedBeamDataset.hpp"
+#include "datasets/CscanBeamDataset.hpp"
+#include "datasets/Datasets.hpp"
 
 constexpr char FILENAME_BIG[] = "big.h5";
 constexpr char FILENAME_SLICE[] = "slice.h5";
@@ -19,35 +19,36 @@ public:
   {
     hid_t fileId = H5Fopen(FILENAME_FPD, H5F_ACC_RDONLY, H5P_DEFAULT);
     hid_t dataGroupId = H5Gopen(fileId, "/Data/Default PA", H5P_DEFAULT);
+    hid_t dsetId = H5Dopen(dataGroupId, ASCAN_DATASET, H5P_DEFAULT);
 
-    IDataSet* x = new AscanMergedBeamDataSet(dataGroupId, L"Default PA");
-    IDataSet* y = new AscanBeamDataSet(dataGroupId, L"Default PA", 0);
+    IDataset* x = new AscanMergedBeamDataset(dsetId, L"Default PA");
+    IDataset* y = new AscanBeamDataset(dsetId, L"Default PA", 0);
 
-    auto ascanDataSet = dynamic_cast<IAscanDataSet*>(x);
-    auto ascanBeamDataSet = dynamic_cast<IAscanBeamDataSet*>(x);
-    auto ascanMergedBeamDataSet = dynamic_cast<IAscanMergedBeamDataSet*>(x);
+    auto ascanDataset = dynamic_cast<IAscanDataset*>(x);
+    auto ascanBeamDataset = dynamic_cast<IAscanBeamDataset*>(x);
+    auto ascanMergedBeamDataset = dynamic_cast<IAscanMergedBeamDataset*>(x);
     
-    auto ascanDataSet2 = dynamic_cast<IAscanDataSet*>(y);
-    auto ascanBeamDataSet2 = dynamic_cast<IAscanBeamDataSet*>(y);
-    auto ascanMergedBeamDataSet2 = dynamic_cast<IAscanMergedBeamDataSet*>(y);
+    auto ascanDataset2 = dynamic_cast<IAscanDataset*>(y);
+    auto ascanBeamDataset2 = dynamic_cast<IAscanBeamDataset*>(y);
+    auto ascanMergedBeamDataset2 = dynamic_cast<IAscanMergedBeamDataset*>(y);
 
-    DataSets dataSets;
-    dataSets.Add(std::make_unique<AscanMergedBeamDataSet>(dataGroupId, L"Default PA"));
-    dataSets.Add(std::make_unique<AscanBeamDataSet>(dataGroupId, L"Default PAAAA", 0));
+    Datasets datasets;
+    datasets.Add(std::make_unique<AscanMergedBeamDataset>(dsetId, L"Default PA"));
+    datasets.Add(std::make_unique<AscanBeamDataset>(dsetId, L"Default PAAAA", 0));
 
-    std::vector<IDataSet*> ascans = dataSets.AScans(L"Default PA");
+    std::vector<IDataset*> ascans = datasets.AScans(L"Default PA");
     auto zz = ascans.size();
 
-    //IDataSet* cx = new CscanBeamDataSet(dsetId, L"", 0, L"");
-    //IDataSet* cy = new CscanMergedBeamDataSet(dsetId, L"", L"");
+    //IDataset* cx = new CscanBeamDataset(dsetId, L"", 0, L"");
+    //IDataset* cy = new CscanMergedBeamDataset(dsetId, L"", L"");
 
-    //dataSets.Add(std::move(std::make_unique<CscanBeamDataSet>(dsetId, L"", 0,  L"")));
-    //dataSets.Add(std::move(std::make_unique<CscanMergedBeamDataSet>(dsetId, L"", L"")));
+    //datasets.Add(std::move(std::make_unique<CscanBeamDataset>(dsetId, L"", 0,  L"")));
+    //datasets.Add(std::move(std::make_unique<CscanMergedBeamDataset>(dsetId, L"", L"")));
 
-    //auto cs = dataSets.CScans(L"");
+    //auto cs = datasets.CScans(L"");
 
-    //AscanMergedBeamDataSet ads(dsetId);
-    //AscanBeamDataSet abds;
+    //AscanMergedBeamDataset ads(dsetId);
+    //AscanBeamDataset abds;
   }
 
   ~FileStorage() = default;

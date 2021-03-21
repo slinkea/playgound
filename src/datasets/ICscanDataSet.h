@@ -1,16 +1,16 @@
 #pragma once
-#include "IDataSet.h"
+#include "IDataset.h"
 
 
 struct CscanAttributes;
-class CscanDataSpace;
+class CscanDataspace;
 
-class ICscanDataSet : public IDataSet
+class ICscanDataset : public IDataset
 {
 public:
-  virtual ~ICscanDataSet() = default;
+  virtual ~ICscanDataset() = default;
   
   virtual const CscanAttributes& Attributes() const = 0;
-  virtual const CscanDataSpace& DataSpace() const = 0;
+  virtual const CscanDataspace& Dataspace() const = 0;
   virtual void Read(const void* dataOut_) const = 0;
 };

@@ -2,11 +2,13 @@
 #include <string>
 #include <vector>
 #include <hdf5/hdf5.h>
-#include "datasets/DataSets.hpp"
-#include "datasets/AscanMergedBeamDataSet.hpp"
+#include "datasets/Datasets.hpp"
+#include "datasets/AscanMergedBeamDataset.hpp"
 
 
 constexpr char GROUP_DATA[] = "/Data";
+constexpr char ASCAN_DATASET[] = "Ascan Data";
+constexpr char ASCAN_STATUS_DATASET[] = "Ascan Status";
 constexpr char BEAM_ONE[] = "Beam 1";
 constexpr size_t MAX_NAME_LENGTH = 1024;
 
@@ -28,8 +30,8 @@ class AcquiredData
 public:
   AcquiredData(const std::string& filePath_)
   {
-    //Fetch1(filePath_);
-    Fetch2(filePath_);
+    Fetch1(filePath_);
+    //Fetch2(filePath_);
   }
 
   static int Visit(hid_t id_, const char* name_, const H5O_info_t* oinfo_, void* op_data_)
@@ -85,7 +87,7 @@ public:
     hid_t fileId = H5Fopen(filePath_.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
     hid_t dataGroupId = H5Gopen(fileId, GROUP_DATA, H5P_DEFAULT);
 
-    DataSets dataSets;
+    Datasets datasets;
     ssize_t nameLength{};
     char name[MAX_NAME_LENGTH];
 
@@ -114,7 +116,8 @@ public:
               if (status == 0)
               {
                 std::wstring configName(nameChar.begin(), nameChar.end());
-                dataSets.Add(std::move(std::make_unique<AscanMergedBeamDataSet>(configGroupId, configName)));
+                hid_t dsetId = H5Dopen(configGroupId, ASCAN_DATASET, H5P_DEFAULT);
+                datasets.Add(std::move(std::make_unique<AscanMergedBeamDataset>(dsetId, configName)));
               }
             }
 

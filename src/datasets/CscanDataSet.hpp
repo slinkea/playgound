@@ -1,29 +1,29 @@
 #pragma once
-#include "DataSet.hpp"
-#include "CscanDataSpace.hpp"
+#include "Dataset.hpp"
+#include "CscanDataspace.hpp"
 
 
-class CscanDataSet : public DataSet
+class CscanDataset : public Dataset
 {
 protected:
-  CscanDataSet(hid_t id_, const std::wstring& configName_, const std::wstring& sourceName_)
-    : DataSet(configName_)
+  CscanDataset(hid_t id_, const std::wstring& configName_, const std::wstring& sourceName_)
+    : Dataset(id_, configName_)
     , m_sourceName(sourceName_)
   {
   }
 
-  CscanDataSet() = delete;
-  CscanDataSet(const CscanDataSet&) = delete;
-  CscanDataSet& operator=(const CscanDataSet&) = delete;
+  CscanDataset() = delete;
+  CscanDataset(const CscanDataset&) = delete;
+  CscanDataset& operator=(const CscanDataset&) = delete;
 
-  virtual ~CscanDataSet() = default;
+  virtual ~CscanDataset() = default;
 
   const CscanAttributes& Attributes() const {
     return m_attributes;
   }
 
-  const CscanDataSpace& DataSpace() const {
-    return m_dataSpace;
+  const CscanDataspace& Dataspace() const {
+    return m_dataspace;
   };
 
   void Fetch()
@@ -31,7 +31,7 @@ protected:
 
   }
 
-  CscanDataSpace m_dataSpace;
+  CscanDataspace m_dataspace;
   CscanAttributes m_attributes;
   const std::wstring m_sourceName;
 };

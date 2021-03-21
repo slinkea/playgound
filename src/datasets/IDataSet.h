@@ -2,10 +2,10 @@
 #include <string>
 
 
-class IDataSet
+class IDataset
 {
 public:
-  virtual ~IDataSet() = default;
+  virtual ~IDataset() = default;
   
   virtual const std::wstring& ConfigName() const = 0;
 };

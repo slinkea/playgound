@@ -1,24 +1,24 @@
 #pragma once
-#include "AscanDataSet.hpp"
-#include "IAscanBeamDataSet.h"
+#include "AscanDataset.hpp"
+#include "IAscanBeamDataset.h"
 
 
-class AscanBeamDataSet : public AscanDataSet, public IAscanBeamDataSet
+class AscanBeamDataset : public AscanDataset, public IAscanBeamDataset
 {
 public:
-  AscanBeamDataSet(hid_t id_, const std::wstring& configName_, size_t beamIdx_)
-    : AscanDataSet(id_, configName_)
+  AscanBeamDataset(hid_t id_, const std::wstring& configName_, size_t beamIdx_)
+    : AscanDataset(id_, configName_)
     , m_beamIdx(beamIdx_)
   {
   }
 
-  AscanBeamDataSet() = delete;
-  AscanBeamDataSet(const AscanBeamDataSet&) = delete;
-  AscanBeamDataSet& operator=(const AscanBeamDataSet&) = delete;
-  virtual ~AscanBeamDataSet() = default;
+  AscanBeamDataset() = delete;
+  AscanBeamDataset(const AscanBeamDataset&) = delete;
+  AscanBeamDataset& operator=(const AscanBeamDataset&) = delete;
+  virtual ~AscanBeamDataset() = default;
 
   const std::wstring& ConfigName() const override {
-    return DataSet::ConfigName();
+    return Dataset::ConfigName();
   };
 
   size_t BeamIndex() const override {
@@ -26,11 +26,11 @@ public:
   };
 
   const AscanAttributes& Attributes() const override {
-    return AscanDataSet::Attributes();
+    return AscanDataset::Attributes();
   }
 
-  const AscanDataSpace& DataSpace() const override {
-    return AscanDataSet::DataSpace();
+  const AscanDataspace& Dataspace() const override {
+    return AscanDataset::Dataspace();
   };
 
   void Read(const void* dataOut_) const override
