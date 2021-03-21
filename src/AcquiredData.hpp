@@ -6,12 +6,6 @@
 #include "datasets/AscanMergedBeamDataset.hpp"
 
 
-constexpr char GROUP_DATA[] = "/Data";
-constexpr char ASCAN_DATASET[] = "Ascan Data";
-constexpr char ASCAN_STATUS_DATASET[] = "Ascan Status";
-constexpr char BEAM_ONE[] = "Beam 1";
-constexpr size_t MAX_NAME_LENGTH = 1024;
-
 //typedef struct {
 //  const char* path;           /* Path to object */
 //  H5O_type_t type;            /* Type of object */
@@ -116,8 +110,9 @@ public:
               if (status == 0)
               {
                 std::wstring configName(nameChar.begin(), nameChar.end());
-                hid_t dsetId = H5Dopen(configGroupId, ASCAN_DATASET, H5P_DEFAULT);
-                datasets.Add(std::move(std::make_unique<AscanMergedBeamDataset>(dsetId, configName)));
+                hid_t ascanDataId = H5Dopen(configGroupId, ASCAN_DATASET, H5P_DEFAULT);
+                hid_t ascanStatusId = H5Dopen(configGroupId, ASCAN_STATUS_DATASET, H5P_DEFAULT);
+                datasets.Add(std::move(std::make_unique<AscanMergedBeamDataset>(ascanDataId, ascanStatusId, configName)));
               }
             }
 

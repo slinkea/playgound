@@ -17,8 +17,8 @@ public:
   CscanBeamDataset& operator=(const CscanBeamDataset&) = delete;
   virtual ~CscanBeamDataset() = default;
 
-  const std::wstring& ConfigName() const override {
-    return Dataset::ConfigName();
+  const std::wstring& Configuration() const override {
+    return CscanDataset::Configuration();
   };
 
   size_t BeamIndex() const override {

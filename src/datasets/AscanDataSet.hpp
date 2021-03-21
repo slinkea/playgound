@@ -1,15 +1,18 @@
 #pragma once
-#include "Dataset.hpp"
+#include <string>
+#include <hdf5/H5Cpp.h>
 #include "AscanDataspace.hpp"
 
 
-class AscanDataset : public Dataset
+class AscanDataset
 {
 protected:
-  AscanDataset(hid_t id_, const std::wstring& configName_)
-    : Dataset(id_, configName_)
+  AscanDataset(hid_t dataId_, hid_t statusId_, const std::wstring& configName_)
+    : m_dataId(dataId_)
+    , m_statusId(statusId_)
+    , m_configName(configName_)
   {
-    hid_t dspaceId = H5Dget_space(m_id);
+    hid_t dspaceId = H5Dget_space(m_dataId);
     const int ndims = H5Sget_simple_extent_ndims(dspaceId);
 
     hsize_t* dsetDims = new hsize_t[ndims]{};
@@ -20,7 +23,7 @@ protected:
 
     delete[] dsetDims;
 
-    hid_t plistId = H5Dget_create_plist(m_id);
+    hid_t plistId = H5Dget_create_plist(m_dataId);
 
     if (H5Pget_layout(plistId) == H5D_CHUNKED)
     {
@@ -64,6 +67,10 @@ protected:
 
   virtual ~AscanDataset() = default;
 
+  const std::wstring& Configuration() const {
+    return m_configName;
+  };
+
   const AscanAttributes& Attributes() const {
     return m_attributes;
   }
@@ -73,6 +80,9 @@ protected:
   };
 
 private:
-  AscanAttributes m_attributes;
+  hid_t m_dataId{};
+  hid_t m_statusId{};
   AscanDataspace m_dataspace;
+  AscanAttributes m_attributes;
+  const std::wstring m_configName;
 };

@@ -1,13 +1,14 @@
 #pragma once
-#include "Dataset.hpp"
+#include <string>
 #include "CscanDataspace.hpp"
 
 
-class CscanDataset : public Dataset
+class CscanDataset
 {
 protected:
-  CscanDataset(hid_t id_, const std::wstring& configName_, const std::wstring& sourceName_)
-    : Dataset(id_, configName_)
+  CscanDataset(hid_t Id, const std::wstring& configName_, const std::wstring& sourceName_)
+    : m_dataId(Id)
+    , m_configName(configName_)
     , m_sourceName(sourceName_)
   {
   }
@@ -17,6 +18,10 @@ protected:
   CscanDataset& operator=(const CscanDataset&) = delete;
 
   virtual ~CscanDataset() = default;
+
+  const std::wstring& Configuration() const {
+    return m_configName;
+  };
 
   const CscanAttributes& Attributes() const {
     return m_attributes;
@@ -31,7 +36,9 @@ protected:
 
   }
 
+  hid_t m_dataId{};
   CscanDataspace m_dataspace;
   CscanAttributes m_attributes;
   const std::wstring m_sourceName;
+  const std::wstring m_configName;
 };

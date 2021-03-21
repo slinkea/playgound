@@ -7,5 +7,5 @@ class IDataset
 public:
   virtual ~IDataset() = default;
   
-  virtual const std::wstring& ConfigName() const = 0;
+  virtual const std::wstring& Configuration() const = 0;
 };

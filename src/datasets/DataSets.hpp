@@ -20,7 +20,7 @@ public:
   {
     return TSuper::Select([&configName_](const TItemPtr& item_) {
       if (auto ascanDataset = dynamic_cast<IAscanDataset*>(item_.get())) {
-        return ascanDataset->ConfigName() == configName_;
+        return ascanDataset->Configuration() == configName_;
       }
       else {
         return false;
@@ -32,7 +32,7 @@ public:
   {
     return TSuper::Select([&configName_](const TItemPtr& item_) {
       if (auto cscanDataset = dynamic_cast<ICscanDataset*>(item_.get())) {
-        return cscanDataset->ConfigName() == configName_;
+        return cscanDataset->Configuration() == configName_;
       }
       else {
         return false;

@@ -1,5 +1,11 @@
 #pragma once
 
+constexpr char GROUP_DATA[] = "/Data";
+constexpr char ASCAN_DATASET[] = "Ascan Data";
+constexpr char ASCAN_STATUS_DATASET[] = "Ascan Status";
+constexpr char BEAM_ONE[] = "Beam 1";
+constexpr size_t MAX_NAME_LENGTH = 1024;
+
 struct CscanData1
 {
   CscanData1() = default;

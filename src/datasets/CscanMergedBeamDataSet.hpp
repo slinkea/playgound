@@ -17,8 +17,8 @@ public:
 
   virtual ~CscanMergedBeamDataset() = default;
 
-  const std::wstring& ConfigName() const override {
-    return Dataset::ConfigName();
+  const std::wstring& Configuration() const override {
+    return CscanDataset::Configuration();
   };
 
   const CscanAttributes& Attributes() const override {
