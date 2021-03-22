@@ -4,6 +4,8 @@
 #include <hdf5/hdf5.h>
 #include "datasets/Datasets.hpp"
 #include "datasets/AscanMergedBeamDataset.hpp"
+#include "datasets/AscanData.hpp"
+#include "datasets/AscanDataSource.hpp"
 
 
 //typedef struct {
@@ -24,6 +26,16 @@ class AcquiredData
 public:
   AcquiredData(const std::string& filePath_)
   {
+    const std::vector<IDataset*> dataset;
+    //IDataset* x = new AscanMergedBeamDataset("./Data/Default PA/Ascan Data");
+
+    const PhasedArraySource* pas = new PhasedArraySource(L"Default PA");
+
+    const AscanDataSource* ads = new AscanDataSource(pas, dataset);
+    const AscanData* ad = new AscanData(ads);
+    m_readOnlyData.push_back(ad);
+
+
     Fetch1(filePath_);
     //Fetch2(filePath_);
   }
@@ -126,4 +138,8 @@ public:
   }
 
   ~AcquiredData() = default;
+
+private:
+  std::vector<const IReadOnlyData*> m_readOnlyData;
+
 };

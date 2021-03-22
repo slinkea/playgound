@@ -31,7 +31,7 @@ public:
 
   const AscanDataspace& Dataspace() const override {
     return AscanDataset::Dataspace();
-  };
+  }
 
   void Read(const void* dataOut_) const override
   {

@@ -7,6 +7,7 @@
 #include "datasets/CscanBeamDataset.hpp"
 #include "datasets/Datasets.hpp"
 
+
 constexpr char FILENAME_BIG[] = "big.h5";
 constexpr char FILENAME_SLICE[] = "slice.h5";
 constexpr char FILENAME_FPD[] = "ThinBlade.h5";
@@ -20,6 +21,11 @@ public:
     hid_t fileId = H5Fopen(FILENAME_FPD, H5F_ACC_RDONLY, H5P_DEFAULT);
     hid_t dataGroupId = H5Gopen(fileId, "/Data/Default PA", H5P_DEFAULT);
     hid_t ascanDataId = H5Dopen(dataGroupId, ASCAN_DATASET, H5P_DEFAULT);
+
+    hid_t fileId2 = H5Fopen(FILENAME_FPD, H5F_ACC_RDONLY, H5P_DEFAULT);
+    hid_t dataGroupId2 = H5Gopen(fileId, "/Data/Default PA", H5P_DEFAULT);
+    hid_t ascanDataId2 = H5Dopen(dataGroupId, ASCAN_DATASET, H5P_DEFAULT);
+    
     hid_t ascanStatusId = H5Dopen(dataGroupId, ASCAN_STATUS_DATASET, H5P_DEFAULT);
 
     IDataset* x = new AscanMergedBeamDataset(ascanDataId, ascanStatusId, L"Default PA");
