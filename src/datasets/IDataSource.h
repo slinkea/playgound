@@ -1,16 +1,12 @@
 #pragma once
-#include <vector>
+#include <string>
 
-
-class IDataset;
-class IConfigurationSource;
 
 class IDataSource
 {
 public:
   virtual ~IDataSource() = default;
 
-  virtual const IConfigurationSource* Configuration() const = 0;
-  virtual const std::vector<IDataset*> Datasets() const = 0;
+  virtual const std::wstring& Name() const = 0;
 
 };

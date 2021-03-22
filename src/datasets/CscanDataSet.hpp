@@ -6,9 +6,9 @@
 class CscanDataset
 {
 protected:
-  CscanDataset(hid_t Id, const std::wstring& configName_, const std::wstring& sourceName_)
+  CscanDataset(hid_t Id, const std::string& location_, const std::wstring& sourceName_)
     : m_dataId(Id)
-    , m_configName(configName_)
+    , m_location(location_)
     , m_sourceName(sourceName_)
   {
   }
@@ -19,8 +19,8 @@ protected:
 
   virtual ~CscanDataset() = default;
 
-  const std::wstring& Configuration() const {
-    return m_configName;
+  const std::string& Location() const {
+    return m_location;
   };
 
   const CscanAttributes& Attributes() const {
@@ -40,5 +40,5 @@ protected:
   CscanDataspace m_dataspace;
   CscanAttributes m_attributes;
   const std::wstring m_sourceName;
-  const std::wstring m_configName;
+  const std::string m_location;
 };

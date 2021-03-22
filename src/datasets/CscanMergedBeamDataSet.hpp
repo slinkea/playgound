@@ -6,8 +6,8 @@
 class CscanMergedBeamDataset : public CscanDataset, public ICscanDataset
 {
 public:
-  CscanMergedBeamDataset(hid_t id_, const std::wstring& configName_, const std::wstring& sourceName_)
-    : CscanDataset(id_, configName_, sourceName_)
+  CscanMergedBeamDataset(hid_t id_, const std::string& location_, const std::wstring& sourceName_)
+    : CscanDataset(id_, location_, sourceName_)
   {
   }
 
@@ -17,8 +17,8 @@ public:
 
   virtual ~CscanMergedBeamDataset() = default;
 
-  const std::wstring& Configuration() const override {
-    return CscanDataset::Configuration();
+  const std::string& Location() const override {
+    return CscanDataset::Location();
   };
 
   const CscanAttributes& Attributes() const override {

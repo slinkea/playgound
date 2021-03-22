@@ -6,10 +6,10 @@
 class AscanData : public IAscanData
 {
 public:
-  AscanData(const AscanDataSource* dataSource_)
+  AscanData(const AscanDataSource& dataSource_)
     : m_dataSource(dataSource_)
   {
-
+    auto x = m_dataSource.Datasets();
   }
 
   AscanData() = delete;
@@ -18,8 +18,8 @@ public:
 
   virtual ~AscanData() = default;
 
-  const IDataSource* Source() const override {
-    return m_dataSource;
+  const IAscanDataSource* Source() const override {
+    return &m_dataSource;
   }
 
   const AscanAttributes& Attributes() const override {
@@ -30,10 +30,10 @@ public:
     throw 0;
   }
 
-  void Read(const void* dataOut_) const override {
+  void Read(void* dataOut_) const override {
     throw 0;
   }
 
 private:
-  const AscanDataSource* m_dataSource;
+  const AscanDataSource m_dataSource;
 };

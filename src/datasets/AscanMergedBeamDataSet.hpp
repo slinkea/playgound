@@ -6,8 +6,8 @@
 class AscanMergedBeamDataset : public AscanDataset, public IAscanMergedBeamDataset
 {
 public:
-  AscanMergedBeamDataset(hid_t dataId_, hid_t statusId_, const std::wstring& configName_)
-    : AscanDataset(dataId_, statusId_, configName_)
+  AscanMergedBeamDataset(hid_t Id_, const std::string& location_)
+    : AscanDataset(Id_, location_)
   {
   }
 
@@ -17,8 +17,8 @@ public:
 
   virtual ~AscanMergedBeamDataset() = default;
 
-  const std::wstring& Configuration() const override {
-    return AscanDataset::Configuration();
+  const std::string& Location() const override {
+    return AscanDataset::Location();
   };
 
   const AscanAttributes& Attributes() const override {

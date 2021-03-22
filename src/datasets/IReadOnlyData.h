@@ -1,5 +1,5 @@
 #pragma once
-#include "IDataSource.h"
+#include <string>
 
 
 class IReadOnlyData
@@ -7,6 +7,6 @@ class IReadOnlyData
 public:
   virtual ~IReadOnlyData() = default;
 
-  virtual const IDataSource* Source() const = 0;
+  virtual void Read(void* dataOut_) const = 0;
 
 };

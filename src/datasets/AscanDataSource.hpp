@@ -1,35 +1,32 @@
 #pragma once
+#include <string>
 #include <vector>
-#include "IDataSource.h"
-#include "PhasedArraySource.hpp"
-#include "Dataset.hpp"
+#include "DataSource.hpp"
+#include "IAscanDataSource.h"
 
 
-class PhasedArraySource;
-
-class AscanDataSource : public IDataSource
+class AscanDataSource : public DataSource, public IAscanDataSource
 {
 public:
-  AscanDataSource(const PhasedArraySource* configSource_, const std::vector<IDataset*>& dataset_)
-    : m_configSource(configSource_)
-    , m_dataset(dataset_)
+  AscanDataSource(const std::wstring& configName_, std::vector<const IDataset*> datasets_)
+    : DataSource(configName_, datasets_)
   {
   }
 
-  AscanDataSource(const AscanDataSource&) = delete;
+  AscanDataSource() = delete;
+  //AscanDataSource(const AscanDataSource&) = delete;
   AscanDataSource& operator=(const AscanDataSource&) = delete;
 
   virtual ~AscanDataSource() = default;
 
-  const IConfigurationSource* Configuration() const override {
-    return m_configSource;
+  const std::wstring& Name() const {
+    return DataSource::Name();
   }
 
-  const std::vector<IDataset*> Datasets() const override {
-    return m_dataset;
+  const std::vector<const IDataset*> Datasets() const {
+    return DataSource::Datasets();
   }
 
 private:
-  const std::vector<IDataset*> m_dataset;
-  const PhasedArraySource* m_configSource;
+
 };

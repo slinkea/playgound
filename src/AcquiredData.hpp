@@ -3,6 +3,7 @@
 #include <vector>
 #include <hdf5/hdf5.h>
 #include "datasets/Datasets.hpp"
+#include "datasets/AscanBeamDataset.hpp"
 #include "datasets/AscanMergedBeamDataset.hpp"
 #include "datasets/AscanData.hpp"
 #include "datasets/AscanDataSource.hpp"
@@ -26,15 +27,22 @@ class AcquiredData
 public:
   AcquiredData(const std::string& filePath_)
   {
-    const std::vector<IDataset*> dataset;
-    //IDataset* x = new AscanMergedBeamDataset("./Data/Default PA/Ascan Data");
+    std::vector<const IDataset*> datasets;
+    const IAscanDataset* data = new AscanMergedBeamDataset(0, "./Data/Default PA/Ascan Data");
+    datasets.push_back(data);
 
-    const PhasedArraySource* pas = new PhasedArraySource(L"Default PA");
+    //IAscanDataset* status = new AscanMergedBeamStatusDataset("./Data/Default PA/Ascan Status");
+    
+    const IAscanDataset* data2 = new AscanBeamDataset(0, "./Data/Default PA/Beam 1/Ascan Data", 0);
+    datasets.push_back(data2);
 
-    const AscanDataSource* ads = new AscanDataSource(pas, dataset);
-    const AscanData* ad = new AscanData(ads);
+
+    const AscanDataSource ds(L"Default PA", datasets);
+    const AscanData* ad = new AscanData(ds);
     m_readOnlyData.push_back(ad);
 
+    auto s = ad->Source();
+    s->Name();
 
     Fetch1(filePath_);
     //Fetch2(filePath_);
@@ -122,9 +130,9 @@ public:
               if (status == 0)
               {
                 std::wstring configName(nameChar.begin(), nameChar.end());
-                hid_t ascanDataId = H5Dopen(configGroupId, ASCAN_DATASET, H5P_DEFAULT);
-                hid_t ascanStatusId = H5Dopen(configGroupId, ASCAN_STATUS_DATASET, H5P_DEFAULT);
-                datasets.Add(std::move(std::make_unique<AscanMergedBeamDataset>(ascanDataId, ascanStatusId, configName)));
+                //hid_t ascanDataId = H5Dopen(configGroupId, ASCAN_DATASET, H5P_DEFAULT);
+                //hid_t ascanStatusId = H5Dopen(configGroupId, ASCAN_STATUS_DATASET, H5P_DEFAULT);
+                datasets.Add(std::move(std::make_unique<AscanMergedBeamDataset>(fileId, "./Data/Default PA/Ascan Data")));
               }
             }
 

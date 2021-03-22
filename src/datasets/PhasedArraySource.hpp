@@ -12,7 +12,6 @@ public:
   }
 
   PhasedArraySource() = delete;
-  PhasedArraySource(const PhasedArraySource&) = delete;
   PhasedArraySource& operator=(const PhasedArraySource&) = delete;
 
   virtual ~PhasedArraySource() = default;

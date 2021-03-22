@@ -7,12 +7,11 @@
 class AscanDataset
 {
 protected:
-  AscanDataset(hid_t dataId_, hid_t statusId_, const std::wstring& configName_)
-    : m_dataId(dataId_)
-    , m_statusId(statusId_)
-    , m_configName(configName_)
+  AscanDataset(hid_t Id_, const std::string& location_)
+    : m_Id(Id_)
+    , m_location(location_)
   {
-    hid_t dspaceId = H5Dget_space(m_dataId);
+    hid_t dspaceId = H5Dget_space(m_Id);
     const int ndims = H5Sget_simple_extent_ndims(dspaceId);
 
     hsize_t* dsetDims = new hsize_t[ndims]{};
@@ -23,7 +22,7 @@ protected:
 
     delete[] dsetDims;
 
-    hid_t plistId = H5Dget_create_plist(m_dataId);
+    hid_t plistId = H5Dget_create_plist(m_Id);
 
     if (H5Pget_layout(plistId) == H5D_CHUNKED)
     {
@@ -67,8 +66,8 @@ protected:
 
   virtual ~AscanDataset() = default;
 
-  const std::wstring& Configuration() const {
-    return m_configName;
+  const std::string& Location() const {
+    return m_location;
   };
 
   const AscanAttributes& Attributes() const {
@@ -80,9 +79,8 @@ protected:
   };
 
 private:
-  hid_t m_dataId{};
-  hid_t m_statusId{};
+  hid_t m_Id{};
   AscanDataspace m_dataspace;
   AscanAttributes m_attributes;
-  const std::wstring m_configName;
+  const std::string m_location;
 };

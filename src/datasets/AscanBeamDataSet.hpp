@@ -6,8 +6,8 @@
 class AscanBeamDataset : public AscanDataset, public IAscanBeamDataset
 {
 public:
-  AscanBeamDataset(hid_t dataId_, hid_t statusId_, const std::wstring& configName_, size_t beamIdx_)
-    : AscanDataset(dataId_, statusId_, configName_)
+  AscanBeamDataset(hid_t Id_, const std::string& location_, size_t beamIdx_)
+    : AscanDataset(Id_, location_)
     , m_beamIdx(beamIdx_)
   {
   }
@@ -17,8 +17,8 @@ public:
   AscanBeamDataset& operator=(const AscanBeamDataset&) = delete;
   virtual ~AscanBeamDataset() = default;
 
-  const std::wstring& Configuration() const override {
-    return AscanDataset::Configuration();
+  const std::string& Location() const override {
+    return AscanDataset::Location();
   };
 
   size_t BeamIndex() const override {

@@ -6,8 +6,8 @@
 class CscanBeamDataset : public CscanDataset, public ICscanBeamDataset
 {
 public:
-  CscanBeamDataset(hid_t id_, const std::wstring& configName_, size_t beamIdx_, const std::wstring& sourceName_)
-    : CscanDataset(id_, configName_, sourceName_)
+  CscanBeamDataset(hid_t id_, const std::string& location_, size_t beamIdx_, const std::wstring& sourceName_)
+    : CscanDataset(id_, location_, sourceName_)
     , m_beamIdx(beamIdx_)
   {
   }
@@ -17,8 +17,8 @@ public:
   CscanBeamDataset& operator=(const CscanBeamDataset&) = delete;
   virtual ~CscanBeamDataset() = default;
 
-  const std::wstring& Configuration() const override {
-    return CscanDataset::Configuration();
+  const std::string& Location() const override {
+    return CscanDataset::Location();
   };
 
   size_t BeamIndex() const override {
