@@ -29,7 +29,7 @@ public:
     return AscanDataset::Dataspace();
   };
 
-  void Read(const void* dataOut_) const override
+  void Read(void* dataOut_) const override
   {
   }
 };

@@ -1,20 +1,19 @@
 #pragma once
 #include <string>
 #include "Container.hpp"
-#include "IAscanDataset.h"
-#include "ICscanDataset.h"
+#include "IReadOnlyData.h"
 
 
-using TIDatasets = std::vector<IDataset*>;
+using TReadOnlyDatasets = std::vector<IReadOnlyData*>;
 
-class Datasets : public ONDTLib::Container<IDataset>
+class ReadOnlyDatasets : public ONDTLib::Container<IReadOnlyData>
 {
-  using TSuper = ONDTLib::Container<IDataset>;
+  using TSuper = ONDTLib::Container<IReadOnlyData>;
 public:
-  Datasets(const Datasets&) = delete;
-  Datasets& operator=(const Datasets&) = delete;
-  Datasets() = default;
-  virtual ~Datasets() {}
+  ReadOnlyDatasets(const ReadOnlyDatasets&) = delete;
+  ReadOnlyDatasets& operator=(const ReadOnlyDatasets&) = delete;
+  ReadOnlyDatasets() = default;
+  virtual ~ReadOnlyDatasets() {}
 
   //TIDatasets AScans(const std::wstring& configName_) const
   //{
