@@ -16,7 +16,6 @@ public:
   }
 
   AscanDataSource() = delete;
-  //AscanDataSource(const AscanDataSource&) = delete;
   AscanDataSource& operator=(const AscanDataSource&) = delete;
 
   virtual ~AscanDataSource() = default;
