@@ -3,8 +3,8 @@
 constexpr char GROUP_DATA[] = "/Data";
 constexpr char ASCAN_DATASET[] = "Ascan Data";
 constexpr char ASCAN_STATUS_DATASET[] = "Ascan Status";
-constexpr char BEAM_ONE[] = "Beam 1";
-constexpr size_t MAX_NAME_LENGTH = 1024;
+constexpr char BEAM_PREFIX[] = "Beam";
+constexpr size_t MAX_NAME_LENGTH = 512;
 
 struct CscanData1
 {

@@ -64,7 +64,10 @@ protected:
   AscanDataset(const AscanDataset&) = delete;
   AscanDataset& operator=(const AscanDataset&) = delete;
 
-  virtual ~AscanDataset() = default;
+  virtual ~AscanDataset()
+  {
+    herr_t status = H5Dclose(m_Id);
+  }
 
   const std::string& Location() const {
     return m_location;
