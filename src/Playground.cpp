@@ -41,14 +41,19 @@ int main(int argc, char* argv[])
 
     acquiredData.Open(FILENAME_2);
     auto& dataset2 = acquiredData.Datasets(FILENAME_2);
-    auto ascanData = dataset2.AscanData(2);
     
-    //auto ascanData = ascanDataVec.AscanData(2);
-    auto ascanDatasets = ascanData->Datasets();
-    auto src = ascanData->Source();
+    const auto ascanData = dataset2.AscanData();
+    auto ascanDataConfig = ascanData.AscanData(1);
+    auto src = ascanDataConfig->Source();
     size_t configId = src->Id();
     std::wstring name = src->Name();
 
+    ascanDataConfig = dataset2.AscanData(2);
+    src = ascanDataConfig->Source();
+    configId = src->Id();
+    name = src->Name();
+
+    auto ascanDatasets = ascanDataConfig->Datasets();
     for (auto ascanDataset : ascanDatasets)
     {
       if (auto ascanBeam = std::dynamic_pointer_cast<const IAscanBeamDataset>(ascanDataset)) 
