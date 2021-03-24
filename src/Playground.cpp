@@ -41,11 +41,13 @@ int main(int argc, char* argv[])
 
     acquiredData.Open(FILENAME_2);
     auto& dataset2 = acquiredData.Datasets(FILENAME_2);
-    auto ascanDataVec = dataset2.AscanData();
+    auto ascanData = dataset2.AscanData(2);
     
-    auto ascanData = ascanDataVec.Get(2);
+    //auto ascanData = ascanDataVec.AscanData(2);
     auto ascanDatasets = ascanData->Datasets();
     auto src = ascanData->Source();
+    size_t configId = src->Id();
+    std::wstring name = src->Name();
 
     for (auto ascanDataset : ascanDatasets)
     {

@@ -50,6 +50,12 @@ public:
     return ascanData;
   }
 
+  const IAscanData* AscanData(size_t configId_) const
+  {
+    return dynamic_cast<IAscanData*>(TSuper::Find([&configId_](const TItemPtr& item_)
+      { return dynamic_cast<IAscanData*>(item_.get())->Source()->Id() == configId_; }));
+  }
+
   //TIDatasets CScans(const std::wstring& configName_) const
   //{
   //  return TSuper::Select([&configName_](const TItemPtr& item_) {
