@@ -36,7 +36,7 @@ public:
 
 private:
   const int m_configId{};
-  const fs::path& m_filePath;
+  const fs::path m_filePath;
   const std::wstring m_configName;
   const std::vector<std::shared_ptr<const IDataset>> m_datasets;
 };

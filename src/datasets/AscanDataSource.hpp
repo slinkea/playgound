@@ -24,11 +24,11 @@ public:
 
   virtual ~AscanDataSource() = default;
 
-  const std::wstring& Name() const {
+  const std::wstring& Name() const override {
     return DataSource::Name();
   }
 
-  const std::vector<std::shared_ptr<const IDataset>> Datasets() const {
+  const std::vector<std::shared_ptr<const IDataset>> Datasets() const override {
     return DataSource::Datasets();
   }
 

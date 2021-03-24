@@ -20,8 +20,8 @@
 
 
 //constexpr char FILENAME[] = "big.h5";
-//constexpr char FILENAME[] = "D:\\NDT Files\\ThinBlade.h5";
-constexpr char FILENAME[] = "D:\\NDT Files\\4-Configs.h5";
+constexpr char FILENAME_1[] = "D:\\NDT Files\\ThinBlade.h5";
+constexpr char FILENAME_2[] = "D:\\NDT Files\\4-Configs.h5";
 
 
 struct us_listen_socket_t* global_listen_socket;
@@ -34,8 +34,26 @@ int main(int argc, char* argv[])
     //fs.ReadBig();
     //fs.CompressFile();
 
-    auto x = AcquiredData(FILENAME);
+    AcquiredData acquiredData;
 
+    acquiredData.Open(FILENAME_1);
+    const auto& ds1 = acquiredData.Datasets(FILENAME_1);
+    acquiredData.Open(FILENAME_2);
+    auto& ds2 = acquiredData.Datasets(FILENAME_2);
+    auto ascans = ds2.Ascans();
+    auto src = ascans[2]->Source();
+    auto ds = src->Datasets();
+
+    if (auto ascanBeam = std::dynamic_pointer_cast<const IAscanBeamDataset>(ds[0])) {
+      ascanBeam = nullptr;
+    }
+    else if (auto ascanMergedBeam = std::dynamic_pointer_cast<const IAscanMergedBeamDataset>(ds[0])) {
+      ascanMergedBeam = nullptr;
+    }
+
+
+    acquiredData.Close(FILENAME_1);
+    acquiredData.Close(FILENAME_2);
 
     //fs.Write();
     //std::vector<int8_t> dataSlice = fs.ReadSliceFpd();

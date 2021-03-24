@@ -60,24 +60,39 @@ class AcquiredData
 {
 public:
   using TDatasets = std::vector<std::shared_ptr<const IDataset>>;
+  using TDataMap = std::map<const fs::path, ReadOnlyDatasets>;
 
-  AcquiredData(const fs::path& filePath_)
+  AcquiredData() = default;
+  ~AcquiredData() = default;
+
+  void Open(const fs::path& filePath_)
   {
     H5_RESULT_CHECK(H5Eset_auto(H5E_DEFAULT, NULL, NULL));
-    m_fileId = H5Fopen(filePath_.string().c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
+    hid_t fileId = H5Fopen(filePath_.string().c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
+    m_h5FileMap.emplace(filePath_, fileId);
 
-    const auto fileVersion = GetFileVersion();
+    const auto fileVersion = GetFileVersion(filePath_);
     if (IsEqualOrLess(fileVersion, FILE_VERSION_1_2_0))
     {
-      FetchAscanData120(filePath_);
+      FetchData_120(filePath_);
     }
   }
 
-  ~AcquiredData()
+  void Close(const fs::path& filePath_)
   {
-    herr_t status = H5Fclose(m_fileId);
+    m_datasetsMap.erase(filePath_);
+    H5_RESULT_CHECK(H5Fclose(m_h5FileMap[filePath_]));
   }
 
+  const ReadOnlyDatasets& Datasets(const fs::path& filePath_) const {
+    return m_datasetsMap.at(filePath_);
+  }
+
+  ReadOnlyDatasets& Datasets(const fs::path& filePath_) {
+    return m_datasetsMap.at(filePath_);
+  }
+
+private:
   void Parse(int result[3], const std::string& input_)
   {
     std::istringstream parser(input_);
@@ -101,10 +116,11 @@ public:
     return std::lexicographical_compare(parsedB, parsedB + 3, parsedA, parsedA + 3);
   }
 
-  const std::string GetFileVersion() const
+  const std::string GetFileVersion(const fs::path& filePath_) const
   {
     char fileVersion[MAX_NAME_LENGTH]{};
-    hid_t attrId = H5Aopen(m_fileId, FLE_VERSION, H5P_DEFAULT);
+    hid_t fileId = m_h5FileMap.at(filePath_);
+    hid_t attrId = H5Aopen(fileId, FLE_VERSION, H5P_DEFAULT);
     hid_t attrType = H5Aget_type(attrId);
     H5_RESULT_CHECK(H5Aread(attrId, attrType, fileVersion));
     H5Aclose(attrId);
@@ -112,14 +128,14 @@ public:
     return std::string(fileVersion);
   }
 
-  void FetchAscanData120(const fs::path& filePath_)
+  void FetchData_120(const fs::path& filePath_)
   {
     hsize_t groupQty{};
     char name[MAX_NAME_LENGTH];
-    hid_t dataGroupId = H5Gopen(m_fileId, GROUP_DATA, H5P_DEFAULT);
+    hid_t dataGroupId = H5Gopen(m_h5FileMap[filePath_], GROUP_DATA, H5P_DEFAULT);
     if (H5Gget_num_objs(dataGroupId, &groupQty) >= 0)
     {
-      ONDTLib::Container<IReadOnlyData> datasets;
+      ReadOnlyDatasets datasets;
       for (hsize_t groupIdx{}; groupIdx < groupQty; groupIdx++)
       {
         ssize_t nameLength = H5Gget_objname_by_idx(dataGroupId, groupIdx, name, MAX_NAME_LENGTH);
@@ -128,30 +144,30 @@ public:
         }
       }
 
-      m_datasetsDic.emplace(std::make_pair(filePath_, std::move(datasets)));
+      m_datasetsMap.emplace(std::make_pair(filePath_, std::move(datasets)));
     }
 
     H5Gclose(dataGroupId);
   }
 
-  const TDatasets GetAscanMergedBeamDatasets(const std::string& location_) const
+  const TDatasets GetAscanMergedBeamDatasets(hid_t fileId_, const std::string& location_) const
   {
     TDatasets datasets;
 
     std::stringstream dataLocation;
     dataLocation << location_ << ASCAN_DATASET;
-    hid_t dsetId = H5Dopen(m_fileId, dataLocation.str().c_str(), H5P_DEFAULT);
+    hid_t dsetId = H5Dopen(fileId_, dataLocation.str().c_str(), H5P_DEFAULT);
     datasets.push_back(std::make_shared<AscanMergedBeamDataset>(dsetId, dataLocation.str()));
 
     std::stringstream statusLocation;
     statusLocation << location_ << ASCAN_STATUS_DATASET;
-    dsetId = H5Dopen(m_fileId, statusLocation.str().c_str(), H5P_DEFAULT);
+    dsetId = H5Dopen(fileId_, statusLocation.str().c_str(), H5P_DEFAULT);
     datasets.push_back(std::make_shared<AscanStatusMergedBeamDataset>(dsetId, dataLocation.str()));
 
     return datasets;
   }
 
-  const TDatasets GetAscanBeamDatasets(const std::string& location_, hsize_t beamQty_) const
+  const TDatasets GetAscanBeamDatasets(hid_t fileId_, const std::string& location_, hsize_t beamQty_) const
   {
     TDatasets datasets;
 
@@ -161,17 +177,17 @@ public:
       std::string beamStr(BEAM_PREFIX + std::string(" ") + std::to_string(beamIdx + 1));
       beamLocation << location_ << beamStr << "/";
 
-      herr_t status = H5Gget_objinfo(m_fileId, beamLocation.str().c_str(), 0, nullptr);
+      herr_t status = H5Gget_objinfo(fileId_, beamLocation.str().c_str(), 0, nullptr);
       if (status == 0)
       {
         std::stringstream dataLocation;
         dataLocation << beamLocation.str() << ASCAN_DATASET;
-        hid_t dsetId = H5Dopen(m_fileId, dataLocation.str().c_str(), H5P_DEFAULT);
+        hid_t dsetId = H5Dopen(fileId_, dataLocation.str().c_str(), H5P_DEFAULT);
         datasets.push_back(std::make_shared<AscanBeamDataset>(dsetId, dataLocation.str(), beamIdx));
 
         std::stringstream statusLocation;
         statusLocation << beamLocation.str() << ASCAN_STATUS_DATASET;
-        dsetId = H5Dopen(m_fileId, statusLocation.str().c_str(), H5P_DEFAULT);
+        dsetId = H5Dopen(fileId_, statusLocation.str().c_str(), H5P_DEFAULT);
         datasets.push_back(std::make_shared<AscanStatusBeamDataset>(dsetId, dataLocation.str(), beamIdx));
       }
     }
@@ -179,19 +195,21 @@ public:
     return datasets;
   }
 
-  void GetAscanData(const fs::path& filePath_, const std::string& configName_, ONDTLib::Container<IReadOnlyData>& dataOut_) const
+  void GetAscanData(const fs::path& filePath_, const std::string& configName_, ReadOnlyDatasets& dataOut_) const
   {
     std::stringstream dataLocation;
     dataLocation << GROUP_DATA << "/" << configName_ << "/";
 
-    hid_t configGroupId = H5Gopen(m_fileId, dataLocation.str().c_str(), H5P_DEFAULT);
+    hid_t fileId = m_h5FileMap.at(filePath_);
+    hid_t configGroupId = H5Gopen(fileId, dataLocation.str().c_str(), H5P_DEFAULT);
     if (configGroupId >= 0)
     {
+      hid_t fileId = m_h5FileMap.at(filePath_);
       std::wstring configName(configName_.begin(), configName_.end());
       herr_t status = H5Gget_objinfo(configGroupId, ASCAN_DATASET, 0, nullptr);
       if (status == 0)
       {
-        const auto ascanDatasets = GetAscanMergedBeamDatasets(dataLocation.str());
+        const auto ascanDatasets = GetAscanMergedBeamDatasets(fileId, dataLocation.str());
         AscanDataSource ascanDataSource(filePath_, 0, configName, ascanDatasets); //[TODO[EAB] Utiliser un id provenant de la config.]
         dataOut_.Add(std::make_unique<AscanData>(ascanDataSource));
       }
@@ -200,7 +218,7 @@ public:
         hsize_t beamQty{};
         if (H5Gget_num_objs(configGroupId, &beamQty) >= 0)
         {
-          const auto ascanDatasets = GetAscanBeamDatasets(dataLocation.str(), beamQty);
+          const auto ascanDatasets = GetAscanBeamDatasets(fileId, dataLocation.str(), beamQty);
           AscanDataSource ascanDataSource(filePath_, 0, configName, ascanDatasets); //[TODO[EAB] Utiliser un id provenant de la config.]
           dataOut_.Add(std::make_unique<AscanData>(ascanDataSource));
         }
@@ -210,8 +228,9 @@ public:
     }
   }
 
-private:
-  hid_t m_fileId{};
-  using TDataDictionnary = std::map<const fs::path, ONDTLib::Container<IReadOnlyData>>;
-  TDataDictionnary m_datasetsDic;
+  TDataMap m_datasetsMap;
+
+  using TH5FileMap = std::map<const fs::path, const hid_t>;
+  TH5FileMap m_h5FileMap;
+
 };
