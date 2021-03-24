@@ -78,10 +78,14 @@ public:
     H5_RESULT_CHECK(H5Fclose(m_h5FileMap[filePath_]));
   }
 
-  size_t Size(const fs::path& filePath_) 
+  static size_t Size(const fs::path& filePath_) 
   {
     hsize_t fileSize{};
-    H5_RESULT_CHECK(H5Fget_filesize(m_h5FileMap[filePath_], &fileSize));
+    H5_RESULT_CHECK(H5Eset_auto(H5E_DEFAULT, NULL, NULL));
+    hid_t fileId = H5Fopen(filePath_.string().c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
+    H5_RESULT_CHECK(H5Fget_filesize(fileId, &fileSize));
+    H5_RESULT_CHECK(H5Fclose(fileId));
+
     return fileSize;
   }
 

@@ -37,11 +37,11 @@ int main(int argc, char* argv[])
 
     AcquiredData acquiredData;
 
+    size_t fileSize1 = AcquiredData::Size(FILENAME_1);
+    size_t fileSize2 = AcquiredData::Size(FILENAME_2);
+
     acquiredData.Open(FILENAME_1);
     acquiredData.Open(FILENAME_2);
-
-    size_t fileSize1 = acquiredData.Size(FILENAME_1);
-    size_t fileSize2 = acquiredData.Size(FILENAME_2);
 
     const auto& fileData1 = acquiredData.Data(FILENAME_1);
     const auto& fileData2 = acquiredData.Data(FILENAME_2);
@@ -95,10 +95,10 @@ int main(int argc, char* argv[])
 
 void ReadDatasets(const IAscanDatasetVector& ascanDatasets_)
 {
-  for (auto ascanDataset : ascanDatasets_)
+  for (const auto& ascanDataset : ascanDatasets_)
   {
-    const auto& props = ascanDataset->Properties();
     const auto& dims = ascanDataset->Dimensions();
+    const auto& props = ascanDataset->Properties();
 
     if (auto ascanBeam = std::dynamic_pointer_cast<const IAscanBeamDataset>(ascanDataset))
     {
