@@ -138,7 +138,7 @@ private:
       {
         ssize_t nameLength = H5Gget_objname_by_idx(dataGroupId, groupIdx, name, MAX_NAME_LENGTH);
         if (nameLength > 0) {
-          GetAscanData(filePath_, std::string(name), datasets);
+          GetAscanData(filePath_, groupIdx, std::string(name), datasets);  //[TODO[EAB] Utiliser un id provenant de la config.]
         }
       }
 
@@ -193,7 +193,7 @@ private:
     return datasets;
   }
 
-  void GetAscanData(const fs::path& filePath_, const std::string& configName_, ReadOnlyDatasets& dataOut_) const
+  void GetAscanData(const fs::path& filePath_, size_t configId_, const std::string& configName_, ReadOnlyDatasets& dataOut_) const
   {
     std::stringstream dataLocation;
     dataLocation << GROUP_DATA << "/" << configName_ << "/";
@@ -208,7 +208,7 @@ private:
       if (status == 0)
       {
         const auto ascanDatasets = GetAscanMergedBeamDatasets(fileId, dataLocation.str());
-        AscanDataSource ascanDataSource(filePath_, 0, configName); //[TODO[EAB] Utiliser un id provenant de la config.]
+        AscanDataSource ascanDataSource(filePath_, configId_, configName);
         dataOut_.Add(std::make_unique<AscanData>(ascanDataSource, ascanDatasets));
       }
       else
@@ -217,7 +217,7 @@ private:
         if (H5Gget_num_objs(configGroupId, &beamQty) >= 0)
         {
           const auto ascanDatasets = GetAscanBeamDatasets(fileId, dataLocation.str(), beamQty);
-          AscanDataSource ascanDataSource(filePath_, 0, configName); //[TODO[EAB] Utiliser un id provenant de la config.]
+          AscanDataSource ascanDataSource(filePath_, configId_, configName);
           dataOut_.Add(std::make_unique<AscanData>(ascanDataSource, ascanDatasets));
         }
       }

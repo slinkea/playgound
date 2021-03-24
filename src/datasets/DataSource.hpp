@@ -8,7 +8,7 @@ namespace fs = std::filesystem;
 class DataSource
 {
 public:
-  DataSource(const fs::path& filePath_, int configId_, const std::wstring& configName_)
+  DataSource(const fs::path& filePath_, size_t configId_, const std::wstring& configName_)
     : m_filePath(filePath_)
     , m_configId(configId_)
     , m_configName(configName_)
@@ -30,7 +30,7 @@ public:
   }
 
 private:
-  const int m_configId{};
+  const size_t m_configId{};
   const fs::path m_filePath;
   const std::wstring m_configName;
 };

@@ -43,23 +43,21 @@ int main(int argc, char* argv[])
     auto& dataset2 = acquiredData.Datasets(FILENAME_2);
     auto ascanDataVec = dataset2.AscanData();
     
-    auto ascanDataFromId = ascanDataVec.Filter(1);
-    auto ascanDatasets = ascanDataFromId->Datasets();
+    auto ascanData = ascanDataVec.Get(2);
+    auto ascanDatasets = ascanData->Datasets();
+    auto src = ascanData->Source();
 
-    auto ascanDataFilteredVec = ascanDataVec.Filter(L"Linear Merged");
-    auto x = ascanDataFilteredVec.Filter(0);
-    
-
-    //auto ascanData = ascanDataVec[2];
-    //auto ascanDatasets = ascanData->Datasets();
-    //auto src = ascanData->Source();
-
-    if (auto ascanBeam = std::dynamic_pointer_cast<const IAscanBeamDataset>(ascanDatasets[0])) {
-      ascanBeam = nullptr;
+    for (auto ascanDataset : ascanDatasets)
+    {
+      if (auto ascanBeam = std::dynamic_pointer_cast<const IAscanBeamDataset>(ascanDataset)) {
+        ascanBeam = nullptr;
+      }
+      else if (auto ascanMergedBeam = std::dynamic_pointer_cast<const IAscanMergedBeamDataset>(ascanDataset)) {
+        ascanMergedBeam = nullptr;
+      }
     }
-    else if (auto ascanMergedBeam = std::dynamic_pointer_cast<const IAscanMergedBeamDataset>(ascanDatasets[0])) {
-      ascanMergedBeam = nullptr;
-    }
+
+
 
 
     acquiredData.Close(FILENAME_1);

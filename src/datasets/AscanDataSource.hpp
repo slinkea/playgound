@@ -10,7 +10,7 @@ namespace fs = std::filesystem;
 class AscanDataSource : public DataSource, public IAscanDataSource
 {
 public:
-  AscanDataSource(const fs::path& filePath_, int configId_, const std::wstring& configName_)
+  AscanDataSource(const fs::path& filePath_, size_t configId_, const std::wstring& configName_)
     : DataSource(filePath_, configId_, configName_)
   {
   }
