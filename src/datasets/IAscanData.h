@@ -1,8 +1,10 @@
 #pragma once
 #include "IReadOnlyData.h"
+#include "IAscanDataset.h"
+#include "IAscanDataSource.h"
+#include "IAscanDatasetVector.hpp"
 
 
-class IAscanDataSource;
 class AscanDataspace;
 struct AscanAttributes;
 
@@ -12,6 +14,6 @@ public:
   virtual ~IAscanData() = default;
 
   virtual const IAscanDataSource* Source() const = 0;
-  virtual const AscanDataspace& Dataspace() const = 0;
-  virtual const AscanAttributes& Attributes() const = 0;
+  virtual const IAscanDatasetVector& Datasets() const = 0;
+
 };

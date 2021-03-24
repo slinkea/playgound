@@ -1,12 +1,9 @@
 #pragma once
-#include <string>
+#include <map>
+#include <filesystem>
 #include "Container.hpp"
 #include "IReadOnlyData.h"
-#include "IAscanData.h"
-
-
-using TReadOnlyDatasets = std::vector<IReadOnlyData*>;
-using TAscanDatasets = std::vector<const IAscanData*>;
+#include "IAscanDataVector.hpp"
 
 
 class ReadOnlyDatasets : public ONDTLib::Container<IReadOnlyData>
@@ -33,9 +30,9 @@ public:
     return *this;
   }
 
-  TAscanDatasets Ascans() const
+  IAscanDataVector AscanData() const
   {
-    TAscanDatasets datasets;
+    IAscanDataVector ascanData;
 
     const auto items = TSuper::Select([&](const TItemPtr& item_) {
       if (auto ascanDataset = dynamic_cast<IAscanData*>(item_.get())) {
@@ -47,10 +44,10 @@ public:
     });
 
     for (const auto item : items) {
-      datasets.push_back(dynamic_cast<const IAscanData*>(item));
+      ascanData.push_back(dynamic_cast<const IAscanData*>(item));
     }
 
-    return datasets;
+    return ascanData;
   }
 
   //TIDatasets CScans(const std::wstring& configName_) const
@@ -65,3 +62,5 @@ public:
   //    });
   //}
 };
+
+using TDataMap = std::map<const std::filesystem::path, ReadOnlyDatasets>;

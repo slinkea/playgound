@@ -17,8 +17,7 @@ protected:
     hsize_t* dsetDims = new hsize_t[ndims]{};
     H5Sget_simple_extent_dims(dspaceId, dsetDims, nullptr);
 
-    DataDimensions dataDimensions(dsetDims[0], dsetDims[1], dsetDims[2]);
-    m_dataspace = AscanDataspace(dataDimensions);
+    m_dataspace = AscanDataspace(DataDimensions(dsetDims[0], dsetDims[1], dsetDims[2]));
 
     delete[] dsetDims;
 
@@ -83,7 +82,7 @@ protected:
 
 private:
   hid_t m_Id{};
-  AscanDataspace m_dataspace;
-  AscanAttributes m_attributes;
+  AscanDataspace m_dataspace{};
+  AscanAttributes m_attributes{};
   const std::string m_location;
 };

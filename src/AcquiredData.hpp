@@ -12,6 +12,7 @@
 #include "datasets/AscanMergedBeamDataset.hpp"
 #include "datasets/AscanStatusMergedBeamDataset.hpp"
 #include "datasets/AscanData.hpp"
+#include "datasets/IAscanDatasetVector.hpp"
 #include "datasets/AscanDataSource.hpp"
 
 
@@ -59,9 +60,6 @@ struct VersionNumber
 class AcquiredData
 {
 public:
-  using TDatasets = std::vector<std::shared_ptr<const IDataset>>;
-  using TDataMap = std::map<const fs::path, ReadOnlyDatasets>;
-
   AcquiredData() = default;
   ~AcquiredData() = default;
 
@@ -150,9 +148,9 @@ private:
     H5Gclose(dataGroupId);
   }
 
-  const TDatasets GetAscanMergedBeamDatasets(hid_t fileId_, const std::string& location_) const
+  const IAscanDatasetVector GetAscanMergedBeamDatasets(hid_t fileId_, const std::string& location_) const
   {
-    TDatasets datasets;
+    IAscanDatasetVector datasets;
 
     std::stringstream dataLocation;
     dataLocation << location_ << ASCAN_DATASET;
@@ -167,9 +165,9 @@ private:
     return datasets;
   }
 
-  const TDatasets GetAscanBeamDatasets(hid_t fileId_, const std::string& location_, hsize_t beamQty_) const
+  const IAscanDatasetVector GetAscanBeamDatasets(hid_t fileId_, const std::string& location_, hsize_t beamQty_) const
   {
-    TDatasets datasets;
+    IAscanDatasetVector datasets;
 
     for (size_t beamIdx{}; beamIdx < beamQty_; beamIdx++)
     {
@@ -210,8 +208,8 @@ private:
       if (status == 0)
       {
         const auto ascanDatasets = GetAscanMergedBeamDatasets(fileId, dataLocation.str());
-        AscanDataSource ascanDataSource(filePath_, 0, configName, ascanDatasets); //[TODO[EAB] Utiliser un id provenant de la config.]
-        dataOut_.Add(std::make_unique<AscanData>(ascanDataSource));
+        AscanDataSource ascanDataSource(filePath_, 0, configName); //[TODO[EAB] Utiliser un id provenant de la config.]
+        dataOut_.Add(std::make_unique<AscanData>(ascanDataSource, ascanDatasets));
       }
       else
       {
@@ -219,8 +217,8 @@ private:
         if (H5Gget_num_objs(configGroupId, &beamQty) >= 0)
         {
           const auto ascanDatasets = GetAscanBeamDatasets(fileId, dataLocation.str(), beamQty);
-          AscanDataSource ascanDataSource(filePath_, 0, configName, ascanDatasets); //[TODO[EAB] Utiliser un id provenant de la config.]
-          dataOut_.Add(std::make_unique<AscanData>(ascanDataSource));
+          AscanDataSource ascanDataSource(filePath_, 0, configName); //[TODO[EAB] Utiliser un id provenant de la config.]
+          dataOut_.Add(std::make_unique<AscanData>(ascanDataSource, ascanDatasets));
         }
       }
 

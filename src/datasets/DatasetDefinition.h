@@ -1,4 +1,9 @@
 #pragma once
+#include <vector>
+#include <memory>
+#include "IDataset.h"
+#include "Datasets.hpp"
+
 
 constexpr char GROUP_DATA[] = "/Data";
 constexpr char ASCAN_DATASET[] = "Ascan Data";

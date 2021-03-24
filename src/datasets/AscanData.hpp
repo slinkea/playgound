@@ -1,15 +1,16 @@
 #pragma once
 #include "IAscanData.h"
 #include "AscanDataSource.hpp"
+#include "IAscanDatasetVector.hpp"
 
 
 class AscanData : public IAscanData
 {
 public:
-  AscanData(const AscanDataSource& dataSource_)
+  AscanData(const AscanDataSource& dataSource_, const IAscanDatasetVector& datasets_)
     : m_dataSource(dataSource_)
+    , m_datasets(datasets_)
   {
-    auto x = m_dataSource.Datasets();
   }
 
   AscanData() = delete;
@@ -22,18 +23,17 @@ public:
     return &m_dataSource;
   }
 
-  const AscanAttributes& Attributes() const override {
-    throw 0;
-  }
-
-  const AscanDataspace& Dataspace() const override {
-    throw 0;
+  const IAscanDatasetVector& Datasets() const override {
+    return m_datasets;
   }
 
   void Read(void* dataOut_) const override {
     throw 0;
   }
 
+
+
 private:
+  const IAscanDatasetVector m_datasets;
   const AscanDataSource m_dataSource;
 };
