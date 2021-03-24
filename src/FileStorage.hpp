@@ -1,11 +1,6 @@
 #pragma once
 #include <hdf5/hdf5.h>
 #include "CudaKernels.cuh"
-#include "datasets/AscanMergedBeamDataset.hpp"
-#include "datasets/AscanBeamDataset.hpp"
-#include "datasets/CscanMergedBeamDataset.hpp"
-#include "datasets/CscanBeamDataset.hpp"
-#include "datasets/Datasets.hpp"
 
 
 constexpr char FILENAME_BIG[] = "big.h5";

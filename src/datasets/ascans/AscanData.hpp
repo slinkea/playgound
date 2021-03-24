@@ -1,7 +1,11 @@
 #pragma once
 #include "IAscanData.h"
 #include "AscanDataSource.hpp"
+#include "AscanBeamDataset.hpp"
 #include "IAscanDatasetVector.hpp"
+#include "AscanMergedBeamDataset.hpp"
+#include "AscanStatusBeamDataset.hpp"
+#include "AscanStatusMergedBeamDataset.hpp"
 
 
 class AscanData : public IAscanData

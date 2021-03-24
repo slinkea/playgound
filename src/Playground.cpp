@@ -37,18 +37,19 @@ int main(int argc, char* argv[])
     AcquiredData acquiredData;
 
     acquiredData.Open(FILENAME_1);
-    const auto& dataset1 = acquiredData.Datasets(FILENAME_1);
-
     acquiredData.Open(FILENAME_2);
-    auto& dataset2 = acquiredData.Datasets(FILENAME_2);
+
+    const auto& fileData1 = acquiredData.FileData(FILENAME_1);
+    const auto& fileData2 = acquiredData.FileData(FILENAME_2);
     
-    const auto ascanData = dataset2.AscanData();
-    auto ascanDataConfig = ascanData.AscanData(1);
+    auto ascanData1 = fileData1.AscanData();
+    auto ascanDataConfig = ascanData1.ConfigAscanData(0);
     auto src = ascanDataConfig->Source();
     size_t configId = src->Id();
     std::wstring name = src->Name();
 
-    ascanDataConfig = dataset2.AscanData(2);
+    auto ascanData2 = fileData2.AscanData();
+    ascanDataConfig = ascanData2.ConfigAscanData(2);
     src = ascanDataConfig->Source();
     configId = src->Id();
     name = src->Name();

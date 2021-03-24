@@ -1,10 +1,10 @@
 #pragma once
 
 
-class IReadOnlyData
+class IData
 {
 public:
-  virtual ~IReadOnlyData() = default;
+  virtual ~IData() = default;
 
   virtual void Read(void* dataOut_) const = 0;
 

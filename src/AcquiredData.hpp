@@ -7,13 +7,8 @@
 #include <filesystem>
 #include <hdf5/hdf5.h>
 #include "datasets/Datasets.hpp"
-#include "datasets/AscanBeamDataset.hpp"
-#include "datasets/AscanStatusBeamDataset.hpp"
-#include "datasets/AscanMergedBeamDataset.hpp"
-#include "datasets/AscanStatusMergedBeamDataset.hpp"
-#include "datasets/AscanData.hpp"
-#include "datasets/IAscanDatasetVector.hpp"
-#include "datasets/AscanDataSource.hpp"
+#include "datasets/ascans/AscanData.hpp"
+
 
 
 namespace fs = std::filesystem;
@@ -82,11 +77,11 @@ public:
     H5_RESULT_CHECK(H5Fclose(m_h5FileMap[filePath_]));
   }
 
-  const ReadOnlyDatasets& Datasets(const fs::path& filePath_) const {
+  const Datasets& FileData(const fs::path& filePath_) const {
     return m_datasetsMap.at(filePath_);
   }
 
-  ReadOnlyDatasets& Datasets(const fs::path& filePath_) {
+  Datasets& FileData(const fs::path& filePath_) {
     return m_datasetsMap.at(filePath_);
   }
 
@@ -133,7 +128,7 @@ private:
     hid_t dataGroupId = H5Gopen(m_h5FileMap[filePath_], GROUP_DATA, H5P_DEFAULT);
     if (H5Gget_num_objs(dataGroupId, &groupQty) >= 0)
     {
-      ReadOnlyDatasets datasets;
+      Datasets datasets;
       for (hsize_t groupIdx{}; groupIdx < groupQty; groupIdx++)
       {
         ssize_t nameLength = H5Gget_objname_by_idx(dataGroupId, groupIdx, name, MAX_NAME_LENGTH);
@@ -193,7 +188,7 @@ private:
     return datasets;
   }
 
-  void GetAscanData(const fs::path& filePath_, size_t configId_, const std::string& configName_, ReadOnlyDatasets& dataOut_) const
+  void GetAscanData(const fs::path& filePath_, size_t configId_, const std::string& configName_, Datasets& dataOut_) const
   {
     std::stringstream dataLocation;
     dataLocation << GROUP_DATA << "/" << configName_ << "/";

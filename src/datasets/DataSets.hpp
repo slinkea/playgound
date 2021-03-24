@@ -2,29 +2,29 @@
 #include <map>
 #include <filesystem>
 #include "Container.hpp"
-#include "IReadOnlyData.h"
-#include "IAscanDataVector.hpp"
+#include "IData.h"
+#include "ascans/IAscanDataVector.hpp"
 
 
-class ReadOnlyDatasets : public ONDTLib::Container<IReadOnlyData>
+class Datasets : public ONDTLib::Container<IData>
 {
-  using TSuper = ONDTLib::Container<IReadOnlyData>;
+  using TSuper = ONDTLib::Container<IData>;
 public:
-  ReadOnlyDatasets(const ReadOnlyDatasets&) = delete;
-  ReadOnlyDatasets& operator=(const ReadOnlyDatasets&) = delete;
-  ReadOnlyDatasets() = default;
-  virtual ~ReadOnlyDatasets() {}
+  Datasets(const Datasets&) = delete;
+  Datasets& operator=(const Datasets&) = delete;
+  Datasets() = default;
+  virtual ~Datasets() {}
 
-  ReadOnlyDatasets(ReadOnlyDatasets&& other_) noexcept
-    : Container<IReadOnlyData>(std::move(other_))
+  Datasets(Datasets&& other_) noexcept
+    : Container<IData>(std::move(other_))
   {
   }
 
-  ReadOnlyDatasets& operator=(ReadOnlyDatasets&& other_) noexcept
+  Datasets& operator=(Datasets&& other_) noexcept
   {
     if (this != &other_)
     {
-      Container<IReadOnlyData>::operator=(std::move(other_));
+      Container<IData>::operator=(std::move(other_));
     }
 
     return *this;
@@ -50,7 +50,7 @@ public:
     return ascanData;
   }
 
-  const IAscanData* AscanData(size_t configId_) const
+  const IAscanData* ConfigAscanData(size_t configId_) const
   {
     return dynamic_cast<IAscanData*>(TSuper::Find([&configId_](const TItemPtr& item_)
       { return dynamic_cast<IAscanData*>(item_.get())->Source()->Id() == configId_; }));
@@ -69,4 +69,4 @@ public:
   //}
 };
 
-using TDataMap = std::map<const std::filesystem::path, ReadOnlyDatasets>;
+using TDataMap = std::map<const std::filesystem::path, Datasets>;

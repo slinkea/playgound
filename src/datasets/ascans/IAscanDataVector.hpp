@@ -11,7 +11,7 @@ public:
 
   virtual ~IAscanDataVector() = default;
 
-  const IAscanData* AscanData(size_t configId_) const
+  const IAscanData* ConfigAscanData(size_t configId_) const
   {
     auto itr = std::find_if(begin(), end(), 
       [&configId_](const IAscanData* a) { return a->Source()->Id() == configId_; });

@@ -1,5 +1,5 @@
 #pragma once
-#include "IReadOnlyData.h"
+#include "IData.h"
 #include "IAscanDataset.h"
 #include "IAscanDataSource.h"
 #include "IAscanDatasetVector.hpp"
@@ -8,7 +8,7 @@
 class AscanDataspace;
 struct AscanAttributes;
 
-class IAscanData : public IReadOnlyData
+class IAscanData : public IData
 {
 public:
   virtual ~IAscanData() = default;
