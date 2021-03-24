@@ -49,11 +49,27 @@ int main(int argc, char* argv[])
 
     for (auto ascanDataset : ascanDatasets)
     {
-      if (auto ascanBeam = std::dynamic_pointer_cast<const IAscanBeamDataset>(ascanDataset)) {
-        ascanBeam = nullptr;
+      if (auto ascanBeam = std::dynamic_pointer_cast<const IAscanBeamDataset>(ascanDataset)) 
+      {
+        if (ascanBeam->IsData())
+        {
+          ascanBeam = nullptr;
+        }
+        else if (ascanBeam->IsStatus())
+        {
+          ascanBeam = nullptr;
+        }
       }
-      else if (auto ascanMergedBeam = std::dynamic_pointer_cast<const IAscanMergedBeamDataset>(ascanDataset)) {
-        ascanMergedBeam = nullptr;
+      else if (auto ascanMergedBeam = std::dynamic_pointer_cast<const IAscanMergedBeamDataset>(ascanDataset))
+      {
+        if (ascanMergedBeam->IsData())
+        {
+          ascanMergedBeam = nullptr;
+        }
+        else if (ascanMergedBeam->IsStatus())
+        {
+          ascanMergedBeam = nullptr;
+        }
       }
     }
 

@@ -33,6 +33,14 @@ public:
     return AscanDataset::Dataspace();
   }
 
+  bool IsStatus() const {
+    return AscanDataset::IsStatus();
+  }
+
+  bool IsData() const {
+    return AscanDataset::IsData();
+  }
+
   void Read(void* dataOut_) const override
   {
   }

@@ -35,6 +35,14 @@ protected:
     return m_dataspace;
   };
 
+  bool IsStatus() const {
+    return true;
+  }
+
+  bool IsData() const {
+    return false;
+  }
+
 private:
   hid_t m_Id{};
   AscanDataspace m_dataspace;
