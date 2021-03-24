@@ -65,9 +65,10 @@ public:
     m_h5FileMap.emplace(filePath_, fileId);
 
     const auto fileVersion = GetFileVersion(filePath_);
-    if (IsEqualOrLess(fileVersion, FILE_VERSION_1_2_0))
-    {
-      FetchData_120(filePath_);
+    DataContainer dataContainer(fileVersion);
+
+    if (IsEqualOrLess(fileVersion, FILE_VERSION_1_2_0)) {
+      FetchData_120(filePath_, std::move(dataContainer));
     }
   }
 
@@ -75,6 +76,13 @@ public:
   {
     m_datasetsMap.erase(filePath_);
     H5_RESULT_CHECK(H5Fclose(m_h5FileMap[filePath_]));
+  }
+
+  size_t Size(const fs::path& filePath_) 
+  {
+    hsize_t fileSize{};
+    H5_RESULT_CHECK(H5Fget_filesize(m_h5FileMap[filePath_], &fileSize));
+    return fileSize;
   }
 
   const DataContainer& Data(const fs::path& filePath_) const {
@@ -121,14 +129,13 @@ private:
     return std::string(fileVersion);
   }
 
-  void FetchData_120(const fs::path& filePath_)
+  void FetchData_120(const fs::path& filePath_, DataContainer&& dataContainer)
   {
     hsize_t groupQty{};
     char name[MAX_NAME_LENGTH];
     hid_t dataGroupId = H5Gopen(m_h5FileMap[filePath_], GROUP_DATA, H5P_DEFAULT);
     if (H5Gget_num_objs(dataGroupId, &groupQty) >= 0)
     {
-      DataContainer dataContainer;
       for (hsize_t groupIdx{}; groupIdx < groupQty; groupIdx++)
       {
         ssize_t nameLength = H5Gget_objname_by_idx(dataGroupId, groupIdx, name, MAX_NAME_LENGTH);
@@ -225,5 +232,4 @@ private:
 
   using TH5FileMap = std::map<const fs::path, const hid_t>;
   TH5FileMap m_h5FileMap;
-
 };

@@ -1,5 +1,6 @@
 #pragma once
 #include <map>
+#include <string>
 #include <filesystem>
 #include "ascans/IAscanDataVector.hpp"
 #include "Container.hpp"
@@ -11,13 +12,18 @@ class DataContainer : public ONDTLib::Container<IData>
   using TSuper = ONDTLib::Container<IData>;
 
 public:
+  DataContainer(const std::string& fileVersion_)
+    : m_fileVersion(fileVersion_)
+  {
+  }
+
   DataContainer(const DataContainer&) = delete;
   DataContainer& operator=(const DataContainer&) = delete;
-  DataContainer() = default;
   virtual ~DataContainer() {}
 
   DataContainer(DataContainer&& other_) noexcept
     : Container<IData>(std::move(other_))
+    , m_fileVersion(other_.m_fileVersion)
   {
   }
 
@@ -29,6 +35,10 @@ public:
     }
 
     return *this;
+  }
+
+  const std::string& Version() const {
+    return m_fileVersion;
   }
 
   IAscanDataVector AscanData() const
@@ -56,6 +66,9 @@ public:
     return dynamic_cast<IAscanData*>(TSuper::Find([&configId_](const TItemPtr& item_)
       { return dynamic_cast<IAscanData*>(item_.get())->Source()->Id() == configId_; }));
   }
+
+private:
+  const std::string m_fileVersion;
 };
 
 using TDataMap = std::map<const std::filesystem::path, DataContainer>;

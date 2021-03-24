@@ -40,9 +40,14 @@ int main(int argc, char* argv[])
     acquiredData.Open(FILENAME_1);
     acquiredData.Open(FILENAME_2);
 
+    size_t fileSize1 = acquiredData.Size(FILENAME_1);
+    size_t fileSize2 = acquiredData.Size(FILENAME_2);
+
     const auto& fileData1 = acquiredData.Data(FILENAME_1);
     const auto& fileData2 = acquiredData.Data(FILENAME_2);
     
+    const auto& fileVersion = fileData1.Version();
+
     auto ascanData1 = fileData1.AscanData();
     auto ascanConfigData = ascanData1.ConfigData(0);
     auto src = ascanConfigData->Source();
