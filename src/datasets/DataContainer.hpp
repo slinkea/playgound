@@ -1,26 +1,27 @@
 #pragma once
 #include <map>
 #include <filesystem>
+#include "ascans/IAscanDataVector.hpp"
 #include "Container.hpp"
 #include "IData.h"
-#include "ascans/IAscanDataVector.hpp"
 
 
-class Datasets : public ONDTLib::Container<IData>
+class DataContainer : public ONDTLib::Container<IData>
 {
   using TSuper = ONDTLib::Container<IData>;
-public:
-  Datasets(const Datasets&) = delete;
-  Datasets& operator=(const Datasets&) = delete;
-  Datasets() = default;
-  virtual ~Datasets() {}
 
-  Datasets(Datasets&& other_) noexcept
+public:
+  DataContainer(const DataContainer&) = delete;
+  DataContainer& operator=(const DataContainer&) = delete;
+  DataContainer() = default;
+  virtual ~DataContainer() {}
+
+  DataContainer(DataContainer&& other_) noexcept
     : Container<IData>(std::move(other_))
   {
   }
 
-  Datasets& operator=(Datasets&& other_) noexcept
+  DataContainer& operator=(DataContainer&& other_) noexcept
   {
     if (this != &other_)
     {
@@ -50,23 +51,11 @@ public:
     return ascanData;
   }
 
-  const IAscanData* ConfigAscanData(size_t configId_) const
+  const IAscanData* ConfigData(size_t configId_) const
   {
     return dynamic_cast<IAscanData*>(TSuper::Find([&configId_](const TItemPtr& item_)
       { return dynamic_cast<IAscanData*>(item_.get())->Source()->Id() == configId_; }));
   }
-
-  //TIDatasets CScans(const std::wstring& configName_) const
-  //{
-  //  return TSuper::Select([&configName_](const TItemPtr& item_) {
-  //    if (auto cscanDataset = dynamic_cast<ICscanDataset*>(item_.get())) {
-  //      return cscanDataset->Configuration() == configName_;
-  //    }
-  //    else {
-  //      return false;
-  //    }
-  //    });
-  //}
 };
 
-using TDataMap = std::map<const std::filesystem::path, Datasets>;
+using TDataMap = std::map<const std::filesystem::path, DataContainer>;

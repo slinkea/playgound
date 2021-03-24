@@ -17,7 +17,7 @@ public:
 
   virtual ~AscanStatusMergedBeamDataset() = default;
 
-  const std::string& Location() const override {
+  const std::string& Location() const {
     return AscanStatusDataset::Location();
   };
 

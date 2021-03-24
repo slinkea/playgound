@@ -17,7 +17,7 @@ public:
   AscanBeamDataset& operator=(const AscanBeamDataset&) = delete;
   virtual ~AscanBeamDataset() = default;
 
-  const std::string& Location() const override {
+  const std::string& Location() const {
     return AscanDataset::Location();
   };
 

@@ -21,7 +21,7 @@ public:
     return m_beamIdx;
   };
 
-  const std::string& Location() const override {
+  const std::string& Location() const {
     return AscanStatusDataset::Location();
   };
 

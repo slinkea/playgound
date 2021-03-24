@@ -1,13 +1,11 @@
 #pragma once
-#include <vector>
 #include <memory>
-#include "IDataset.h"
 
 
 struct AscanAttributes;
 class AscanDataspace;
 
-class IAscanDataset : public IDataset
+class IAscanDataset
 {
 public:
   virtual ~IAscanDataset() = default;

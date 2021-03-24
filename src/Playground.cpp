@@ -39,17 +39,17 @@ int main(int argc, char* argv[])
     acquiredData.Open(FILENAME_1);
     acquiredData.Open(FILENAME_2);
 
-    const auto& fileData1 = acquiredData.FileData(FILENAME_1);
-    const auto& fileData2 = acquiredData.FileData(FILENAME_2);
+    const auto& fileData1 = acquiredData.Data(FILENAME_1);
+    const auto& fileData2 = acquiredData.Data(FILENAME_2);
     
     auto ascanData1 = fileData1.AscanData();
-    auto ascanDataConfig = ascanData1.ConfigAscanData(0);
+    auto ascanDataConfig = ascanData1.ConfigData(0);
     auto src = ascanDataConfig->Source();
     size_t configId = src->Id();
     std::wstring name = src->Name();
 
     auto ascanData2 = fileData2.AscanData();
-    ascanDataConfig = ascanData2.ConfigAscanData(2);
+    ascanDataConfig = ascanData2.ConfigData(2);
     src = ascanDataConfig->Source();
     configId = src->Id();
     name = src->Name();
