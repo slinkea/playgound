@@ -25,16 +25,20 @@ public:
     return AscanDataset::Attributes();
   }
 
-  const AscanDataspace& Dataspace() const override {
-    return AscanDataset::Dataspace();
-  };
-
-  bool IsStatus() const {
-    return AscanDataset::IsStatus();
+  const DataDimensions& Dimensions() const override {
+    return AscanDataset::Dimensions();
   }
 
-  bool IsData() const {
-    return AscanDataset::IsData();
+  const DatasetProperties& Properties() const override {
+    return AscanDataset::Properties();
+  }
+
+  bool IsStatus() const override {
+    return false;
+  }
+
+  bool IsData() const override {
+    return true;
   }
 
   void Read(void* dataOut_) const override

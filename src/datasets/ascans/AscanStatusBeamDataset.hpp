@@ -1,13 +1,13 @@
 #pragma once
 #include "IAscanBeamDataset.h"
-#include "AscanStatusDataset.hpp"
+#include "AscanDataset.hpp"
 
 
-class AscanStatusBeamDataset : public AscanStatusDataset, public IAscanBeamDataset
+class AscanStatusBeamDataset : public AscanDataset, public IAscanBeamDataset
 {
 public:
   AscanStatusBeamDataset(hid_t Id_, const std::string& location_, size_t beamIdx_)
-    : AscanStatusDataset(Id_, location_)
+    : AscanDataset(Id_, location_)
   {
   }
 
@@ -22,23 +22,27 @@ public:
   };
 
   const std::string& Location() const {
-    return AscanStatusDataset::Location();
+    return AscanDataset::Location();
   };
 
   const AscanAttributes& Attributes() const override {
-    return AscanStatusDataset::Attributes();
+    return AscanDataset::Attributes();
   }
 
-  const AscanDataspace& Dataspace() const override {
-    return AscanStatusDataset::Dataspace();
-  };
-
-  bool IsStatus() const {
-    return AscanStatusDataset::IsStatus();
+  const DataDimensions& Dimensions() const override  {
+    return AscanDataset::Dimensions();
   }
 
-  bool IsData() const {
-    return AscanStatusDataset::IsData();
+  const DatasetProperties& Properties() const override {
+    return AscanDataset::Properties();
+  }
+
+  bool IsStatus() const override {
+    return true;
+  }
+
+  bool IsData() const override {
+    return false;
   }
 
   void Read(void* dataOut_) const override

@@ -1,7 +1,8 @@
 #pragma once
 #include <string>
 #include <hdf5/H5Cpp.h>
-#include "AscanDataspace.hpp"
+#include "datasets/DatasetProperties.hpp"
+#include "datasets/DatasetDefinition.h"
 
 
 class AscanDataset
@@ -17,8 +18,13 @@ protected:
     hsize_t* dsetDims = new hsize_t[ndims]{};
     H5Sget_simple_extent_dims(dspaceId, dsetDims, nullptr);
 
-    m_dataspace = AscanDataspace(DataDimensions(dsetDims[0], dsetDims[1], dsetDims[2]));
-
+    if (ndims == 2) {
+      m_dims = DataDimensions(dsetDims[0], dsetDims[1]);
+    }
+    else if (ndims == 3) {
+      m_dims = DataDimensions(dsetDims[0], dsetDims[1], dsetDims[2]);
+    }
+    
     delete[] dsetDims;
 
     hid_t plistId = H5Dget_create_plist(m_Id);
@@ -27,6 +33,7 @@ protected:
     {
       hsize_t* chunkDims = new hsize_t[ndims]{};
       int rankChunk = H5Pget_chunk(plistId, ndims, chunkDims);
+      m_properties = DatasetProperties(true, DataDimensions(chunkDims[0], chunkDims[1], chunkDims[2]));
       delete[] chunkDims;
 
       int numfilt = H5Pget_nfilters(plistId);
@@ -76,21 +83,18 @@ protected:
     return m_attributes;
   }
 
-  const AscanDataspace& Dataspace() const {
-    return m_dataspace;
+  const DataDimensions& Dimensions() const {
+    return m_dims;
+  }
+
+  const DatasetProperties& Properties() const {
+    return m_properties;
   };
-
-  bool IsStatus() const {
-    return false;
-  }
-
-  bool IsData() const {
-    return true;
-  }
 
 private:
   hid_t m_Id{};
-  AscanDataspace m_dataspace{};
-  AscanAttributes m_attributes{};
+  DataDimensions m_dims;
+  DatasetProperties m_properties;
+  AscanAttributes m_attributes;
   const std::string m_location;
 };

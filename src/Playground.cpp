@@ -23,6 +23,7 @@
 constexpr char FILENAME_1[] = "D:\\NDT Files\\ThinBlade.h5";
 constexpr char FILENAME_2[] = "D:\\NDT Files\\4-Configs.h5";
 
+void ReadDatasets(const IAscanDatasetVector& ascanDatasets_);
 
 struct us_listen_socket_t* global_listen_socket;
 
@@ -43,45 +44,20 @@ int main(int argc, char* argv[])
     const auto& fileData2 = acquiredData.Data(FILENAME_2);
     
     auto ascanData1 = fileData1.AscanData();
-    auto ascanDataConfig = ascanData1.ConfigData(0);
-    auto src = ascanDataConfig->Source();
+    auto ascanConfigData = ascanData1.ConfigData(0);
+    auto src = ascanConfigData->Source();
     size_t configId = src->Id();
     std::wstring name = src->Name();
 
+    ReadDatasets(ascanConfigData->Datasets());
+
     auto ascanData2 = fileData2.AscanData();
-    ascanDataConfig = ascanData2.ConfigData(2);
-    src = ascanDataConfig->Source();
+    ascanConfigData = ascanData2.ConfigData(1);
+    src = ascanConfigData->Source();
     configId = src->Id();
     name = src->Name();
 
-    auto ascanDatasets = ascanDataConfig->Datasets();
-    for (auto ascanDataset : ascanDatasets)
-    {
-      if (auto ascanBeam = std::dynamic_pointer_cast<const IAscanBeamDataset>(ascanDataset)) 
-      {
-        if (ascanBeam->IsData())
-        {
-          ascanBeam = nullptr;
-        }
-        else if (ascanBeam->IsStatus())
-        {
-          ascanBeam = nullptr;
-        }
-      }
-      else if (auto ascanMergedBeam = std::dynamic_pointer_cast<const IAscanMergedBeamDataset>(ascanDataset))
-      {
-        if (ascanMergedBeam->IsData())
-        {
-          ascanMergedBeam = nullptr;
-        }
-        else if (ascanMergedBeam->IsStatus())
-        {
-          ascanMergedBeam = nullptr;
-        }
-      }
-    }
-
-
+    ReadDatasets(ascanConfigData->Datasets());
 
 
     acquiredData.Close(FILENAME_1);
@@ -110,6 +86,40 @@ int main(int argc, char* argv[])
   }
 
   return 0;
+}
+
+void ReadDatasets(const IAscanDatasetVector& ascanDatasets_)
+{
+  for (auto ascanDataset : ascanDatasets_)
+  {
+    const auto& props = ascanDataset->Properties();
+    const auto& dims = ascanDataset->Dimensions();
+
+    if (auto ascanBeam = std::dynamic_pointer_cast<const IAscanBeamDataset>(ascanDataset))
+    {
+      size_t beamIdx = ascanBeam->BeamIndex();
+
+      if (ascanBeam->IsData())
+      {
+        ascanBeam = nullptr;
+      }
+      else if (ascanBeam->IsStatus())
+      {
+        ascanBeam = nullptr;
+      }
+    }
+    else if (auto ascanMergedBeam = std::dynamic_pointer_cast<const IAscanMergedBeamDataset>(ascanDataset))
+    {
+      if (ascanMergedBeam->IsData())
+      {
+        ascanMergedBeam = nullptr;
+      }
+      else if (ascanMergedBeam->IsStatus())
+      {
+        ascanMergedBeam = nullptr;
+      }
+    }
+  }
 }
 
 Playground::Playground(CycleDataDescriptor&& cdd) noexcept
