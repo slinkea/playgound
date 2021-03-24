@@ -20,18 +20,6 @@ namespace fs = std::filesystem;
 constexpr char FLE_VERSION[] = "File Version";
 constexpr char FILE_VERSION_1_2_0[] = "1.2.0";
 
-//typedef struct {
-//  const char* path;           /* Path to object */
-//  H5O_type_t type;            /* Type of object */
-//} obj_visit_t;
-
-typedef struct {
-  unsigned idx;               /* Index in object visit structure */
-  //const obj_visit_t* info;    /* Pointer to the object visit structure to use */
-} ovisit_ud_t;
-
-static std::vector<std::string> m_groupPath;
-static std::vector<std::string> m_datasetPath;
 
 #define H5_RESULT_CHECK( ret )                \
     if ( ret < 0 ) {                          \
@@ -220,54 +208,6 @@ public:
 
       H5Gclose(configGroupId);
     }
-  }
-
-
-  static int Visit(hid_t id_, const char* name_, const H5O_info_t* oinfo_, void* op_data_)
-  {
-    ovisit_ud_t* op_data = static_cast <ovisit_ud_t*>(op_data_);
-
-    if (oinfo_->type == H5O_type_t::H5O_TYPE_GROUP)
-    {
-      m_groupPath.push_back(name_);
-
-      H5O_info_t oinfo;
-      H5Oget_info_by_name(id_, name_, &oinfo, H5O_INFO_NUM_ATTRS, H5P_DEFAULT);
-    }
-    else if (oinfo_->type == H5O_type_t::H5O_TYPE_DATASET)
-    {
-      m_datasetPath.push_back(name_);
-
-      H5O_info_t oinfo;
-      H5Oget_info_by_name(id_, name_, &oinfo, H5O_INFO_NUM_ATTRS, H5P_DEFAULT);
-
-      for (unsigned i = 0; i < (unsigned)oinfo.num_attrs; i++)
-      {
-        hid_t dsetId = H5Dopen(id_, name_, H5P_DEFAULT);
-        hid_t attr = H5Aopen_by_idx(dsetId, ".", H5_INDEX_CRT_ORDER, H5_ITER_INC, (hsize_t)i, H5P_DEFAULT, H5P_DEFAULT);
-        hid_t atype = H5Aget_type(attr);
-        H5T_class_t type_class = H5Tget_class(atype);
-        if (type_class == H5T_STRING) {
-          hid_t atype_mem = H5Tget_native_type(atype, H5T_DIR_ASCEND);
-          atype_mem = 0;
-        }
-      }
-    }
-
-    op_data->idx++;
-
-    return H5_ITER_CONT;
-  }
-
-  void Fetch2(const std::string& filePath_)
-  {
-    hid_t fileId = H5Fopen(filePath_.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
-
-    ovisit_ud_t udata;
-    H5Ovisit(fileId, H5_INDEX_NAME, H5_ITER_INC, Visit, &udata, H5O_INFO_BASIC);
-
-    size_t x = m_groupPath.size();
-    x = m_datasetPath.size();
   }
 
 private:
