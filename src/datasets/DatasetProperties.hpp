@@ -5,8 +5,9 @@
 class DatasetProperties
 {
 public:
-  DatasetProperties(bool chunked_, const DataDimensions& dims_)
+  DatasetProperties(bool chunked_, bool compressed_, const DataDimensions& dims_)
     : m_chunked(chunked_)
+    , m_compressed(compressed_)
     , m_dims(dims_)
   {
   }
@@ -20,11 +21,16 @@ public:
     return m_chunked;
   }
 
+  bool IsCompressed() const {
+    return m_compressed;
+  }
+
   const DataDimensions& ChunkDimensions() const {
     return m_dims;
   }
 
 private:
   bool m_chunked{};
+  bool m_compressed{};
   DataDimensions m_dims;
 };

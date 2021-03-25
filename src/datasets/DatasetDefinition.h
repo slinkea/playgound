@@ -81,17 +81,22 @@ struct AscanAttributes
 struct DataDimensions
 {
   DataDimensions() = default;
-  DataDimensions(size_t x_, size_t y_, size_t z_)
+
+  DataDimensions(size_t x_)
     : X(x_)
-    , Y(y_)
-    , Z(z_)
   {
   }
 
   DataDimensions(size_t x_, size_t y_)
     : X(x_)
     , Y(y_)
-    , Z(1)
+  {
+  }
+
+  DataDimensions(size_t x_, size_t y_, size_t z_)
+    : X(x_)
+    , Y(y_)
+    , Z(z_)
   {
   }
 

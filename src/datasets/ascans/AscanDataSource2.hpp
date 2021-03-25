@@ -5,8 +5,8 @@
 class AscanDataSource2 : public DataSource2
 {
 public:
-  AscanDataSource2(const fs::path& filePath_, size_t configId_)
-    : DataSource2(filePath_, configId_)
+  AscanDataSource2(const fs::path& filePath_, size_t configId_, const std::wstring& configName_)
+    : DataSource2(filePath_, configId_, configName_)
   {
   }
 

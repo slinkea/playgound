@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include <filesystem>
 
 
@@ -7,9 +8,10 @@ namespace fs = std::filesystem;
 class DataSource2
 {
 public:
-  DataSource2(const fs::path& filePath_, size_t configId_)
+  DataSource2(const fs::path& filePath_, size_t configId_, const std::wstring& configName_)
     : m_filePath(filePath_)
     , m_configId(configId_)
+    , m_configName(configName_)
   {
   }
 
@@ -26,4 +28,5 @@ public:
 protected:
   const fs::path m_filePath;
   const size_t m_configId;
+  const std::wstring m_configName;
 };

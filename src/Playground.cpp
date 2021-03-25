@@ -43,12 +43,33 @@ int main(int argc, char* argv[])
     acquiredData.Open(FILENAME_1);
     acquiredData.Open(FILENAME_2);
 
-    const auto& fileData1 = acquiredData.Data(FILENAME_1);
-    const auto& fileData2 = acquiredData.Data(FILENAME_2);
-    
-    const auto& fileVersion = fileData1.Version();
+    const auto& dataContainer1 = acquiredData.DataContainer(FILENAME_1);
+    const auto& fileVersion = dataContainer1.Version();
 
-    auto ascanData1 = fileData1.AscanData();
+    const auto& dataContainer2 = acquiredData.DataContainer(FILENAME_2);
+
+    const auto& dataItem = dataContainer2.Items()[0];
+    const auto& src = dataItem->Source();
+    const auto& datasets = dataItem->Datasets();
+
+    const auto& ds1 = datasets.Items()[0];
+    auto dataset1 = dynamic_cast<const AscanDataset2*>(ds1.get());
+    auto dataset2 = dynamic_cast<const AscanBeamDataset2*>(ds1.get());
+    const auto& loc = dataset1->Location();
+
+    const auto& dims = dataset1->Dimensions();
+    size_t x = dims.X;
+
+    const auto& attr = dataset1->Attributes();
+    const auto& props = dataset1->Properties();
+
+    dataset1->SelectSingle(0, 0);
+
+    std::vector<int16_t> singleAscan(10, 0);
+    dataset1->Read(singleAscan.data());
+
+
+    /*auto ascanData1 = fileData1.AscanData();
     auto ascanConfigData = ascanData1.ConfigData(0);
     auto src = ascanConfigData->Source();
     size_t configId = src->Id();
@@ -62,7 +83,7 @@ int main(int argc, char* argv[])
     configId = src->Id();
     name = src->Name();
 
-    ReadDatasets(ascanConfigData->Datasets());
+    ReadDatasets(ascanConfigData->Datasets());*/
 
 
     acquiredData.Close(FILENAME_1);
@@ -95,42 +116,42 @@ int main(int argc, char* argv[])
 
 void ReadDatasets(const IAscanDatasetVector& ascanDatasets_)
 {
-  for (const auto& ascanDataset : ascanDatasets_)
-  {
-    const auto& dims = ascanDataset->Dimensions();
-    const auto& props = ascanDataset->Properties();
+  //for (const auto& ascanDataset : ascanDatasets_)
+  //{
+  //  const auto& dims = ascanDataset->Dimensions();
+  //  const auto& props = ascanDataset->Properties();
 
-    if (auto ascanBeam = std::dynamic_pointer_cast<const IAscanBeamDataset>(ascanDataset))
-    {
-      size_t beamIdx = ascanBeam->BeamIndex();
+  //  if (auto ascanBeam = std::dynamic_pointer_cast<const IAscanBeamDataset>(ascanDataset))
+  //  {
+  //    size_t beamIdx = ascanBeam->BeamIndex();
 
-      if (ascanBeam->IsData())
-      {
-        ascanBeam = nullptr;
-      }
-      else if (ascanBeam->IsStatus())
-      {
-        ascanBeam = nullptr;
-      }
-    }
-    else if (auto ascanMergedBeam = std::dynamic_pointer_cast<const IAscanMergedBeamDataset>(ascanDataset))
-    {
-      if (ascanMergedBeam->IsData())
-      {
-        //DataDimensions dims{ 1, 1, 1 };
-        ascanMergedBeam->SelectSingle(0, 0);
+  //    if (ascanBeam->IsData())
+  //    {
+  //      ascanBeam = nullptr;
+  //    }
+  //    else if (ascanBeam->IsStatus())
+  //    {
+  //      ascanBeam = nullptr;
+  //    }
+  //  }
+  //  else if (auto ascanMergedBeam = std::dynamic_pointer_cast<const IAscanMergedBeamDataset>(ascanDataset))
+  //  {
+  //    if (ascanMergedBeam->IsData())
+  //    {
+  //      //DataDimensions dims{ 1, 1, 1 };
+  //      ascanMergedBeam->SelectSingle(0, 0);
 
-        std::vector<int16_t> singleAscan(10, 0);
-        ascanMergedBeam->Read(singleAscan.data());
+  //      std::vector<int16_t> singleAscan(10, 0);
+  //      ascanMergedBeam->Read(singleAscan.data());
 
-        ascanMergedBeam = nullptr;
-      }
-      else if (ascanMergedBeam->IsStatus())
-      {
-        ascanMergedBeam = nullptr;
-      }
-    }
-  }
+  //      ascanMergedBeam = nullptr;
+  //    }
+  //    else if (ascanMergedBeam->IsStatus())
+  //    {
+  //      ascanMergedBeam = nullptr;
+  //    }
+  //  }
+  //}
 }
 
 Playground::Playground(CycleDataDescriptor&& cdd) noexcept

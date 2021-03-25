@@ -52,3 +52,5 @@ private:
   const AscanDataSource2 m_dataSource;
   DatasetContainer2 m_datasets;
 };
+
+using TAscanDataPtr = std::unique_ptr<AscanData2>;
