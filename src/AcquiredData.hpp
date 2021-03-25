@@ -11,8 +11,7 @@
 
 #include "datasets/DataContainer2.hpp"
 #include "datasets/ascans/AscanData2.hpp"
-#include "datasets/ascans/AscanDataSource2.hpp"
-#include "datasets/ascans/AscanDataset2.hpp"
+
 
 namespace fs = std::filesystem;
 
@@ -60,6 +59,7 @@ public:
 
     DatasetContainer2 dsc2;
     dsc2.Add(std::make_unique<AscanDataset2>(1, "A"));
+    dsc2.Add(std::make_unique<AscanBeamDataset2>(2, "B", 0));
 
     //AscanData2 ad2(adsrc2, std::move(dsc2));
     //const auto& src2 = ad2.Source();
@@ -69,8 +69,15 @@ public:
     const auto& dataItem = dc2.Items()[0];
     const auto& src22 = dataItem->Source();
     auto& datasetItem = dataItem->Datasets();
-    auto& ds = datasetItem.Items()[0];
+    auto& ds1 = datasetItem.Items()[0];
+    auto& ds2 = datasetItem.Items()[1];
     
+    auto ads1 = dynamic_cast<const AscanDataset2*>(ds1.get());
+    auto abds1 = dynamic_cast<const AscanBeamDataset2*>(ds1.get());
+
+    auto ads2 = dynamic_cast<const AscanDataset2*>(ds2.get());
+    auto abds2 = dynamic_cast<const AscanBeamDataset2*>(ds2.get());
+
     Test(std::move(dc2));
 
     auto ad22 = dynamic_cast<AscanData2*>(dataItem.get());

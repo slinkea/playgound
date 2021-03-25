@@ -1,6 +1,8 @@
 #pragma once
-#include "AscanDataSource2.hpp"
 #include "datasets/DatasetContainer2.hpp"
+#include "AscanDataSource2.hpp"
+#include "AscanDataset2.hpp"
+#include "AscanBeamDataset2.hpp"
 
 
 class AscanData2 : public IData2
