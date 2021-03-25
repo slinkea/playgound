@@ -12,6 +12,7 @@
 #include "datasets/DataContainer2.hpp"
 #include "datasets/ascans/AscanData2.hpp"
 #include "datasets/ascans/AscanDataSource2.hpp"
+#include "datasets/ascans/AscanDataset2.hpp"
 
 namespace fs = std::filesystem;
 
@@ -54,21 +55,41 @@ class AcquiredData
 public:
   AcquiredData()
   {
-    AscanDataSource2 ads2(fs::path(), 0);
-    size_t id = ads2.Id();
-    AscanData2 ad2(ads2);
-    const auto& src2 = ad2.Source();
+    AscanDataSource2 adsrc2(fs::path(), 0);
+    size_t id = adsrc2.Id();
+
+    DatasetContainer2 dsc2;
+    dsc2.Add(std::make_unique<AscanDataset2>(1, "A"));
+
+    //AscanData2 ad2(adsrc2, std::move(dsc2));
+    //const auto& src2 = ad2.Source();
 
     DataContainer2 dc2;
-    dc2.Add(std::make_unique<AscanData2>(ads2));
-    const auto& item = dc2.Items()[0];
-    const auto& src22 = item->Source();
+    dc2.Add(std::make_unique<AscanData2>(adsrc2, std::move(dsc2)));
+    const auto& dataItem = dc2.Items()[0];
+    const auto& src22 = dataItem->Source();
+    auto& datasetItem = dataItem->Datasets();
+    auto& ds = datasetItem.Items()[0];
+    
+    Test(std::move(dc2));
 
-    auto ad22 = dynamic_cast<AscanData2*>(item.get());
+    auto ad22 = dynamic_cast<AscanData2*>(dataItem.get());
     auto src222 = ad22->Source();
+    auto& ds22 = ad22->Datasets();
 
     int x{};
     x++;
+  }
+
+  void Test(const DataContainer2&& dc2_)
+  {
+    size_t count = dc2_.Count();
+    const auto& dataItem = dc2_.Items()[0];
+    const auto& src22 = dataItem->Source();
+    auto& datasetItem = dataItem->Datasets();
+    auto& ds = datasetItem.Items()[0];
+    std::string loc = ds->Location();
+    loc = nullptr;
   }
 
   ~AcquiredData() = default;

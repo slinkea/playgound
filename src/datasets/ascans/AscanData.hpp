@@ -20,7 +20,6 @@ public:
   AscanData() = delete;
   AscanData(const AscanData&) = delete;
   AscanData& operator=(const AscanData&) = delete;
-
   virtual ~AscanData() = default;
 
   const IAscanDataSource* Source() const override {

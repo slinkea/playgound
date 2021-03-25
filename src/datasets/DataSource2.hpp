@@ -13,11 +13,11 @@ public:
   {
   }
 
-  DataSource2() = delete;
-  //DataSource2(const DataSource2&) = delete;
-  DataSource2& operator=(const DataSource2&) = delete;
-
+  DataSource2(const DataSource2&) = default;
   virtual ~DataSource2() = default;
+
+  DataSource2() = delete;
+  DataSource2& operator=(const DataSource2&) = delete;
 
   virtual const fs::path& FilePath() const = 0;
 

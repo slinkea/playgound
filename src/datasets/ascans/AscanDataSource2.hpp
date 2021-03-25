@@ -10,10 +10,11 @@ public:
   {
   }
 
+  AscanDataSource2(const AscanDataSource2&) = default;
+  virtual ~AscanDataSource2() = default;
+
   AscanDataSource2() = delete;
   AscanDataSource2& operator=(const AscanDataSource2&) = delete;
-
-  virtual ~AscanDataSource2() = default;
 
   size_t Id() const override {
     return m_configId;
