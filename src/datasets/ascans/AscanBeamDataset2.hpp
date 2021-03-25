@@ -17,10 +17,11 @@ public:
   AscanBeamDataset2() = delete;
   AscanBeamDataset2& operator=(const AscanBeamDataset2&) = delete;
 
-  const std::string& Location() const override {
-    return m_location;
-  };
+  const AscanAttributes& Attributes() const {
+    return m_attributes;
+  }
 
 private:
   size_t m_beamIdx{};
+  AscanAttributes m_attributes;
 };

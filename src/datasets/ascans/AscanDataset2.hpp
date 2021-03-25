@@ -16,10 +16,10 @@ public:
   AscanDataset2() = delete;
   AscanDataset2& operator=(const AscanDataset2&) = delete;
 
-  const std::string& Location() const override {
-    return m_location;
-  };
+  const AscanAttributes& Attributes() const {
+    return m_attributes;
+  }
 
 private:
-
+  AscanAttributes m_attributes;
 };
