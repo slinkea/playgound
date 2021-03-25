@@ -17,11 +17,6 @@ constexpr char FLE_VERSION[] = "File Version";
 constexpr char FILE_VERSION_1_2_0[] = "1.2.0";
 
 
-#define H5_RESULT_CHECK( ret )                \
-    if ( ret < 0 ) {                          \
-    throw std::runtime_error("HDF5 Error.");  \
-    }
-
 struct VersionNumber
 {
   VersionNumber(size_t major_, size_t minor_, size_t rev_)

@@ -41,6 +41,10 @@ public:
     return false;
   }
 
+  void SelectSingle(size_t x_, size_t y_) const override {
+    return AscanDataset::SelectSingle(x_, y_);
+  }
+
   void Read(void* dataOut_) const override
   {
   }

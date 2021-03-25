@@ -117,6 +117,12 @@ void ReadDatasets(const IAscanDatasetVector& ascanDatasets_)
     {
       if (ascanMergedBeam->IsData())
       {
+        //DataDimensions dims{ 1, 1, 1 };
+        ascanMergedBeam->SelectSingle(0, 0);
+
+        std::vector<int16_t> singleAscan(10, 0);
+        ascanMergedBeam->Read(singleAscan.data());
+
         ascanMergedBeam = nullptr;
       }
       else if (ascanMergedBeam->IsStatus())

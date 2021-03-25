@@ -9,14 +9,14 @@ class AscanDataset
 {
 protected:
   AscanDataset(hid_t Id_, const std::string& location_)
-    : m_Id(Id_)
+    : m_dsetId(Id_)
     , m_location(location_)
   {
-    hid_t dspaceId = H5Dget_space(m_Id);
-    const int ndims = H5Sget_simple_extent_ndims(dspaceId);
+    m_dspaceId = H5Dget_space(m_dsetId);
+    const int ndims = H5Sget_simple_extent_ndims(m_dspaceId);
 
     hsize_t* dsetDims = new hsize_t[ndims]{};
-    H5Sget_simple_extent_dims(dspaceId, dsetDims, nullptr);
+    H5Sget_simple_extent_dims(m_dspaceId, dsetDims, nullptr);
 
     if (ndims == 2) {
       m_dims = DataDimensions(dsetDims[0], dsetDims[1]);
@@ -27,7 +27,10 @@ protected:
     
     delete[] dsetDims;
 
-    hid_t plistId = H5Dget_create_plist(m_Id);
+    hsize_t dimsm[1] = { m_dims.Z };
+    m_singleDspaceId = H5Screate_simple(1, dimsm, nullptr);
+
+    hid_t plistId = H5Dget_create_plist(m_dsetId);
 
     if (H5Pget_layout(plistId) == H5D_CHUNKED)
     {
@@ -72,7 +75,8 @@ protected:
 
   virtual ~AscanDataset()
   {
-    herr_t status = H5Dclose(m_Id);
+    H5Dclose(m_dspaceId);
+    H5Dclose(m_dsetId);
   }
 
   const std::string& Location() const {
@@ -91,8 +95,23 @@ protected:
     return m_properties;
   };
 
+  void SelectSingle(size_t x_, size_t y_) const
+  {
+    hsize_t count[3] = { 1, 1, m_dims.Z };
+    hsize_t offset[3] = { x_, y_, 0 };
+    H5_RESULT_CHECK(H5Sselect_hyperslab(m_dspaceId, H5S_SELECT_SET, offset, nullptr, count, nullptr));
+  };
+
+  void Read(void* dataOut_) const
+  {
+    H5_RESULT_CHECK(H5Dread(m_dsetId, H5T_NATIVE_CHAR, m_singleDspaceId, m_dspaceId, H5P_DEFAULT, dataOut_));
+  }
+  
+
 private:
-  hid_t m_Id{};
+  hid_t m_dsetId{};
+  hid_t m_dspaceId{};
+  hid_t m_singleDspaceId{};
   DataDimensions m_dims;
   DatasetProperties m_properties;
   AscanAttributes m_attributes;

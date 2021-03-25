@@ -45,8 +45,12 @@ public:
     return true;
   }
 
-  void Read(void* dataOut_) const override
-  {
+  void SelectSingle(size_t x_, size_t y_) const override {
+    return AscanDataset::SelectSingle(x_, y_);
+  }
+
+  void Read(void* dataOut_) const override {
+    return AscanDataset::Read(dataOut_);
   }
 
 protected:

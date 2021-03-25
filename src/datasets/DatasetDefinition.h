@@ -7,6 +7,11 @@ constexpr char ASCAN_STATUS_DATASET[] = "Ascan Status";
 constexpr char BEAM_PREFIX[] = "Beam";
 constexpr size_t MAX_NAME_LENGTH = 512;
 
+#define H5_RESULT_CHECK( ret )                \
+    if ( ret < 0 ) {                          \
+    throw std::runtime_error("HDF5 Error.");  \
+    }
+
 struct CscanData1
 {
   CscanData1() = default;
