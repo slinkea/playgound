@@ -8,10 +8,11 @@
 class Dataset
 {
 public:
-  Dataset(hid_t Id_, const std::string& location_)
-    : m_dsetId(Id_)
+  Dataset(hid_t dsetId_, const std::string& location_)
+    : m_dsetId(dsetId_)
     , m_location(location_)
   {
+    m_dataType = H5Dget_type(m_dsetId);
     m_dspaceId = H5Dget_space(m_dsetId);
     m_dimQty = H5Sget_simple_extent_ndims(m_dspaceId);    
 
@@ -27,7 +28,6 @@ public:
   {
     delete[] m_offset;
     delete[] m_count;
-    H5Dclose(m_dspaceId);
     H5Dclose(m_dsetId);
   }
 
@@ -44,13 +44,53 @@ public:
   };
 
 protected:
-  hsize_t* CreateDimensionArray(size_t dimQty_) {
+  hsize_t* CreateArray(size_t dimQty_) {
     return new hsize_t[dimQty_]{};
   }
+
+  DataType GetDataType() const
+  {
+    size_t size = H5Tget_size(m_dataType);
+
+    switch (H5Tget_class(m_dataType)) {
+    case H5T_INTEGER:
+      switch (H5Tget_sign(m_dataType)) {
+      case H5T_SGN_NONE:
+        switch (size) {
+        case 1:
+          return DataType::UCHAR;
+        case 2:
+          return DataType::USHORT;
+        case 4:
+          return DataType::UINT;
+        }
+      case H5T_SGN_2:
+        switch (size) {
+        case 1:
+          return DataType::CHAR;
+        case 2:
+          return DataType::SHORT;
+        case 4:
+          return DataType::INT;
+        }
+      }
+    case H5T_FLOAT:
+      switch (size) {
+      case 4:
+        return DataType::FLOAT;
+      case 8:
+        return DataType::DOUBLE;
+      }
+    }
+
+    throw std::runtime_error("Unsupported data type.");
+  }
+
 
   int m_dimQty{};
   hid_t m_dsetId{};
   hid_t m_dspaceId{};
+  hid_t m_dataType{};
   hsize_t* m_offset{};
   hsize_t* m_count{};
   std::string m_location;

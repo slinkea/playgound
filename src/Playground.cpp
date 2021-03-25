@@ -20,11 +20,52 @@
 
 
 //constexpr char FILENAME[] = "big.h5";
-constexpr char FILENAME_1[] = "D:\\NDT Files\\4-Configs.h5";
-constexpr char FILENAME_2[] = "D:\\NDT Files\\ThinBlade.h5";
+constexpr char FILENAME_1[] = "D:\\NDT Files\\ThinBlade.h5";
+constexpr char FILENAME_2[] = "D:\\NDT Files\\4-Configs.h5";
 
 
 struct us_listen_socket_t* global_listen_socket;
+
+void ReadAscan(const AscanDatasetBase* dset_)
+{
+  const std::string& loc = dset_->Location();
+  const AscanAttributes& attributes = dset_->Attributes();
+  const DatasetProperties& props = dset_->Properties();
+  const DataDimensions& dims = dset_->Dimensions();
+  DataType sampleType = dset_->SampleType();
+  size_t sampleSize = dset_->SampleSize();
+
+  dset_->SelectSingle(1, 0);
+  std::vector<unsigned char> singleAscan(dims.Z * sampleSize, 0);
+  dset_->Read(singleAscan.data());
+
+  std::vector<short> ascanSamples;
+  if (sampleType == DataType::CHAR) {
+    const char* samples = reinterpret_cast<const char*>(singleAscan.data());
+    ascanSamples.assign(samples, samples + dims.Z);
+  }
+  else if (sampleType == DataType::SHORT) {
+    const short* samples = reinterpret_cast<const short*>(singleAscan.data());
+    ascanSamples.assign(samples, samples + dims.Z);
+  }
+  else if (sampleType == DataType::UCHAR) {
+    const unsigned char* samples = reinterpret_cast<const unsigned char*>(singleAscan.data());
+    ascanSamples.assign(samples, samples + dims.Z);
+  }
+  else if (sampleType == DataType::USHORT) {
+    const unsigned short* samples = reinterpret_cast<const unsigned short*>(singleAscan.data());
+    ascanSamples.assign(samples, samples + dims.Z);
+  }
+
+  if (const auto ascanDset = dynamic_cast<const AscanDataset*>(dset_))
+  {
+
+  }
+  else if (const auto ascanDset = dynamic_cast<const AscanBeamDataset*>(dset_))
+  {
+
+  }
+}
 
 int main(int argc, char* argv[])
 {
@@ -39,41 +80,28 @@ int main(int argc, char* argv[])
     size_t fileSize1 = AcquiredData::Size(FILENAME_1);
     size_t fileSize2 = AcquiredData::Size(FILENAME_2);
 
-    acquiredData.Open(FILENAME_1);
+    //acquiredData.Open(FILENAME_1);
     acquiredData.Open(FILENAME_2);
 
-    const auto& dataContainer1 = acquiredData.GetDataContainer(FILENAME_1);
-    const auto& fileVersion = dataContainer1.Version();
+    //const auto& dataContainer1 = acquiredData.GetDataContainer(FILENAME_1);
+    //const auto& fileVersion = dataContainer1.Version();
 
     const auto& dataContainer2 = acquiredData.GetDataContainer(FILENAME_2);
 
-    const auto& dataItem = dataContainer2.Items()[0];
-    const auto& datasets = dataItem->Datasets();
-    const auto& src = dataItem->Source();
-
-    for (const auto& ds : datasets.Items())
+    for (const auto& dataItem : dataContainer2.Items())
     {
-      auto dataset1 = dynamic_cast<const AscanDataset*>(ds.get());
-      auto dataset2 = dynamic_cast<const AscanBeamDataset*>(ds.get());
-      auto dataset3 = dynamic_cast<const AscanStatusDataset*>(ds.get());
-      auto dataset4 = dynamic_cast<const AscanStatusBeamDataset*>(ds.get());
+      const auto& datasets = dataItem->Datasets();
+      const auto& src = dataItem->Source();
 
-      if (dataset1)
+      for (const auto& ds : datasets.Items())
       {
-        const auto& loc = dataset1->Location();
-        const auto& dims = dataset1->Dimensions();
-
-        const auto& attr = dataset1->Attributes();
-        const auto& props = dataset1->Properties();
-
-        dataset1->SelectSingle(0, 0);
-
-        std::vector<int8_t> singleAscan(dims.Z, 0);
-        dataset1->Read(singleAscan.data());
+        if (const auto ascanDset = dynamic_cast<const AscanDatasetBase*>(ds.get())) {
+          ReadAscan(ascanDset);
+        }
       }
     }
 
-    acquiredData.Close(FILENAME_1);
+    //acquiredData.Close(FILENAME_1);
     acquiredData.Close(FILENAME_2);
 
     //fs.Write();

@@ -12,6 +12,8 @@ constexpr size_t MAX_NAME_LENGTH = 512;
     throw std::runtime_error("HDF5 Error.");  \
     }
 
+enum class DataType { CHAR, UCHAR, SHORT, USHORT, INT, UINT, FLOAT, DOUBLE };
+
 struct CscanData1
 {
   CscanData1() = default;
