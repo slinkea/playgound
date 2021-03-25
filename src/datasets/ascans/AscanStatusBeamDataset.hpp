@@ -1,12 +1,12 @@
 #pragma once
-#include "datasets/Dataset.hpp"
+#include "AscanStatusDataset.hpp"
 
 
-class AscanStatusBeamDataset : public Dataset
+class AscanStatusBeamDataset : public AscanStatusDataset
 {
 public:
   AscanStatusBeamDataset(hid_t Id_, const std::string& location_, size_t beamIdx_)
-    : Dataset(Id_, location_)
+    : AscanStatusDataset(Id_, location_)
     , m_beamIdx(beamIdx_)
   {
   }
@@ -17,6 +17,10 @@ public:
   AscanStatusBeamDataset() = delete;
   AscanStatusBeamDataset& operator=(const AscanStatusBeamDataset&) = delete;
 
+  size_t BeamIndex() const {
+    return m_beamIdx;
+  }
+
 private:
-  size_t m_beamIdx{};
+  const size_t m_beamIdx{};
 };

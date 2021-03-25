@@ -26,7 +26,7 @@ constexpr char FILENAME_2[] = "D:\\NDT Files\\4-Configs.h5";
 
 struct us_listen_socket_t* global_listen_socket;
 
-void ReadAscan(const AscanDataset* dset_)
+void ReadAscanData(const AscanDataset* dset_)
 {
   const std::string& loc = dset_->Location();
   const AscanAttributes& attributes = dset_->Attributes();
@@ -64,6 +64,15 @@ void ReadAscan(const AscanDataset* dset_)
   }
 }
 
+void ReadAscanStatus(const AscanStatusDataset* dset_)
+{
+  if (const auto ascanStatusBeamDset = dynamic_cast<const AscanStatusBeamDataset*>(dset_))
+  {
+    size_t idx = ascanStatusBeamDset->BeamIndex();
+    idx = 0;
+  }
+}
+
 int main(int argc, char* argv[])
 {
   try
@@ -93,8 +102,11 @@ int main(int argc, char* argv[])
       const auto& datasets = dataItem->Datasets();
       for (const auto& ds : datasets.Items())
       {
-        if (const auto ascanDset = dynamic_cast<const AscanDataset*>(ds.get())) {
-          ReadAscan(ascanDset);
+        if (const auto dataDset = dynamic_cast<const AscanDataset*>(ds.get())) {
+          ReadAscanData(dataDset);
+        }
+        else if (const auto statusDset = dynamic_cast<const AscanStatusDataset*>(ds.get())) {
+          ReadAscanStatus(statusDset);
         }
       }
     }
