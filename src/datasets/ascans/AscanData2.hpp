@@ -3,20 +3,27 @@
 #include "AscanDataSource2.hpp"
 #include "AscanDataset2.hpp"
 #include "AscanBeamDataset2.hpp"
+#include "AscanStatusDataset2.hpp"
+#include "AscanStatusBeamDataset2.hpp"
 
 
 class AscanData2 : public IData2
 {
 public:
+  AscanData2(const AscanDataSource2& dataSource_)
+    : m_dataSource(dataSource_)
+  {
+  }
+
   AscanData2(const AscanDataSource2& dataSource_, DatasetContainer2&& datasets_)
     : m_dataSource(dataSource_)
     , m_datasets(std::move(datasets_))
   {
   }
 
+  AscanData2() = default;
   virtual ~AscanData2() = default;
 
-  AscanData2() = delete;
   AscanData2(const AscanData2&) = delete;
   AscanData2& operator=(const AscanData2&) = delete;
 

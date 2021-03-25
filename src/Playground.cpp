@@ -20,8 +20,8 @@
 
 
 //constexpr char FILENAME[] = "big.h5";
-constexpr char FILENAME_1[] = "D:\\NDT Files\\ThinBlade.h5";
-constexpr char FILENAME_2[] = "D:\\NDT Files\\4-Configs.h5";
+constexpr char FILENAME_1[] = "D:\\NDT Files\\4-Configs.h5";
+constexpr char FILENAME_2[] = "D:\\NDT Files\\ThinBlade.h5";
 
 void ReadDatasets(const IAscanDatasetVector& ascanDatasets_);
 
@@ -49,24 +49,32 @@ int main(int argc, char* argv[])
     const auto& dataContainer2 = acquiredData.DataContainer(FILENAME_2);
 
     const auto& dataItem = dataContainer2.Items()[0];
-    const auto& src = dataItem->Source();
     const auto& datasets = dataItem->Datasets();
+    const auto& src = dataItem->Source();
 
-    const auto& ds1 = datasets.Items()[0];
-    auto dataset1 = dynamic_cast<const AscanDataset2*>(ds1.get());
-    auto dataset2 = dynamic_cast<const AscanBeamDataset2*>(ds1.get());
-    const auto& loc = dataset1->Location();
+    for (const auto& ds : datasets.Items())
+    {
+      auto dataset1 = dynamic_cast<const AscanDataset2*>(ds.get());
+      auto dataset2 = dynamic_cast<const AscanBeamDataset2*>(ds.get());
+      auto dataset3 = dynamic_cast<const AscanStatusDataset2*>(ds.get());
+      auto dataset4 = dynamic_cast<const AscanStatusBeamDataset2*>(ds.get());
 
-    const auto& dims = dataset1->Dimensions();
-    size_t x = dims.X;
+      if (dataset1)
+      {
+        const auto& loc = dataset1->Location();
 
-    const auto& attr = dataset1->Attributes();
-    const auto& props = dataset1->Properties();
+        const auto& dims = dataset1->Dimensions();
+        size_t x = dims.X;
 
-    dataset1->SelectSingle(0, 0);
+        const auto& attr = dataset1->Attributes();
+        const auto& props = dataset1->Properties();
 
-    std::vector<int16_t> singleAscan(10, 0);
-    dataset1->Read(singleAscan.data());
+        dataset1->SelectSingle(0, 0);
+
+        std::vector<int16_t> singleAscan(10, 0);
+        dataset1->Read(singleAscan.data());
+      }
+    }
 
 
     /*auto ascanData1 = fileData1.AscanData();
