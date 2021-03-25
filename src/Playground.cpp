@@ -42,10 +42,10 @@ int main(int argc, char* argv[])
     acquiredData.Open(FILENAME_1);
     acquiredData.Open(FILENAME_2);
 
-    const auto& dataContainer1 = acquiredData.DataContainer(FILENAME_1);
+    const auto& dataContainer1 = acquiredData.GetDataContainer(FILENAME_1);
     const auto& fileVersion = dataContainer1.Version();
 
-    const auto& dataContainer2 = acquiredData.DataContainer(FILENAME_2);
+    const auto& dataContainer2 = acquiredData.GetDataContainer(FILENAME_2);
 
     const auto& dataItem = dataContainer2.Items()[0];
     const auto& datasets = dataItem->Datasets();
@@ -53,10 +53,10 @@ int main(int argc, char* argv[])
 
     for (const auto& ds : datasets.Items())
     {
-      auto dataset1 = dynamic_cast<const AscanDataset2*>(ds.get());
-      auto dataset2 = dynamic_cast<const AscanBeamDataset2*>(ds.get());
-      auto dataset3 = dynamic_cast<const AscanStatusDataset2*>(ds.get());
-      auto dataset4 = dynamic_cast<const AscanStatusBeamDataset2*>(ds.get());
+      auto dataset1 = dynamic_cast<const AscanDataset*>(ds.get());
+      auto dataset2 = dynamic_cast<const AscanBeamDataset*>(ds.get());
+      auto dataset3 = dynamic_cast<const AscanStatusDataset*>(ds.get());
+      auto dataset4 = dynamic_cast<const AscanStatusBeamDataset*>(ds.get());
 
       if (dataset1)
       {

@@ -7,8 +7,8 @@
 #include <filesystem>
 #include <hdf5/hdf5.h>
 
-#include "datasets/DataContainer2.hpp"
-#include "datasets/ascans/AscanData2.hpp"
+#include "datasets/DataContainer.hpp"
+#include "datasets/ascans/AscanData.hpp"
 
 
 namespace fs = std::filesystem;
@@ -60,10 +60,10 @@ public:
     m_h5FileMap.emplace(filePath_, fileId);
 
     const auto fileVersion = GetFileVersion(filePath_);
-    DataContainer2 dataContainer(fileVersion);
+    DataContainer container(fileVersion);
 
     if (IsEqualOrLess(fileVersion, FILE_VERSION_1_2_0)) {
-      FetchData_120(filePath_, std::move(dataContainer));
+      FetchData_120(filePath_, std::move(container));
     }
   }
 
@@ -84,11 +84,11 @@ public:
     return fileSize;
   }
 
-  const DataContainer2& DataContainer(const fs::path& filePath_) const {
+  const DataContainer& GetDataContainer(const fs::path& filePath_) const {
     return m_datacontainers.at(filePath_);
   }
 
-  DataContainer2& DataContainer(const fs::path& filePath_) {
+  DataContainer& GetDataContainer(const fs::path& filePath_) {
     return m_datacontainers.at(filePath_);
   }
 
@@ -128,7 +128,7 @@ private:
     return std::string(fileVersion);
   }
 
-  void FetchData_120(const fs::path& filePath_, DataContainer2&& dataContainer)
+  void FetchData_120(const fs::path& filePath_, DataContainer&& dataContainer)
   {
     hsize_t groupQty{};
     char groupName[MAX_NAME_LENGTH];
@@ -142,8 +142,8 @@ private:
         {
           std::string name(groupName);
           std::wstring configName(name.begin(), name.end());
-          AscanDataSource2 ascanSource(filePath_, groupIdx, configName); //[TODO[EAB] Utiliser un id provenant de la config.]
-          TAscanDataPtr ascanData = std::make_unique<AscanData2>(ascanSource);
+          AscanDataSource ascanSource(filePath_, groupIdx, configName); //[TODO[EAB] Utiliser un id provenant de la config.]
+          TAscanDataPtr ascanData = std::make_unique<AscanData>(ascanSource);
           
           hid_t fileId = m_h5FileMap.at(filePath_);
           FetchAscanData(fileId, name, ascanData);
@@ -162,12 +162,12 @@ private:
     std::stringstream dataLocation;
     dataLocation << location_ << ASCAN_DATASET;
     hid_t dsetId = H5Dopen(fileId_, dataLocation.str().c_str(), H5P_DEFAULT);
-    ascanData_->Datasets().Add(std::make_unique<AscanDataset2>(dsetId, location_));
+    ascanData_->Datasets().Add(std::make_unique<AscanDataset>(dsetId, location_));
 
     std::stringstream statusLocation;
     statusLocation << location_ << ASCAN_STATUS_DATASET;
     dsetId = H5Dopen(fileId_, statusLocation.str().c_str(), H5P_DEFAULT);
-    ascanData_->Datasets().Add(std::make_unique<AscanStatusDataset2>(dsetId, location_));
+    ascanData_->Datasets().Add(std::make_unique<AscanStatusDataset>(dsetId, location_));
   }
 
   void FetchAscanBeamDatasets(hid_t fileId_, const std::string& location_, hsize_t beamQty_, TAscanDataPtr& ascanData_) const
@@ -184,12 +184,12 @@ private:
         std::stringstream dataLocation;
         dataLocation << beamLocation.str() << ASCAN_DATASET;
         hid_t dsetId = H5Dopen(fileId_, dataLocation.str().c_str(), H5P_DEFAULT);
-        ascanData_->Datasets().Add(std::make_unique<AscanBeamDataset2>(dsetId, location_, beamIdx));
+        ascanData_->Datasets().Add(std::make_unique<AscanBeamDataset>(dsetId, location_, beamIdx));
 
         std::stringstream statusLocation;
         statusLocation << beamLocation.str() << ASCAN_STATUS_DATASET;
         dsetId = H5Dopen(fileId_, statusLocation.str().c_str(), H5P_DEFAULT);
-        ascanData_->Datasets().Add(std::make_unique<AscanStatusBeamDataset2>(dsetId, location_, beamIdx));
+        ascanData_->Datasets().Add(std::make_unique<AscanStatusBeamDataset>(dsetId, location_, beamIdx));
       }
     }
   }

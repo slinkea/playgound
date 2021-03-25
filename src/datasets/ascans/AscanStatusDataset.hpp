@@ -1,29 +1,24 @@
 #pragma once
-#include "datasets/Dataset2.hpp"
+#include "datasets/Dataset.hpp"
 
 
-class AscanDataset2 : public Dataset2
+class AscanStatusDataset : public Dataset
 {
 public:
-  AscanDataset2(hid_t Id_, const std::string& location_)
-    : Dataset2(Id_, location_)
+  AscanStatusDataset(hid_t Id_, const std::string& location_)
+    : Dataset(Id_, location_)
   {
     m_offset = new hsize_t[m_dimQty]{};
     m_countSel = new hsize_t[m_dimQty]{};
 
-    m_pointQty[0] = m_dataDims.Z;
     m_singleId = H5Screate_simple(1, m_pointQty, nullptr);
   }
 
-  AscanDataset2(const AscanDataset2&) = default;
-  virtual ~AscanDataset2() = default;
+  AscanStatusDataset(const AscanStatusDataset&) = default;
+  virtual ~AscanStatusDataset() = default;
 
-  AscanDataset2() = delete;
-  AscanDataset2& operator=(const AscanDataset2&) = delete;
-
-  const AscanAttributes& Attributes() const {
-    return m_attributes;
-  }
+  AscanStatusDataset() = delete;
+  AscanStatusDataset& operator=(const AscanStatusDataset&) = delete;
 
   void SelectSingle(size_t x_, size_t y_) const
   {
@@ -40,6 +35,5 @@ public:
 
 private:
   hid_t m_singleId{};
-  hsize_t m_pointQty[1]{};
-  AscanAttributes m_attributes;
+  hsize_t m_pointQty[1]{1};
 };

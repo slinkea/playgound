@@ -5,10 +5,10 @@
 #include "DatasetProperties.hpp"
 
 
-class Dataset2
+class Dataset
 {
 public:
-  Dataset2(hid_t Id_, const std::string& location_)
+  Dataset(hid_t Id_, const std::string& location_)
     : m_dsetId(Id_)
     , m_location(location_)
   {
@@ -19,11 +19,11 @@ public:
     FetchProperties();
   }
 
-  Dataset2() = delete;
-  Dataset2(const Dataset2&) = delete;
-  Dataset2& operator=(const Dataset2&) = delete;
+  Dataset() = delete;
+  Dataset(const Dataset&) = delete;
+  Dataset& operator=(const Dataset&) = delete;
 
-  virtual ~Dataset2()
+  virtual ~Dataset()
   {
     delete[] m_offset;
     delete[] m_countSel;

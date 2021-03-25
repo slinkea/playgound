@@ -5,21 +5,21 @@
 
 namespace fs = std::filesystem;
 
-class DataSource2
+class DataSource
 {
 public:
-  DataSource2(const fs::path& filePath_, size_t configId_, const std::wstring& configName_)
+  DataSource(const fs::path& filePath_, size_t configId_, const std::wstring& configName_)
     : m_filePath(filePath_)
     , m_configId(configId_)
     , m_configName(configName_)
   {
   }
 
-  DataSource2(const DataSource2&) = default;
-  virtual ~DataSource2() = default;
+  DataSource(const DataSource&) = default;
+  virtual ~DataSource() = default;
 
-  DataSource2() = delete;
-  DataSource2& operator=(const DataSource2&) = delete;
+  DataSource() = delete;
+  DataSource& operator=(const DataSource&) = delete;
 
   virtual const fs::path& FilePath() const = 0;
 
