@@ -9,7 +9,9 @@
 #include "datasets/DataContainer.hpp"
 #include "datasets/ascans/AscanData.hpp"
 
-
+#include "datasets/DataContainer2.hpp"
+#include "datasets/ascans/AscanData2.hpp"
+#include "datasets/ascans/AscanDataSource2.hpp"
 
 namespace fs = std::filesystem;
 
@@ -50,7 +52,25 @@ struct VersionNumber
 class AcquiredData
 {
 public:
-  AcquiredData() = default;
+  AcquiredData()
+  {
+    AscanDataSource2 ads2(fs::path(), 0);
+    size_t id = ads2.Id();
+    AscanData2 ad2(ads2);
+    const auto& src2 = ad2.Source();
+
+    DataContainer2 dc2;
+    dc2.Add(std::make_unique<AscanData2>(ads2));
+    const auto& item = dc2.Items()[0];
+    const auto& src22 = item->Source();
+
+    auto ad22 = dynamic_cast<AscanData2*>(item.get());
+    auto src222 = ad22->Source();
+
+    int x{};
+    x++;
+  }
+
   ~AcquiredData() = default;
 
   void Open(const fs::path& filePath_)
