@@ -23,7 +23,6 @@
 constexpr char FILENAME_1[] = "D:\\NDT Files\\4-Configs.h5";
 constexpr char FILENAME_2[] = "D:\\NDT Files\\ThinBlade.h5";
 
-void ReadDatasets(const IAscanDatasetVector& ascanDatasets_);
 
 struct us_listen_socket_t* global_listen_socket;
 
@@ -31,7 +30,7 @@ int main(int argc, char* argv[])
 {
   try
   {
-    FileStorage fs;
+    //FileStorage fs;
     //fs.ReadBig();
     //fs.CompressFile();
 
@@ -76,24 +75,6 @@ int main(int argc, char* argv[])
       }
     }
 
-
-    /*auto ascanData1 = fileData1.AscanData();
-    auto ascanConfigData = ascanData1.ConfigData(0);
-    auto src = ascanConfigData->Source();
-    size_t configId = src->Id();
-    std::wstring name = src->Name();
-
-    ReadDatasets(ascanConfigData->Datasets());
-
-    auto ascanData2 = fileData2.AscanData();
-    ascanConfigData = ascanData2.ConfigData(1);
-    src = ascanConfigData->Source();
-    configId = src->Id();
-    name = src->Name();
-
-    ReadDatasets(ascanConfigData->Datasets());*/
-
-
     acquiredData.Close(FILENAME_1);
     acquiredData.Close(FILENAME_2);
 
@@ -120,46 +101,6 @@ int main(int argc, char* argv[])
   }
 
   return 0;
-}
-
-void ReadDatasets(const IAscanDatasetVector& ascanDatasets_)
-{
-  //for (const auto& ascanDataset : ascanDatasets_)
-  //{
-  //  const auto& dims = ascanDataset->Dimensions();
-  //  const auto& props = ascanDataset->Properties();
-
-  //  if (auto ascanBeam = std::dynamic_pointer_cast<const IAscanBeamDataset>(ascanDataset))
-  //  {
-  //    size_t beamIdx = ascanBeam->BeamIndex();
-
-  //    if (ascanBeam->IsData())
-  //    {
-  //      ascanBeam = nullptr;
-  //    }
-  //    else if (ascanBeam->IsStatus())
-  //    {
-  //      ascanBeam = nullptr;
-  //    }
-  //  }
-  //  else if (auto ascanMergedBeam = std::dynamic_pointer_cast<const IAscanMergedBeamDataset>(ascanDataset))
-  //  {
-  //    if (ascanMergedBeam->IsData())
-  //    {
-  //      //DataDimensions dims{ 1, 1, 1 };
-  //      ascanMergedBeam->SelectSingle(0, 0);
-
-  //      std::vector<int16_t> singleAscan(10, 0);
-  //      ascanMergedBeam->Read(singleAscan.data());
-
-  //      ascanMergedBeam = nullptr;
-  //    }
-  //    else if (ascanMergedBeam->IsStatus())
-  //    {
-  //      ascanMergedBeam = nullptr;
-  //    }
-  //  }
-  //}
 }
 
 Playground::Playground(CycleDataDescriptor&& cdd) noexcept
