@@ -21,12 +21,20 @@ public:
   DataSource() = delete;
   DataSource& operator=(const DataSource&) = delete;
 
-  virtual const fs::path& FilePath() const = 0;
+  const fs::path& FilePath() const {
+    return m_filePath;
+  }
 
-  virtual size_t Id() const = 0;
+  const std::wstring& ConfigName() const {
+    return m_configName;
+  }
+
+  size_t ConfigId() const {
+    return m_configId;
+  }
 
 protected:
-  const fs::path m_filePath;
   const size_t m_configId;
+  const fs::path m_filePath;
   const std::wstring m_configName;
 };

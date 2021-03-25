@@ -15,15 +15,4 @@ public:
 
   AscanDataSource() = delete;
   AscanDataSource& operator=(const AscanDataSource&) = delete;
-
-  size_t Id() const override {
-    return m_configId;
-  }
-
-  const fs::path& FilePath() const override {
-    return m_filePath;
-  }
-
-private:
-  
 };
