@@ -8,8 +8,11 @@ public:
   AscanDataset(hid_t Id_, const std::string& location_)
     : Dataset(Id_, location_)
   {
-    m_offset = new hsize_t[m_dimQty]{};
-    m_countSel = new hsize_t[m_dimQty]{};
+    m_offset = CreateDimensionArray(m_dimQty);
+    m_count = CreateDimensionArray(m_dimQty);
+    m_count[0] = 1;
+    m_count[1] = 1;
+    m_count[2] = m_dataDims.Z;
 
     m_pointQty[0] = m_dataDims.Z;
     m_singleId = H5Screate_simple(1, m_pointQty, nullptr);
@@ -30,7 +33,7 @@ public:
     m_offset[0] = x_;
     m_offset[1] = y_;
 
-    H5_RESULT_CHECK(H5Sselect_hyperslab(m_dspaceId, H5S_SELECT_SET, m_offset, nullptr, m_countSel, nullptr));
+    H5_RESULT_CHECK(H5Sselect_hyperslab(m_dspaceId, H5S_SELECT_SET, m_offset, nullptr, m_count, nullptr));
   };
 
   void Read(void* dataOut_) const
@@ -41,5 +44,6 @@ public:
 private:
   hid_t m_singleId{};
   hsize_t m_pointQty[1]{};
+  hsize_t m_singleCount[1]{};
   AscanAttributes m_attributes;
 };

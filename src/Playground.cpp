@@ -61,16 +61,14 @@ int main(int argc, char* argv[])
       if (dataset1)
       {
         const auto& loc = dataset1->Location();
-
         const auto& dims = dataset1->Dimensions();
-        size_t x = dims.X;
 
         const auto& attr = dataset1->Attributes();
         const auto& props = dataset1->Properties();
 
         dataset1->SelectSingle(0, 0);
 
-        std::vector<int16_t> singleAscan(10, 0);
+        std::vector<int8_t> singleAscan(dims.Z, 0);
         dataset1->Read(singleAscan.data());
       }
     }

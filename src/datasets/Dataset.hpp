@@ -26,7 +26,7 @@ public:
   virtual ~Dataset()
   {
     delete[] m_offset;
-    delete[] m_countSel;
+    delete[] m_count;
     H5Dclose(m_dspaceId);
     H5Dclose(m_dsetId);
   }
@@ -44,16 +44,20 @@ public:
   };
 
 protected:
+  hsize_t* CreateDimensionArray(size_t dimQty_) {
+    return new hsize_t[dimQty_]{};
+  }
+
   int m_dimQty{};
   hid_t m_dsetId{};
   hid_t m_dspaceId{};
   hsize_t* m_offset{};
-  hsize_t* m_countSel{};
+  hsize_t* m_count{};
   std::string m_location;
   DataDimensions m_dataDims;
 
 private:
-  const DataDimensions CreateDataDimension(int dimQty_, const hsize_t* dsetDims_)
+  DataDimensions CreateDataDimension(int dimQty_, const hsize_t* dsetDims_)
   {
     DataDimensions dims;
 
