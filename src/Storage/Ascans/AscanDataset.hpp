@@ -1,6 +1,6 @@
 #pragma once
-#include "datasets/Dataset.hpp"
-#include "datasets/DatasetDefinition.h"
+#include "Storage/Dataset.hpp"
+#include "Storage/DatasetDefinition.h"
 
 
 class AscanDataset : public Dataset

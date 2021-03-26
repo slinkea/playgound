@@ -4,8 +4,8 @@
 #include <filesystem>
 #include "IData.h"
 #include "Container.hpp"
-#include "ascans/AscanData.hpp"
-#include "cscans/CscanData.hpp"
+#include "Ascans/AscanData.hpp"
+#include "Cscans/CscanData.hpp"
 
 
 class DataContainer : public ONDTLib::Container<IData>

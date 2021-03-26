@@ -14,7 +14,7 @@
 #pragma warning(pop)
 
 #include "Playground.h"
-#include "AcquiredData.hpp"
+#include "Storage/AcquiredData.hpp"
 #include "FileStorage.hpp"
 #include "CudaKernels.cuh"
 

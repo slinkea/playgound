@@ -32,13 +32,13 @@ file(GLOB
 )
 
 file(GLOB
-  _Datasets
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/datasets/*.cpp 
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/datasets/*.h 
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/datasets/*.hpp
+  _Storage
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/Storage/*.cpp 
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/Storage/*.h 
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/Storage/*.hpp
 )
 
-add_executable(Playground ${_Src} ${_Datasets})
+add_executable(Playground ${_Src} ${_Storage})
 
 #set_target_properties(Playground PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 set_target_properties(Playground PROPERTIES LINK_FLAGS "/ignore:4099")

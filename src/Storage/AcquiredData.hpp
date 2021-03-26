@@ -7,9 +7,9 @@
 #include <filesystem>
 #include <hdf5/hdf5.h>
 
-#include "datasets/DataContainer.hpp"
-#include "datasets/ascans/AscanData.hpp"
-#include "datasets/cscans/CscanData.hpp"
+#include "DataContainer.hpp"
+#include "Ascans/AscanData.hpp"
+#include "Cscans/CscanData.hpp"
 
 
 namespace fs = std::filesystem;
