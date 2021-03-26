@@ -1,10 +1,17 @@
 #pragma once
+#include <map>
+#include <string>
+#include <exception>
 
 
+// Version 1.2.0
 constexpr char GROUP_DATA[] = "/Data";
 constexpr char ASCAN_DATASET[] = "Ascan Data";
 constexpr char ASCAN_STATUS_DATASET[] = "Ascan Status";
+constexpr char CSCAN_GROUP[] = "Cscan";
+//constexpr char CSCAN_DATASET[] = "Gate ";
 constexpr char BEAM_PREFIX[] = "Beam";
+
 constexpr size_t MAX_NAME_LENGTH = 512;
 
 #define H5_RESULT_CHECK( ret )                \
@@ -14,10 +21,12 @@ constexpr size_t MAX_NAME_LENGTH = 512;
 
 enum class DataType { CHAR, UCHAR, SHORT, USHORT, INT, UINT, FLOAT, DOUBLE };
 
-struct CscanData1
+using TGateIdentifiers = std::map<size_t, std::wstring>;
+
+struct CscanDataMember1
 {
-  CscanData1() = default;
-  CscanData1(float position, int amplitude, bool isSyncedOnSource, bool isSaturated, bool isDetected)
+  CscanDataMember1() = default;
+  CscanDataMember1(float position, int amplitude, bool isSyncedOnSource, bool isSaturated, bool isDetected)
     : Position(position)
     , Amplitude(amplitude)
     , IsSyncedOnSource(isSyncedOnSource)
@@ -35,11 +44,11 @@ struct CscanData1
   bool HasData{};
 };
 
-struct CscanData2 : CscanData1
+struct CscanDataMember2 : CscanDataMember1
 {
-  CscanData2() = default;
-  CscanData2(float position, float crossingTime, float amplitudeTime, int amplitude, bool isSyncedOnSource, bool isSaturated, bool isDetected)
-    : CscanData1(position, amplitude, isSyncedOnSource, isSaturated, isDetected)
+  CscanDataMember2() = default;
+  CscanDataMember2(float position, float crossingTime, float amplitudeTime, int amplitude, bool isSyncedOnSource, bool isSaturated, bool isDetected)
+    : CscanDataMember1(position, amplitude, isSyncedOnSource, isSaturated, isDetected)
     , CrossingTime(crossingTime)
     , AmplitudeTime(amplitudeTime)
   {
@@ -49,7 +58,7 @@ struct CscanData2 : CscanData1
   float AmplitudeTime{};
 };
 
-using CscanData = CscanData2;
+using CscanDataMember = CscanDataMember2;
 
 struct DataAxis
 {

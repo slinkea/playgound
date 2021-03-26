@@ -1,44 +1,40 @@
 #pragma once
-#include <string>
-#include "CscanDataspace.hpp"
+#include "datasets/Dataset.hpp"
+#include "datasets/DatasetDefinition.h"
 
 
-class CscanDataset
+class CscanDataset : public Dataset
 {
-protected:
-  CscanDataset(hid_t Id, const std::string& location_, const std::wstring& sourceName_)
-    : m_dataId(Id)
-    , m_location(location_)
-    , m_sourceName(sourceName_)
+public:
+  CscanDataset(hid_t dsetId_, const std::string& location_)
+    : Dataset(dsetId_, location_)
   {
   }
 
-  CscanDataset() = delete;
-  CscanDataset(const CscanDataset&) = delete;
-  CscanDataset& operator=(const CscanDataset&) = delete;
-
+  CscanDataset(const CscanDataset&) = default;
   virtual ~CscanDataset() = default;
 
-  const std::string& Location() const {
-    return m_location;
-  };
+  CscanDataset() = delete;
+  CscanDataset& operator=(const CscanDataset&) = delete;
 
   const CscanAttributes& Attributes() const {
     return m_attributes;
   }
 
-  const CscanDataspace& Dataspace() const {
-    return m_dataspace;
+  void SelectAll() const
+  {
+    //m_offset[0] = x_;
+    //m_offset[1] = y_;
+
+    H5_RESULT_CHECK(H5Sselect_hyperslab(m_dspaceId, H5S_SELECT_SET, m_offset, nullptr, m_count, nullptr));
   };
 
-  void Fetch()
+  void Read(void* dataOut_) const
   {
-
+    H5_RESULT_CHECK(H5Dread(m_dsetId, m_dataType, m_singleId, m_dspaceId, H5P_DEFAULT, dataOut_));
   }
 
-  hid_t m_dataId{};
-  CscanDataspace m_dataspace;
+private:
+  hid_t m_singleId{};
   CscanAttributes m_attributes;
-  const std::wstring m_sourceName;
-  const std::string m_location;
 };
