@@ -44,13 +44,6 @@ public:
     return m_fileVersion;
   }
 
-  TIDataPtrs All(const std::wstring& configName_) const
-  {
-    return TSuper::Select([&configName_](const TItemPtr& item_) {
-        return item_->Source().ConfigName() == configName_;
-    });
-  }
-
   const AscanData* Ascan(size_t configId_) const
   {
     return dynamic_cast<const AscanData*>(TSuper::Find([&configId_](const TItemPtr& item_) {

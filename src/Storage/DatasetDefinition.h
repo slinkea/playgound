@@ -97,25 +97,25 @@ struct DataDimensions
 {
   DataDimensions() = default;
 
-  DataDimensions(size_t x_)
-    : X(x_)
+  DataDimensions(size_t sizeX_)
+    : SizeX(sizeX_)
   {
   }
 
-  DataDimensions(size_t x_, size_t y_)
-    : X(x_)
-    , Y(y_)
+  DataDimensions(size_t sizeX_, size_t sizeY_)
+    : SizeX(sizeX_)
+    , SizeY(sizeY_)
   {
   }
 
-  DataDimensions(size_t x_, size_t y_, size_t z_)
-    : X(x_)
-    , Y(y_)
-    , Z(z_)
+  DataDimensions(size_t sizeX_, size_t sizeY_, size_t sizeZ_)
+    : SizeX(sizeX_)
+    , SizeY(sizeY_)
+    , SizeZ(sizeZ_)
   {
   }
 
-  size_t X{};
-  size_t Y{};
-  size_t Z{};
+  size_t SizeX{};
+  size_t SizeY{};
+  size_t SizeZ{};
 };

@@ -23,9 +23,9 @@ public:
     m_count = DatasetUtils::CreateArray(m_dimQty);
     m_count[0] = 1;
     m_count[1] = 1;
-    m_count[2] = m_dataDims.Z;
+    m_count[2] = m_dataDims.SizeZ;
 
-    m_pointQty[0] = m_dataDims.Z;
+    m_pointQty[0] = m_dataDims.SizeZ;
     m_singleId = H5Screate_simple(1, m_pointQty, nullptr);
 
     m_sampleSize = H5Tget_size(m_dataType);
@@ -54,6 +54,11 @@ public:
     return m_properties;
   };
 
+  void Read(void* dataOut_) const override
+  {
+    H5_RESULT_CHECK(H5Dread(m_dataDsetId, m_dataType, m_singleId, m_dataDspaceId, H5P_DEFAULT, dataOut_));
+  }
+
   const AscanAttributes& Attributes() const {
     return m_attributes;
   }
@@ -73,11 +78,6 @@ public:
 
     H5_RESULT_CHECK(H5Sselect_hyperslab(m_dataDspaceId, H5S_SELECT_SET, m_offset, nullptr, m_count, nullptr));
   };
-
-  void Read(void* dataOut_) const
-  {
-    H5_RESULT_CHECK(H5Dread(m_dataDsetId, m_dataType, m_singleId, m_dataDspaceId, H5P_DEFAULT, dataOut_));
-  }
 
 private:
   DataType GetDataType() const
