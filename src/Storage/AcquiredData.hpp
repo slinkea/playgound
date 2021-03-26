@@ -70,7 +70,7 @@ public:
 
   void Close(const fs::path& filePath_)
   {
-    m_datacontainers.erase(filePath_);
+    m_dataContainers.erase(filePath_);
     H5_RESULT_CHECK(H5Fclose(m_h5FileMap[filePath_]));
   }
 
@@ -86,11 +86,11 @@ public:
   }
 
   const DataContainer& GetDataContainer(const fs::path& filePath_) const {
-    return m_datacontainers.at(filePath_);
+    return m_dataContainers.at(filePath_);
   }
 
   DataContainer& GetDataContainer(const fs::path& filePath_) {
-    return m_datacontainers.at(filePath_);
+    return m_dataContainers.at(filePath_);
   }
 
 private:
@@ -157,7 +157,7 @@ private:
         }
       }
 
-      m_datacontainers.emplace(std::make_pair(filePath_, std::move(dataContainer)));
+      m_dataContainers.emplace(std::make_pair(filePath_, std::move(dataContainer)));
     }
 
     H5Gclose(dataGroupId);
@@ -168,12 +168,13 @@ private:
     std::stringstream dataLocation;
     dataLocation << location_ << ASCAN_DATASET;
     hid_t dsetId = H5Dopen(fileId_, dataLocation.str().c_str(), H5P_DEFAULT);
-    ascanData_->Datasets().Add(std::make_unique<AscanDataset>(dsetId, location_));
 
     std::stringstream statusLocation;
     statusLocation << location_ << ASCAN_STATUS_DATASET;
-    dsetId = H5Dopen(fileId_, statusLocation.str().c_str(), H5P_DEFAULT);
-    ascanData_->Datasets().Add(std::make_unique<AscanStatusDataset>(dsetId, location_));
+    hid_t statusDsetId = H5Dopen(fileId_, statusLocation.str().c_str(), H5P_DEFAULT);
+
+    const TDatasetKeys dsetKeys = { std::make_pair(dsetId, dataLocation.str()),  std::make_pair(statusDsetId, statusLocation.str()) };
+    ascanData_->Datasets().Add(std::make_unique<AscanDataset>(dsetKeys));
   }
 
   void FetchAscanBeamDatasets(hid_t fileId_, const std::string& location_, hsize_t beamQty_, TAscanDataPtr& ascanData_) const
@@ -190,12 +191,13 @@ private:
         std::stringstream dataLocation;
         dataLocation << beamLocation.str() << ASCAN_DATASET;
         hid_t dsetId = H5Dopen(fileId_, dataLocation.str().c_str(), H5P_DEFAULT);
-        ascanData_->Datasets().Add(std::make_unique<AscanBeamDataset>(dsetId, location_, beamIdx));
 
         std::stringstream statusLocation;
         statusLocation << beamLocation.str() << ASCAN_STATUS_DATASET;
-        dsetId = H5Dopen(fileId_, statusLocation.str().c_str(), H5P_DEFAULT);
-        ascanData_->Datasets().Add(std::make_unique<AscanStatusBeamDataset>(dsetId, location_, beamIdx));
+        hid_t statusDsetId = H5Dopen(fileId_, statusLocation.str().c_str(), H5P_DEFAULT);
+
+        const TDatasetKeys dsetKeys = { std::make_pair(dsetId, dataLocation.str()),  std::make_pair(statusDsetId, statusLocation.str()) };
+        ascanData_->Datasets().Add(std::make_unique<AscanBeamDataset>(dsetKeys, beamIdx));
       }
     }
   }
@@ -316,7 +318,7 @@ private:
     }    
   }
 
-  TDataContainerMap m_datacontainers;
+  TDataContainerMap m_dataContainers;
 
   using TH5FileMap = std::map<const fs::path, const hid_t>;
   TH5FileMap m_h5FileMap;

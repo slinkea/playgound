@@ -4,8 +4,6 @@
 #include "AscanDataSource.hpp"
 #include "AscanDataset.hpp"
 #include "AscanBeamDataset.hpp"
-#include "AscanStatusDataset.hpp"
-#include "AscanStatusBeamDataset.hpp"
 
 
 class AscanData : public IData
@@ -59,7 +57,7 @@ public:
   bool IsDataMerged() const
   {
     return !std::all_of(m_datasets.Items().begin(), m_datasets.Items().end(), [](const auto& item) {
-      return dynamic_cast<const AscanBeamDataset*>(item.get()) || dynamic_cast<const AscanStatusBeamDataset*>(item.get());
+      return dynamic_cast<const AscanBeamDataset*>(item.get());
       });
   }
 

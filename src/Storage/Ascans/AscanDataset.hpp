@@ -1,16 +1,26 @@
 #pragma once
-#include "Storage/Dataset.hpp"
+#include "Storage/IDataset.h"
+#include "Storage/DatasetUtil.hpp"
 #include "Storage/DatasetDefinition.h"
+#include "Storage/DatasetProperties.hpp"
 
 
-class AscanDataset : public Dataset
+class AscanDataset : public IDataset
 {
 public:
-  AscanDataset(hid_t dsetId_, const std::string& location_)
-    : Dataset(dsetId_, location_)
+  AscanDataset(const TDatasetKeys& dsetKeys_)
+    : m_datasetKeys(dsetKeys_)
   {
-    m_offset = CreateArray(m_dimQty);
-    m_count = CreateArray(m_dimQty);
+    m_dataDsetId = m_datasetKeys[0].first;
+    m_dataType = H5Dget_type(m_dataDsetId);
+    m_dataDspaceId = H5Dget_space(m_dataDsetId);
+    m_dimQty = H5Sget_simple_extent_ndims(m_dataDspaceId);
+
+    m_dataDims = DatasetUtil::FetchDataDimensions(m_dataDspaceId, m_dimQty);
+    m_properties = DatasetUtil::FetchProperties(m_dataDsetId, m_dimQty);
+
+    m_offset = DatasetUtil::CreateArray(m_dimQty);
+    m_count = DatasetUtil::CreateArray(m_dimQty);
     m_count[0] = 1;
     m_count[1] = 1;
     m_count[2] = m_dataDims.Z;
@@ -23,10 +33,26 @@ public:
   }
 
   AscanDataset(const AscanDataset&) = default;
-  virtual ~AscanDataset() = default;
+  virtual ~AscanDataset()
+  {
+    delete[] m_offset;
+    delete[] m_count;
+
+    for (const auto& datasetKey : m_datasetKeys) {
+      H5Dclose(datasetKey.first);
+    }
+  }
 
   AscanDataset() = delete;
   AscanDataset& operator=(const AscanDataset&) = delete;
+
+  const DataDimensions& Dimensions() const override {
+    return m_dataDims;
+  }
+
+  const DatasetProperties& Properties() const override {
+    return m_properties;
+  };
 
   const AscanAttributes& Attributes() const {
     return m_attributes;
@@ -45,18 +71,66 @@ public:
     m_offset[0] = x_;
     m_offset[1] = y_;
 
-    H5_RESULT_CHECK(H5Sselect_hyperslab(m_dspaceId, H5S_SELECT_SET, m_offset, nullptr, m_count, nullptr));
+    H5_RESULT_CHECK(H5Sselect_hyperslab(m_dataDspaceId, H5S_SELECT_SET, m_offset, nullptr, m_count, nullptr));
   };
 
   void Read(void* dataOut_) const
   {
-    H5_RESULT_CHECK(H5Dread(m_dsetId, m_dataType, m_singleId, m_dspaceId, H5P_DEFAULT, dataOut_));
+    H5_RESULT_CHECK(H5Dread(m_dataDsetId, m_dataType, m_singleId, m_dataDspaceId, H5P_DEFAULT, dataOut_));
   }
 
 private:
+  DataType GetDataType() const
+  {
+    size_t size = H5Tget_size(m_dataType);
+
+    switch (H5Tget_class(m_dataType)) {
+    case H5T_INTEGER:
+      switch (H5Tget_sign(m_dataType)) {
+      case H5T_SGN_NONE:
+        switch (size) {
+        case 1:
+          return DataType::UCHAR;
+        case 2:
+          return DataType::USHORT;
+        case 4:
+          return DataType::UINT;
+        }
+      case H5T_SGN_2:
+        switch (size) {
+        case 1:
+          return DataType::CHAR;
+        case 2:
+          return DataType::SHORT;
+        case 4:
+          return DataType::INT;
+        }
+      }
+    case H5T_FLOAT:
+      switch (size) {
+      case 4:
+        return DataType::FLOAT;
+      case 8:
+        return DataType::DOUBLE;
+      }
+    }
+
+    throw std::runtime_error("Unsupported data type.");
+  }
+
+  int m_dimQty{};
+  hsize_t* m_offset{};
+  hsize_t* m_count{};
   hid_t m_singleId{};
+  hid_t m_dataType{};
+  hid_t m_dataDsetId{};
+  hid_t m_dataDspaceId{};
   DataType m_sampleType;
   size_t m_sampleSize{};
   hsize_t m_pointQty[1]{};
+  DataDimensions m_dataDims;
+  DataDimensions m_chunkDims;
+  TDatasetKeys m_datasetKeys;
+  DatasetProperties m_properties;
   AscanAttributes m_attributes;
 };

@@ -28,7 +28,6 @@ struct us_listen_socket_t* global_listen_socket;
 
 void ReadAscanData(const AscanDataset* dset_)
 {
-  const std::string& loc = dset_->Location();
   const AscanAttributes& attributes = dset_->Attributes();
   const DatasetProperties& props = dset_->Properties();
   const DataDimensions& dims = dset_->Dimensions();
@@ -64,14 +63,10 @@ void ReadAscanData(const AscanDataset* dset_)
   }
 }
 
-void ReadAscanStatus(const AscanStatusDataset* dset_)
+void ReadCscanData(const CscanDataset* dset_)
 {
-  if (const auto ascanStatusBeamDset = dynamic_cast<const AscanStatusBeamDataset*>(dset_))
-  {
-    size_t idx = ascanStatusBeamDset->BeamIndex();
-    idx = 0;
-  }
 }
+
 
 int main(int argc, char* argv[])
 {
@@ -110,12 +105,12 @@ int main(int argc, char* argv[])
       
       if (cscanData->IsDataMerged()) 
       {
-        auto cscanDset = datasets.Find(1);
+        auto cscanDset = datasets.Dataset(1);
         cscanDset = nullptr;
       }
       else
       {
-        auto cscanBeamDset = datasets.Find(0, 3);
+        auto cscanBeamDset = datasets.Dataset(0, 3);
         cscanBeamDset = nullptr;
       }
     }
@@ -128,19 +123,14 @@ int main(int argc, char* argv[])
 
       if (ascanData->IsDataMerged())
       {
-        auto data = datasets.Data();
-        data = nullptr;
+        auto dataset = datasets.Dataset();
+        dataset = nullptr;
 
-        auto status = datasets.Status();
-        status = nullptr;
       }
       else
       {
-        auto data = datasets.Data(3);
-        data = nullptr;
-
-        auto status = datasets.Status(4);
-        status = nullptr;
+        auto dataset = datasets.Dataset(3);
+        dataset = nullptr;
       }
     }
 
@@ -165,11 +155,11 @@ int main(int argc, char* argv[])
       const auto& datasets = dataItem->Datasets();
       for (const auto& ds : datasets.Items())
       {
-        if (const auto dataDset = dynamic_cast<const AscanDataset*>(ds.get())) {
-          ReadAscanData(dataDset);
+        if (const auto ascanDset = dynamic_cast<const AscanDataset*>(ds.get())) {
+          ReadAscanData(ascanDset);
         }
-        else if (const auto statusDset = dynamic_cast<const AscanStatusDataset*>(ds.get())) {
-          ReadAscanStatus(statusDset);
+        else if (const auto cscanDset = dynamic_cast<const CscanDataset*>(ds.get())) {
+          ReadCscanData(cscanDset);
         }
       }
     }

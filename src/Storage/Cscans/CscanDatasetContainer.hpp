@@ -4,9 +4,9 @@
 #include "CscanBeamDataset.hpp"
 
 
-class CscanDatasetContainer : public ONDTLib::Container<Dataset>
+class CscanDatasetContainer : public ONDTLib::Container<IDataset>
 {
-  using TSuper = ONDTLib::Container<Dataset>;
+  using TSuper = ONDTLib::Container<IDataset>;
 
 public:
   CscanDatasetContainer() = default;
@@ -16,7 +16,7 @@ public:
   CscanDatasetContainer& operator=(const CscanDatasetContainer&) = delete;
 
   CscanDatasetContainer(CscanDatasetContainer&& other_) noexcept
-    : ONDTLib::Container<Dataset>(std::move(other_))
+    : ONDTLib::Container<IDataset>(std::move(other_))
   {
   }
 
@@ -24,13 +24,13 @@ public:
   {
     if (this != &other_)
     {
-      ONDTLib::Container<Dataset>::operator=(std::move(other_));
+      ONDTLib::Container<IDataset>::operator=(std::move(other_));
     }
 
     return *this;
   }
 
-  CscanDataset* Find(size_t gateId_) const
+  CscanDataset* Dataset(size_t gateId_) const
   {
     return dynamic_cast<CscanDataset*>(TSuper::Find(
       [&gateId_](const TItemPtr& item_)
@@ -47,7 +47,7 @@ public:
     ));
   }
 
-  const CscanBeamDataset* Find(size_t gateId_, size_t beamIdx_) const
+  const CscanBeamDataset* Dataset(size_t gateId_, size_t beamIdx_) const
   {
     return dynamic_cast<const CscanBeamDataset*>(TSuper::Find(
       [&](const TItemPtr& item_)

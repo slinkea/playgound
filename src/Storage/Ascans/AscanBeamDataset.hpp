@@ -1,12 +1,13 @@
 #pragma once
 #include "AscanDataset.hpp"
+#include "Storage/DatasetDefinition.h"
 
 
 class AscanBeamDataset : public AscanDataset
 {
 public:
-  AscanBeamDataset(hid_t Id_, const std::string& location_, size_t beamIdx_)
-    : AscanDataset(Id_, location_)
+  AscanBeamDataset(const TDatasetKeys& dsetKeys_, size_t beamIdx_)
+    : AscanDataset(dsetKeys_)
     , m_beamIdx(beamIdx_)
   {
   }
