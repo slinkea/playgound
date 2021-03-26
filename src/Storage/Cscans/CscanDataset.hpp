@@ -20,15 +20,16 @@ public:
     m_dimQty = H5Sget_simple_extent_ndims(m_dspaceId);
     m_dataDims = DatasetUtils::FetchDataDimensions(m_dspaceId, m_dimQty);
     m_count = DatasetUtils::CreateArray(m_dimQty);
-    m_count[0] = m_dataDims.SizeX;
-    m_count[1] = m_dataDims.SizeY;
+    m_count[0] = m_dataDims.SizeX();
+    m_count[1] = m_dataDims.SizeY();
 
-    m_sampleQty[0] = m_dataDims.SizeX;
-    m_sampleQty[1] = m_dataDims.SizeY;
+    m_sampleQty[0] = m_dataDims.SizeX();
+    m_sampleQty[1] = m_dataDims.SizeY();
     m_selectionId = H5Screate_simple(m_dimQty, m_sampleQty, nullptr);
   }
 
   CscanDataset(const CscanDataset&) = default;
+
   virtual ~CscanDataset()
   {
     delete[] m_count;
@@ -44,7 +45,7 @@ public:
 
   const DatasetProperties& Properties() const override {
     return m_properties;
-  };
+  }
 
   void Read(void* dataOut_) const override
   {

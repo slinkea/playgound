@@ -93,29 +93,52 @@ struct AscanAttributes
   unsigned short AmpSamplingResol{};  
 };
 
-struct DataDimensions
+class DataDimensions
 {
+public:
   DataDimensions() = default;
+  virtual ~DataDimensions() = default;
 
   DataDimensions(size_t sizeX_)
-    : SizeX(sizeX_)
+    : m_sizeX(sizeX_)
+    , m_quantity(1)
   {
   }
 
   DataDimensions(size_t sizeX_, size_t sizeY_)
-    : SizeX(sizeX_)
-    , SizeY(sizeY_)
+    : m_sizeX(sizeX_)
+    , m_sizeY(sizeY_)
+    , m_quantity(2)
   {
   }
 
   DataDimensions(size_t sizeX_, size_t sizeY_, size_t sizeZ_)
-    : SizeX(sizeX_)
-    , SizeY(sizeY_)
-    , SizeZ(sizeZ_)
+    : m_sizeX(sizeX_)
+    , m_sizeY(sizeY_)
+    , m_sizeZ(sizeZ_)
+    , m_quantity(3)
   {
   }
 
-  size_t SizeX{};
-  size_t SizeY{};
-  size_t SizeZ{};
+  size_t Quantity() const {
+    return m_quantity;
+  }
+
+  size_t SizeX() const {
+    return m_sizeX;
+  }
+
+  size_t SizeY() const {
+    return m_sizeY;
+  }
+
+  size_t SizeZ() const {
+    return m_sizeZ;
+  }
+
+private:
+  size_t m_sizeX{};
+  size_t m_sizeY{};
+  size_t m_sizeZ{};
+  size_t m_quantity{};
 };

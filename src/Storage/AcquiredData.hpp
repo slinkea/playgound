@@ -7,46 +7,15 @@
 #include <filesystem>
 #include <hdf5/hdf5.h>
 
+#include "H5Utils.hpp"
+#include "VersionUtils.hpp"
 #include "DataContainer.hpp"
 #include "Ascans/AscanData.hpp"
 #include "Cscans/CscanData.hpp"
 
 
 namespace fs = std::filesystem;
-
-constexpr char FLE_VERSION[] = "File Version";
 constexpr char FILE_VERSION_1_2_0[] = "1.2.0";
-
-
-struct VersionNumber
-{
-  VersionNumber(size_t major_, size_t minor_, size_t rev_)
-    : Major(major_)
-    , Minor(minor_)
-    , Revision(rev_)
-  {
-  }
-
-  bool IsEqualOrLower(size_t major_, size_t minor_, size_t rev_) const
-  {
-    if (Major == 1)
-    {
-      if (major_ <= Major)
-      {
-        if (minor_ <= Minor)
-        {
-
-        }
-      }
-    }
-    
-    return false;
-  }
-
-  size_t Major{};
-  size_t Minor{};
-  size_t Revision{};
-};
 
 class AcquiredData
 {
@@ -60,10 +29,10 @@ public:
     hid_t fileId = H5Fopen(filePath_.string().c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
     m_h5FileMap.emplace(filePath_, fileId);
 
-    const auto fileVersion = GetFileVersion(filePath_);
+    const auto fileVersion = H5Utils::GetFileVersion(fileId);
     DataContainer container(fileVersion);
 
-    if (IsEqualOrLess(fileVersion, FILE_VERSION_1_2_0)) {
+    if (VersionUtils::IsEqualOrLess(fileVersion, FILE_VERSION_1_2_0)) {
       FetchDataVersion120(filePath_, std::move(container));
     }
   }
@@ -72,17 +41,6 @@ public:
   {
     m_dataContainers.erase(filePath_);
     H5_RESULT_CHECK(H5Fclose(m_h5FileMap[filePath_]));
-  }
-
-  static size_t Size(const fs::path& filePath_) 
-  {
-    hsize_t fileSize{};
-    H5_RESULT_CHECK(H5Eset_auto(H5E_DEFAULT, NULL, NULL));
-    hid_t fileId = H5Fopen(filePath_.string().c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
-    H5_RESULT_CHECK(H5Fget_filesize(fileId, &fileSize));
-    H5_RESULT_CHECK(H5Fclose(fileId));
-
-    return fileSize;
   }
 
   const DataContainer& GetDataContainer(const fs::path& filePath_) const {
@@ -94,41 +52,6 @@ public:
   }
 
 private:
-  void Parse(int result[3], const std::string& input_)
-  {
-    std::istringstream parser(input_);
-    parser >> result[0];
-    for (int idx(1); idx < 3; idx++)
-    {
-      parser.get(); //Skip period
-      parser >> result[idx];
-    }
-  }
-
-  bool IsEqualOrLess(const std::string& a_, const std::string& b_)
-  {
-    if (a_ == b_) {
-      return true;
-    }
-
-    int parsedA[3], parsedB[3];
-    Parse(parsedA, a_);
-    Parse(parsedB, b_);
-    return std::lexicographical_compare(parsedB, parsedB + 3, parsedA, parsedA + 3);
-  }
-
-  const std::string GetFileVersion(const fs::path& filePath_) const
-  {
-    char fileVersion[MAX_NAME_LENGTH]{};
-    hid_t fileId = m_h5FileMap.at(filePath_);
-    hid_t attrId = H5Aopen(fileId, FLE_VERSION, H5P_DEFAULT);
-    hid_t attrType = H5Aget_type(attrId);
-    H5_RESULT_CHECK(H5Aread(attrId, attrType, fileVersion));
-    H5Aclose(attrId);
-
-    return std::string(fileVersion);
-  }
-
   void FetchDataVersion120(const fs::path& filePath_, DataContainer&& dataContainer)
   {
     hsize_t groupQty{};
@@ -319,7 +242,6 @@ private:
   }
 
   TDataContainerMap m_dataContainers;
-
   using TH5FileMap = std::map<const fs::path, const hid_t>;
   TH5FileMap m_h5FileMap;
 };

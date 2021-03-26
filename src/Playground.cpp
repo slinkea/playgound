@@ -35,25 +35,25 @@ void ReadAscanData(const AscanDataset* dset_)
   size_t sampleSize = dset_->SampleSize();
 
   dset_->SelectSingle(1, 0);
-  std::vector<unsigned char> singleAscan(dims.SizeZ * sampleSize, 0);
+  std::vector<unsigned char> singleAscan(dims.SizeZ() * sampleSize, 0);
   dset_->Read(singleAscan.data());
 
   std::vector<short> ascanSamples;
   if (sampleType == DataType::CHAR) {
     const char* samples = reinterpret_cast<const char*>(singleAscan.data());
-    ascanSamples.assign(samples, samples + dims.SizeZ);
+    ascanSamples.assign(samples, samples + dims.SizeZ());
   }
   else if (sampleType == DataType::SHORT) {
     const short* samples = reinterpret_cast<const short*>(singleAscan.data());
-    ascanSamples.assign(samples, samples + dims.SizeZ);
+    ascanSamples.assign(samples, samples + dims.SizeZ());
   }
   else if (sampleType == DataType::UCHAR) {
     const unsigned char* samples = reinterpret_cast<const unsigned char*>(singleAscan.data());
-    ascanSamples.assign(samples, samples + dims.SizeZ);
+    ascanSamples.assign(samples, samples + dims.SizeZ());
   }
   else if (sampleType == DataType::USHORT) {
     const unsigned short* samples = reinterpret_cast<const unsigned short*>(singleAscan.data());
-    ascanSamples.assign(samples, samples + dims.SizeZ);
+    ascanSamples.assign(samples, samples + dims.SizeZ());
   }
 
   if (const auto ascanBeamDset = dynamic_cast<const AscanBeamDataset*>(dset_))
@@ -78,8 +78,8 @@ int main(int argc, char* argv[])
 
     AcquiredData acquiredData;
 
-    size_t fileSize1 = AcquiredData::Size(FILENAME_1);
-    size_t fileSize2 = AcquiredData::Size(FILENAME_2);
+    size_t fileSize1 = H5Utils::Size(FILENAME_1);
+    size_t fileSize2 = H5Utils::Size(FILENAME_2);
 
     //acquiredData.Open(FILENAME_1);
     acquiredData.Open(FILENAME_2);
