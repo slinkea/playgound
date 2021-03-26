@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include "Storage/IDataset.h"
-#include "Storage/DatasetUtil.hpp"
+#include "Storage/DatasetUtils.hpp"
 #include "Storage/DatasetDefinition.h"
 #include "Storage/DatasetProperties.hpp"
 
@@ -18,8 +18,8 @@ public:
     m_dataType = H5Dget_type(m_dsetId);
 
     m_dimQty = H5Sget_simple_extent_ndims(m_dspaceId);
-    m_dataDims = DatasetUtil::FetchDataDimensions(m_dspaceId, m_dimQty);
-    m_count = DatasetUtil::CreateArray(m_dimQty);
+    m_dataDims = DatasetUtils::FetchDataDimensions(m_dspaceId, m_dimQty);
+    m_count = DatasetUtils::CreateArray(m_dimQty);
     m_count[0] = m_dataDims.X;
     m_count[1] = m_dataDims.Y;
 

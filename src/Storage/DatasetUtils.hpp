@@ -4,7 +4,7 @@
 #include "DatasetProperties.hpp"
 
 
-class DatasetUtil
+class DatasetUtils
 {
 public:
   static DataDimensions FetchDataDimensions(hid_t m_dspaceId_, int dimQty_)
