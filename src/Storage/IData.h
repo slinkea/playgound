@@ -1,6 +1,8 @@
 #pragma once
+#include "Container.hpp"
 #include "DataSource.hpp"
-#include "DatasetContainer.hpp"
+#include "Dataset.hpp"
+
 
 class IData
 {
@@ -8,6 +10,6 @@ public:
   virtual ~IData() = default;
 
   virtual const DataSource& Source() const = 0;
-  virtual const DatasetContainer& Datasets() const = 0;
-  virtual DatasetContainer& Datasets() = 0;
+  virtual const ONDTLib::Container<Dataset>& Datasets() const = 0;
+  virtual ONDTLib::Container<Dataset>& Datasets() = 0;
 };

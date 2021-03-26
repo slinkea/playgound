@@ -6,8 +6,9 @@
 class CscanDataset : public Dataset
 {
 public:
-  CscanDataset(hid_t dsetId_, const std::string& location_)
+  CscanDataset(hid_t dsetId_, const std::string& location_, const TGateIdentifiers& gateIds_)
     : Dataset(dsetId_, location_)
+    , m_gateIds(gateIds_)
   {
   }
 
@@ -19,6 +20,10 @@ public:
 
   const CscanAttributes& Attributes() const {
     return m_attributes;
+  }
+
+  const TGateIdentifiers& GateIdentifier() const {
+    return m_gateIds;
   }
 
   void SelectAll() const
@@ -37,4 +42,5 @@ public:
 private:
   hid_t m_singleId{};
   CscanAttributes m_attributes;
+  const TGateIdentifiers m_gateIds;
 };

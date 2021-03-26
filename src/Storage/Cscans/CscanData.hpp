@@ -1,6 +1,6 @@
 #pragma once
 #include "Storage/IData.h"
-#include "Storage/DatasetContainer.hpp"
+#include "CscanDatasetContainer.hpp"
 #include "CscanDataSource.hpp"
 #include "CscanDataset.hpp"
 //#include "CscanBeamDataset.hpp"
@@ -14,7 +14,7 @@ public:
   {
   }
 
-  CscanData(const CscanDataSource& dataSource_, DatasetContainer&& datasets_)
+  CscanData(const CscanDataSource& dataSource_, CscanDatasetContainer&& datasets_)
     : m_dataSource(dataSource_)
     , m_datasets(std::move(datasets_))
   {
@@ -46,17 +46,17 @@ public:
     return m_dataSource;
   }
 
-  const DatasetContainer& Datasets() const override {
+  const CscanDatasetContainer& Datasets() const override {
     return m_datasets;
   }
 
-  DatasetContainer& Datasets() override {
+  CscanDatasetContainer& Datasets() override {
     return m_datasets;
   }
 
 private:
   const CscanDataSource m_dataSource;
-  DatasetContainer m_datasets;
+  CscanDatasetContainer m_datasets;
 };
 
 using TCscanDataPtr = std::unique_ptr<CscanData>;

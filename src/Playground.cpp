@@ -95,18 +95,28 @@ int main(int argc, char* argv[])
     const auto& dataContainer2 = acquiredData.GetDataContainer(FILENAME_2);
 
     //auto dataPerConfig = dataContainer2.Select(L"Linear Merged");
-    auto dataPerConfig = dataContainer2.SelectAscan(L"Linear Merged");
+    //auto dataPerConfig = dataContainer2.SelectAscan(L"Linear Merged");
+    auto dataPerConfig = dataContainer2.SelectCscan(L"Linear Merged");
     for (const auto data : dataPerConfig)
     {
       if (auto ascanData = dynamic_cast<const AscanData*>(data)) {
+        const auto& src = ascanData->Source();
+        const std::wstring& configName = src.ConfigName();
+
         const auto& datasets = ascanData->Datasets();
         size_t count = datasets.Count();
         count = 0;
       }
       else if (auto cscanData = dynamic_cast<const CscanData*>(data)) {
+        const auto& src = cscanData->Source();
+        const std::wstring& configName = src.ConfigName();
+        
         const auto& datasets = cscanData->Datasets();
         size_t count = datasets.Count();
         count = 0;
+
+        auto cscanDset = datasets.Find(L"Gate A");
+        cscanDset = nullptr;
       }
     }
 

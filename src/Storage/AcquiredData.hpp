@@ -150,8 +150,7 @@ private:
           FetchAscanData(fileId, name, ascanData);
           dataContainer.Add(std::move(ascanData));
 
-          TGateIdentifiers gateIds;
-          CscanDataSource cscanSource(filePath_, groupIdx, configName, gateIds); //[TODO[EAB] Utiliser les ids provenant de la config.]
+          CscanDataSource cscanSource(filePath_, groupIdx, configName); //[TODO[EAB] Utiliser les ids provenant de la config.]
           TCscanDataPtr cscanData = std::make_unique<CscanData>(cscanSource);
           FetchCscanData(fileId, name, cscanData);
           dataContainer.Add(std::move(cscanData));
@@ -250,10 +249,11 @@ private:
             ssize_t nameLength = H5Gget_objname_by_idx(cscanGroupId, gateIdx, dsetName, MAX_NAME_LENGTH);
             if (nameLength > 0)
             {
+              TGateIdentifiers gateIds;
               std::stringstream dsetLocation;
               dsetLocation << cscanLocation.str() << std::string(dsetName);
               hid_t dsetId = H5Dopen(fileId_, dsetLocation.str().c_str(), H5P_DEFAULT);
-              cscanData_->Datasets().Add(std::make_unique<CscanDataset>(dsetId, dsetLocation.str()));
+              cscanData_->Datasets().Add(std::make_unique<CscanDataset>(dsetId, dsetLocation.str(), gateIds));
             }
           }
         }
@@ -292,10 +292,13 @@ private:
                     ssize_t nameLength = H5Gget_objname_by_idx(cscanId, gateIdx, dsetName, MAX_NAME_LENGTH);
                     if (nameLength > 0)
                     {
+                      std::string gateName(dsetName);
+                      TGateIdentifiers gateIds = { {gateIdx, std::wstring(gateName.begin(), gateName.end())} };
+
                       std::stringstream dsetLocation;
-                      dsetLocation << cscanLocation.str() << std::string(dsetName);
+                      dsetLocation << cscanLocation.str() << gateName;
                       hid_t dsetId = H5Dopen(fileId_, dsetLocation.str().c_str(), H5P_DEFAULT);
-                      cscanData_->Datasets().Add(std::make_unique<CscanDataset>(dsetId, dsetLocation.str()));
+                      cscanData_->Datasets().Add(std::make_unique<CscanDataset>(dsetId, dsetLocation.str(), gateIds));
                     }
                   }
                 }
