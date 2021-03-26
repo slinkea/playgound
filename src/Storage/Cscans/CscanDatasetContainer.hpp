@@ -29,11 +29,13 @@ public:
     return *this;
   }
 
-  CscanDataset* Find(const std::wstring& gateName_) const
+  CscanDataset* Find(size_t gateId_) const
   {
     return dynamic_cast<CscanDataset*>(TSuper::Find(
-      [&gateName_](const TItemPtr& item_) 
-      { return true; }
+      [&gateId_](const TItemPtr& item_)
+      {
+        const auto& map = dynamic_cast<CscanDataset*>(item_.get())->GateIdentifier();
+        return map.find(gateId_) != map.end(); }
     ));
   }
 };

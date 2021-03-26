@@ -44,27 +44,27 @@ public:
     return m_fileVersion;
   }
 
-  std::vector<IData*> Select(const std::wstring& configName_) const
+  std::vector<IData*> All(const std::wstring& configName_) const
   {
     return TSuper::Select([&configName_](const TItemPtr& item_) {
         return item_->Source().ConfigName() == configName_;
     });
   }
 
-  std::vector<IData*> SelectAscan(const std::wstring& configName_) const
+  const AscanData* Ascan(size_t configId_) const
   {
-    return TSuper::Select([&configName_](const TItemPtr& item_) {
-      return item_->Source().ConfigName() == configName_ &&
-        dynamic_cast<AscanData*>(item_.get());
-      });
+    return dynamic_cast<const AscanData*>(TSuper::Find([&configId_](const TItemPtr& item_) {
+      return item_->Source().ConfigId() == configId_ &&
+        dynamic_cast<const AscanData*>(item_.get());
+      }));
   }
 
-  std::vector<IData*> SelectCscan(const std::wstring& configName_) const
+  const CscanData* Cscan(size_t configId_) const
   {
-    return TSuper::Select([&configName_](const TItemPtr& item_) {
-      return item_->Source().ConfigName() == configName_ &&
-        dynamic_cast<CscanData*>(item_.get());
-      });
+    return dynamic_cast<const CscanData*>(TSuper::Find([&configId_](const TItemPtr& item_) {
+      return item_->Source().ConfigId() == configId_ &&
+        dynamic_cast<const CscanData*>(item_.get());
+      }));
   }
 
 private:

@@ -1,6 +1,6 @@
 #pragma once
 #include "Storage/IData.h"
-#include "Storage/DatasetContainer.hpp"
+#include "AscanDatasetContainer.hpp"
 #include "AscanDataSource.hpp"
 #include "AscanDataset.hpp"
 #include "AscanBeamDataset.hpp"
@@ -16,7 +16,7 @@ public:
   {
   }
 
-  AscanData(const AscanDataSource& dataSource_, DatasetContainer&& datasets_)
+  AscanData(const AscanDataSource& dataSource_, AscanDatasetContainer&& datasets_)
     : m_dataSource(dataSource_)
     , m_datasets(std::move(datasets_))
   {
@@ -48,17 +48,17 @@ public:
     return m_dataSource;
   }
 
-  const DatasetContainer& Datasets() const override {
+  const AscanDatasetContainer& Datasets() const override {
     return m_datasets;
   }
 
-  DatasetContainer& Datasets() override {
+  AscanDatasetContainer& Datasets() override {
     return m_datasets;
   }
 
 private:
   const AscanDataSource m_dataSource;
-  DatasetContainer m_datasets;
+  AscanDatasetContainer m_datasets;
 };
 
 using TAscanDataPtr = std::unique_ptr<AscanData>;

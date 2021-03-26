@@ -94,31 +94,48 @@ int main(int argc, char* argv[])
 
     const auto& dataContainer2 = acquiredData.GetDataContainer(FILENAME_2);
 
-    //auto dataPerConfig = dataContainer2.Select(L"Linear Merged");
-    //auto dataPerConfig = dataContainer2.SelectAscan(L"Linear Merged");
-    auto dataPerConfig = dataContainer2.SelectCscan(L"Linear Merged");
-    for (const auto data : dataPerConfig)
+    for (const auto& dataItem : dataContainer2.Items())
     {
-      if (auto ascanData = dynamic_cast<const AscanData*>(data)) {
-        const auto& src = ascanData->Source();
-        const std::wstring& configName = src.ConfigName();
-
-        const auto& datasets = ascanData->Datasets();
-        size_t count = datasets.Count();
-        count = 0;
-      }
-      else if (auto cscanData = dynamic_cast<const CscanData*>(data)) {
-        const auto& src = cscanData->Source();
-        const std::wstring& configName = src.ConfigName();
-        
-        const auto& datasets = cscanData->Datasets();
-        size_t count = datasets.Count();
-        count = 0;
-
-        auto cscanDset = datasets.Find(L"Gate A");
-        cscanDset = nullptr;
-      }
+      const auto& src = dataItem->Source();
+      const std::wstring& configName = src.ConfigName();
+      size_t configId = src.ConfigId();
     }
+
+    //auto dataPerConfig = dataContainer2.All(L"Linear Merged");
+
+    {
+      const auto cscanData = dataContainer2.Cscan(2);
+      const auto& datasets = cscanData->Datasets();
+      size_t count = datasets.Count();
+      
+      auto cscanDset = datasets.Find(1);
+      cscanDset = nullptr;
+    }
+
+    {
+      const auto ascanData = dataContainer2.Ascan(2);
+      const auto& datasets = ascanData->Datasets();
+      size_t count = datasets.Count();
+      
+      auto data = datasets.Data();
+      data = nullptr;
+
+      auto status = datasets.Status();
+      status = nullptr;
+    }
+
+
+    //for (const auto data : dataPerConfig)
+    //{
+    //  if (auto ascanData = dynamic_cast<const AscanData*>(data)) {
+    //    const auto& src = ascanData->Source();
+    //    const std::wstring& configName = src.ConfigName();
+
+    //    const auto& datasets = ascanData->Datasets();
+    //    size_t count = datasets.Count();
+    //    count = 0;
+    //  }
+    //}
 
     for (const auto& dataItem : dataContainer2.Items())
     {

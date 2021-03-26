@@ -249,9 +249,11 @@ private:
             ssize_t nameLength = H5Gget_objname_by_idx(cscanGroupId, gateIdx, dsetName, MAX_NAME_LENGTH);
             if (nameLength > 0)
             {
-              TGateIdentifiers gateIds;
+              std::string gateName(dsetName);
+              TGateIdentifiers gateIds = { {gateIdx, std::wstring(gateName.begin(), gateName.end())} };
+
               std::stringstream dsetLocation;
-              dsetLocation << cscanLocation.str() << std::string(dsetName);
+              dsetLocation << cscanLocation.str() << gateName;
               hid_t dsetId = H5Dopen(fileId_, dsetLocation.str().c_str(), H5P_DEFAULT);
               cscanData_->Datasets().Add(std::make_unique<CscanDataset>(dsetId, dsetLocation.str(), gateIds));
             }
