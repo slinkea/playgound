@@ -300,7 +300,7 @@ private:
                       std::stringstream dsetLocation;
                       dsetLocation << cscanLocation.str() << gateName;
                       hid_t dsetId = H5Dopen(fileId_, dsetLocation.str().c_str(), H5P_DEFAULT);
-                      cscanData_->Datasets().Add(std::make_unique<CscanDataset>(dsetId, dsetLocation.str(), gateIds));
+                      cscanData_->Datasets().Add(std::make_unique<CscanBeamDataset>(dsetId, dsetLocation.str(), beamIdx, gateIds));
                     }
                   }
                 }

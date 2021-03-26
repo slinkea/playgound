@@ -108,20 +108,40 @@ int main(int argc, char* argv[])
       const auto& datasets = cscanData->Datasets();
       size_t count = datasets.Count();
       
-      auto cscanDset = datasets.Find(1);
-      cscanDset = nullptr;
+      if (cscanData->IsDataMerged()) 
+      {
+        auto cscanDset = datasets.Find(1);
+        cscanDset = nullptr;
+      }
+      else
+      {
+        auto cscanBeamDset = datasets.Find(0, 3);
+        cscanBeamDset = nullptr;
+      }
     }
 
     {
+
       const auto ascanData = dataContainer2.Ascan(2);
       const auto& datasets = ascanData->Datasets();
       size_t count = datasets.Count();
-      
-      auto data = datasets.Data();
-      data = nullptr;
 
-      auto status = datasets.Status();
-      status = nullptr;
+      if (ascanData->IsDataMerged())
+      {
+        auto data = datasets.Data();
+        data = nullptr;
+
+        auto status = datasets.Status();
+        status = nullptr;
+      }
+      else
+      {
+        auto data = datasets.Data(3);
+        data = nullptr;
+
+        auto status = datasets.Status(4);
+        status = nullptr;
+      }
     }
 
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "Container.hpp"
 #include "CscanDataset.hpp"
+#include "CscanBeamDataset.hpp"
 
 
 class CscanDatasetContainer : public ONDTLib::Container<Dataset>
@@ -34,8 +35,38 @@ public:
     return dynamic_cast<CscanDataset*>(TSuper::Find(
       [&gateId_](const TItemPtr& item_)
       {
-        const auto& map = dynamic_cast<CscanDataset*>(item_.get())->GateIdentifier();
-        return map.find(gateId_) != map.end(); }
+        if (dynamic_cast<CscanBeamDataset*>(item_.get())) {
+          return false;
+        }
+        else 
+        {
+          const auto& map = dynamic_cast<CscanDataset*>(item_.get())->GateIdentifier();
+          return map.find(gateId_) != map.end();
+        }
+      }
+    ));
+  }
+
+  const CscanBeamDataset* Find(size_t gateId_, size_t beamIdx_) const
+  {
+    return dynamic_cast<const CscanBeamDataset*>(TSuper::Find(
+      [&](const TItemPtr& item_)
+      {
+        if (const auto dset = dynamic_cast<const CscanBeamDataset*>(item_.get()))
+        {
+          if (dset->BeamIndex() == beamIdx_) 
+          {
+            const auto& map = dset->GateIdentifier();
+            return map.find(gateId_) != map.end();
+          }
+          else {
+            return false;
+          }
+        }
+        else {
+          return false;
+        }
+      }
     ));
   }
 };

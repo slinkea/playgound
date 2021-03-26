@@ -3,7 +3,7 @@
 #include "CscanDatasetContainer.hpp"
 #include "CscanDataSource.hpp"
 #include "CscanDataset.hpp"
-//#include "CscanBeamDataset.hpp"
+#include "CscanBeamDataset.hpp"
 
 
 class CscanData : public IData
@@ -52,6 +52,13 @@ public:
 
   CscanDatasetContainer& Datasets() override {
     return m_datasets;
+  }
+
+  bool IsDataMerged() const
+  {
+    return !std::all_of(m_datasets.Items().begin(), m_datasets.Items().end(), [](const auto& item) {
+      return dynamic_cast<const CscanBeamDataset*>(item.get());
+      });
   }
 
 private:

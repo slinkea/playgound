@@ -56,6 +56,13 @@ public:
     return m_datasets;
   }
 
+  bool IsDataMerged() const
+  {
+    return !std::all_of(m_datasets.Items().begin(), m_datasets.Items().end(), [](const auto& item) {
+      return dynamic_cast<const AscanBeamDataset*>(item.get()) || dynamic_cast<const AscanStatusBeamDataset*>(item.get());
+      });
+  }
+
 private:
   const AscanDataSource m_dataSource;
   AscanDatasetContainer m_datasets;
