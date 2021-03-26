@@ -4,7 +4,8 @@
 #include <filesystem>
 #include "IData.h"
 #include "Container.hpp"
-#include "DatasetContainer.hpp"
+#include "ascans/AscanData.hpp"
+#include "cscans/CscanData.hpp"
 
 
 class DataContainer : public ONDTLib::Container<IData>
@@ -41,6 +42,29 @@ public:
 
   const std::string& Version() const {
     return m_fileVersion;
+  }
+
+  std::vector<IData*> Select(const std::wstring& configName_) const
+  {
+    return TSuper::Select([&configName_](const TItemPtr& item_) {
+        return item_->Source().ConfigName() == configName_;
+    });
+  }
+
+  std::vector<IData*> SelectAscan(const std::wstring& configName_) const
+  {
+    return TSuper::Select([&configName_](const TItemPtr& item_) {
+      return item_->Source().ConfigName() == configName_ &&
+        dynamic_cast<AscanData*>(item_.get());
+      });
+  }
+
+  std::vector<IData*> SelectCscan(const std::wstring& configName_) const
+  {
+    return TSuper::Select([&configName_](const TItemPtr& item_) {
+      return item_->Source().ConfigName() == configName_ &&
+        dynamic_cast<CscanData*>(item_.get());
+      });
   }
 
 private:
