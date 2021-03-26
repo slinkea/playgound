@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
     //auto dataPerConfig = dataContainer2.All(L"Linear Merged");
 
     {
-      const auto cscanData = dataContainer2.Cscan(2);
+      const auto cscanData = dataContainer2.Cscan(3);
       const auto& datasets = cscanData->Datasets();
       size_t count = datasets.Count();
       

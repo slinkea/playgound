@@ -38,7 +38,7 @@ public:
         if (dynamic_cast<CscanBeamDataset*>(item_.get())) {
           return false;
         }
-        else 
+        else
         {
           const auto& map = dynamic_cast<CscanDataset*>(item_.get())->GateIdentifier();
           return map.find(gateId_) != map.end();

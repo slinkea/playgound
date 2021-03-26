@@ -115,16 +115,3 @@ struct DataDimensions
   size_t Y{};
   size_t Z{};
 };
-
-struct DataProperties
-{
-  DataProperties() = default;
-  DataProperties(bool isChunked_, const DataDimensions& dims_)
-    : IsChunked(isChunked_)
-    , Dimensions(dims_)
-  {
-  }
-
-  bool IsChunked{};
-  DataDimensions Dimensions;
-};

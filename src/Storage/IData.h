@@ -13,3 +13,5 @@ public:
   virtual const ONDTLib::Container<Dataset>& Datasets() const = 0;
   virtual ONDTLib::Container<Dataset>& Datasets() = 0;
 };
+
+using TIDataPtrs = std::vector<IData*>;

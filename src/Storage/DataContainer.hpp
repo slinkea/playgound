@@ -44,7 +44,7 @@ public:
     return m_fileVersion;
   }
 
-  std::vector<IData*> All(const std::wstring& configName_) const
+  TIDataPtrs All(const std::wstring& configName_) const
   {
     return TSuper::Select([&configName_](const TItemPtr& item_) {
         return item_->Source().ConfigName() == configName_;
