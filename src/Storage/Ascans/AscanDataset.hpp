@@ -1,11 +1,10 @@
 #pragma once
-#include "Storage/IDataset.h"
-#include "Storage/DatasetUtils.hpp"
+#include "Storage/DatasetBase.hpp"
 #include "Storage/DatasetDefinition.h"
 #include "Storage/DatasetProperties.hpp"
 
 
-class AscanDataset : public IDataset
+class AscanDataset : public DatasetBase
 {
 public:
   AscanDataset(const TDatasetKeys& dsetKeys_)
@@ -16,11 +15,11 @@ public:
     m_dataDspaceId = H5Dget_space(m_dataDsetId);
     m_dimQty = H5Sget_simple_extent_ndims(m_dataDspaceId);
 
-    m_dataDims = DatasetUtils::FetchDataDimensions(m_dataDspaceId, m_dimQty);
-    m_properties = DatasetUtils::FetchProperties(m_dataDsetId, m_dimQty);
+    m_dataDims = FetchDataDimensions(m_dataDspaceId, m_dimQty);
+    m_properties = FetchProperties(m_dataDsetId, m_dimQty);
 
-    m_offset = DatasetUtils::CreateArray(m_dimQty);
-    m_count = DatasetUtils::CreateArray(m_dimQty);
+    m_offset = CreateArray(m_dimQty);
+    m_count = CreateArray(m_dimQty);
     m_count[0] = 1;
     m_count[1] = 1;
     m_count[2] = m_dataDims.SizeZ();
@@ -46,15 +45,11 @@ public:
   AscanDataset() = delete;
   AscanDataset& operator=(const AscanDataset&) = delete;
 
-  const DataDimensions& Dimensions() const override {
+  const DataDimensions& Dimensions() const {
     return m_dataDims;
   }
 
-  const DatasetProperties& Properties() const override {
-    return m_properties;
-  }
-
-  void Read(void* dataOut_) const override
+  void Read(void* dataOut_) const
   {
     H5_RESULT_CHECK(H5Dread(m_dataDsetId, m_dataType, m_singleId, m_dataDspaceId, H5P_DEFAULT, dataOut_));
   }
@@ -131,6 +126,5 @@ private:
   DataDimensions m_dataDims;
   DataDimensions m_chunkDims;
   TDatasetKeys m_datasetKeys;
-  DatasetProperties m_properties;
   AscanAttributes m_attributes;
 };

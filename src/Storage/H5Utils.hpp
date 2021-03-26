@@ -8,7 +8,7 @@
 namespace fs = std::filesystem;
 
 constexpr char FLE_VERSION[] = "File Version";
-constexpr size_t MAX_FILEVERSION_LENGTH = 32;
+constexpr size_t MAX_FILEVERSION_LENGTH = 256;
 
 //TODO[SVC][Mettre ca dans ONDTLib]
 
@@ -59,7 +59,7 @@ public:
     return fileSize;
   }
 
-  static const std::string GetFileVersion(hid_t fileId_)
+  static std::string GetFileVersion(hid_t fileId_)
   {
     char fileVersion[MAX_FILEVERSION_LENGTH]{};
     hid_t attrId = H5Aopen(fileId_, FLE_VERSION, H5P_DEFAULT);

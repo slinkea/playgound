@@ -4,10 +4,17 @@
 #include "DatasetProperties.hpp"
 
 
-class DatasetUtils
+class DatasetBase
 {
 public:
-  static DataDimensions FetchDataDimensions(hid_t m_dspaceId_, int dimQty_)
+  DatasetBase() = default;
+  virtual ~DatasetBase() = default;
+
+  const DatasetProperties& Properties() const {
+    return m_properties;
+  }
+
+  DataDimensions FetchDataDimensions(hid_t m_dspaceId_, int dimQty_)
   {
     hsize_t* dsetDims = new hsize_t[dimQty_]{};
     H5Sget_simple_extent_dims(m_dspaceId_, dsetDims, nullptr);
@@ -17,7 +24,7 @@ public:
     return dataDims;
   }
 
-  static DatasetProperties FetchProperties(hid_t dsetId_, int dimQty_)
+  DatasetProperties FetchProperties(hid_t dsetId_, int dimQty_)
   {
     bool chunked{};
     bool compressed{};
@@ -47,12 +54,12 @@ public:
     return DatasetProperties(chunked, compressed, chunkDims);
   }
 
-  static hsize_t* CreateArray(size_t dimQty_) {
+  hsize_t* CreateArray(size_t dimQty_) {
     return new hsize_t[dimQty_]{};
   }
 
 private:
-  static DataDimensions CreateDataDimension(int dimQty_, const hsize_t* dsetDims_)
+  DataDimensions CreateDataDimension(int dimQty_, const hsize_t* dsetDims_)
   {
     DataDimensions dims;
 
@@ -69,7 +76,7 @@ private:
     return dims;
   }
 
-  static DataDimensions FetchChunkDimensions(hid_t plistId_, int dimQty_)
+  DataDimensions FetchChunkDimensions(hid_t plistId_, int dimQty_)
   {
     hsize_t* chunkDims = new hsize_t[dimQty_]{};
     int rankChunk = H5Pget_chunk(plistId_, dimQty_, chunkDims);
@@ -78,4 +85,7 @@ private:
 
     return chunkDimensions;
   }
+
+protected:
+  DatasetProperties m_properties;
 };
