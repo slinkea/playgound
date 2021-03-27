@@ -46,11 +46,11 @@ public:
     return m_dataSource;
   }
 
-  const AscanDatasetContainer& Datasets() const override {
+  const AscanDatasetContainer& Datasets() const {
     return m_datasets;
   }
 
-  AscanDatasetContainer& Datasets() override {
+  AscanDatasetContainer& Datasets() {
     return m_datasets;
   }
 

@@ -20,16 +20,17 @@ namespace fs = std::filesystem;
 // Supported version
 constexpr char FILE_VERSION_1_2_0[] = "1.2.0";
 
-class NdtDataReader
+class NdtFileReader
 {
 public:
-  NdtDataReader() = default;
-  virtual ~NdtDataReader() {
-    Close();
+  NdtFileReader() = default;
+
+  NdtFileReader(const fs::path& filePath_) {
+    Open(filePath_);
   }
 
-  NdtDataReader(const fs::path& filePath_) {
-    Open(filePath_);
+  virtual ~NdtFileReader() {
+    Close();
   }
 
   void Open(const fs::path& filePath_)
@@ -54,6 +55,10 @@ public:
       H5_RESULT_CHECK(H5Fclose(m_fileId));
       m_fileId = 0;
     }
+  }
+
+  bool IsOpen() const {
+    return m_fileId != 0;
   }
 
   const DataContainer& Data() const {

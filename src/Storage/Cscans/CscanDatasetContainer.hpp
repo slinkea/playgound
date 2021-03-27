@@ -30,9 +30,9 @@ public:
     return *this;
   }
 
-  CscanDataset* Dataset(size_t gateId_) const
+  const CscanDataset* Dataset(size_t gateId_) const
   {
-    return dynamic_cast<CscanDataset*>(TSuper::Find(
+    return dynamic_cast<const CscanDataset*>(TSuper::Find(
       [&gateId_](const TItemPtr& item_)
       {
         if (dynamic_cast<CscanBeamDataset*>(item_.get())) {
@@ -40,14 +40,14 @@ public:
         }
         else
         {
-          const auto& map = dynamic_cast<CscanDataset*>(item_.get())->GateIdentifier();
+          const auto& map = dynamic_cast<const CscanDataset*>(item_.get())->GateIdentifier();
           return map.find(gateId_) != map.end();
         }
       }
     ));
   }
 
-  const CscanBeamDataset* Dataset(size_t gateId_, size_t beamIdx_) const
+  const CscanBeamDataset* BeamDataset(size_t gateId_, size_t beamIdx_) const
   {
     return dynamic_cast<const CscanBeamDataset*>(TSuper::Find(
       [&](const TItemPtr& item_)

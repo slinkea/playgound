@@ -4,9 +4,9 @@
 #include "AscanBeamDataset.hpp"
 
 
-class AscanDatasetContainer : public ONDTLib::Container<DatasetBase>
+class AscanDatasetContainer : public ONDTLib::Container<AscanDataset>
 {
-  using TSuper = ONDTLib::Container<DatasetBase>;
+  using TSuper = ONDTLib::Container<AscanDataset>;
 
 public:
   AscanDatasetContainer() = default;
@@ -16,7 +16,7 @@ public:
   AscanDatasetContainer& operator=(const AscanDatasetContainer&) = delete;
 
   AscanDatasetContainer(AscanDatasetContainer&& other_) noexcept
-    : ONDTLib::Container<DatasetBase>(std::move(other_))
+    : ONDTLib::Container<AscanDataset>(std::move(other_))
   {
   }
 
@@ -24,20 +24,24 @@ public:
   {
     if (this != &other_)
     {
-      ONDTLib::Container<DatasetBase>::operator=(std::move(other_));
+      ONDTLib::Container<AscanDataset>::operator=(std::move(other_));
     }
 
     return *this;
   }
 
-  AscanDataset* Dataset() const
+  const TItemPtrs& Items() const {
+    return TSuper::Items();
+  }
+
+  const AscanDataset* Dataset() const
   {
-    return dynamic_cast<AscanDataset*>(TSuper::Find(
-      [](const TItemPtr& item_) { return dynamic_cast<AscanDataset*>(item_.get()); }
+    return dynamic_cast<const AscanDataset*>(TSuper::Find(
+      [](const TItemPtr& item_) { return dynamic_cast<const AscanDataset*>(item_.get()); }
     ));
   }
 
-  const AscanBeamDataset* Dataset(size_t beamIdx_) const
+  const AscanBeamDataset* BeamDataset(size_t beamIdx_) const
   {
     return dynamic_cast<const AscanBeamDataset*>(TSuper::Find(
       [&beamIdx_](const TItemPtr& item_)

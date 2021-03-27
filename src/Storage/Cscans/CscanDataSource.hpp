@@ -15,4 +15,8 @@ public:
 
   CscanDataSource() = delete;
   CscanDataSource& operator=(const CscanDataSource&) = delete;
+
+  bool IsBeamDataMerged() const {
+    return false;
+  }
 };

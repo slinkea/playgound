@@ -46,11 +46,11 @@ public:
     return m_dataSource;
   }
 
-  const CscanDatasetContainer& Datasets() const override {
+  const CscanDatasetContainer& Datasets() const {
     return m_datasets;
   }
 
-  CscanDatasetContainer& Datasets() override {
+  CscanDatasetContainer& Datasets() {
     return m_datasets;
   }
 

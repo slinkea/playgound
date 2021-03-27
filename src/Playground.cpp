@@ -14,7 +14,7 @@
 #pragma warning(pop)
 
 #include "Playground.h"
-#include "Storage/NdtDataReader.hpp"
+#include "Storage/NdtFileReader.hpp"
 #include "FileStorage.hpp"
 #include "CudaKernels.cuh"
 
@@ -26,7 +26,7 @@ constexpr char FILENAME_2[] = "D:\\NDT Files\\4-Configs.h5";
 
 struct us_listen_socket_t* global_listen_socket;
 
-void ReadAscanData(const AscanDataset* dset_)
+void ReadAscanData(const TAscanDatasetPtr& dset_)
 {
   const AscanAttributes& attributes = dset_->Attributes();
   const DatasetProperties& props = dset_->Properties();
@@ -56,7 +56,7 @@ void ReadAscanData(const AscanDataset* dset_)
     ascanSamples.assign(samples, samples + dims.SizeZ);
   }
 
-  if (const auto ascanBeamDset = dynamic_cast<const AscanBeamDataset*>(dset_))
+  if (const auto ascanBeamDset = dynamic_cast<const AscanBeamDataset*>(dset_.get()))
   {
     size_t idx = ascanBeamDset->BeamIndex();
     idx = 0;
@@ -76,96 +76,54 @@ int main(int argc, char* argv[])
     //fs.ReadBig();
     //fs.CompressFile();
 
-    NdtDataReader ndr;
+    NdtFileReader nfr;
 
     size_t fileSize1 = H5Utils::Size(FILENAME_1);
     size_t fileSize2 = H5Utils::Size(FILENAME_2);
 
-    //acquiredData.Open(FILENAME_1);
-    ndr.Open(FILENAME_2);
+    nfr.Open(FILENAME_2);
 
-    //const auto& dataContainer1 = acquiredData.GetDataContainer(FILENAME_1);
-    //const auto& fileVersion = dataContainer1.Version();
+    const auto& dataContainer = nfr.Data();
 
-    const auto& dataContainer2 = ndr.Data();
+    size_t count = dataContainer.Count();
 
-    for (const auto& dataItem : dataContainer2.Items())
+    const auto ascanDataCfg3 = dataContainer.Ascan(3);
+    const auto cscanDataCfg3 = dataContainer.Cscan(3);
+    const auto& cscanSrc = cscanDataCfg3->Source();
+    bool merged = cscanSrc.IsBeamDataMerged();
+    const auto& cscanDatasets = cscanDataCfg3->Datasets();
+    const auto gateIDset = cscanDatasets.Dataset(0);
+    const auto gateIBeamDset = cscanDatasets.BeamDataset(0, 0);
+    const auto& cscanAttr = gateIDset->Attributes();
+
+    for (const auto& dataItem : dataContainer.Items())
     {
       const auto& src = dataItem->Source();
       const std::wstring& configName = src.ConfigName();
       size_t configId = src.ConfigId();
-    }
 
-    //auto dataPerConfig = dataContainer2.All(L"Linear Merged");
-
-    {
-      const auto cscanData = dataContainer2.Cscan(3);
-      const auto& datasets = cscanData->Datasets();
-      size_t count = datasets.Count();
-      
-      if (cscanData->IsDataMerged()) 
+      if (const auto ascanData = dynamic_cast<const AscanData*>(dataItem.get()))
       {
-        auto cscanDset = datasets.Dataset(1);
-        cscanDset = nullptr;
-      }
-      else
-      {
-        auto cscanBeamDset = datasets.Dataset(0, 3);
-        cscanBeamDset = nullptr;
-      }
-    }
-
-    {
-
-      const auto ascanData = dataContainer2.Ascan(2);
-      const auto& datasets = ascanData->Datasets();
-      size_t count = datasets.Count();
-
-      if (ascanData->IsDataMerged())
-      {
-        auto dataset = datasets.Dataset();
-        dataset = nullptr;
-
-      }
-      else
-      {
-        auto dataset = datasets.Dataset(3);
-        dataset = nullptr;
-      }
-    }
-
-
-    //for (const auto data : dataPerConfig)
-    //{
-    //  if (auto ascanData = dynamic_cast<const AscanData*>(data)) {
-    //    const auto& src = ascanData->Source();
-    //    const std::wstring& configName = src.ConfigName();
-
-    //    const auto& datasets = ascanData->Datasets();
-    //    size_t count = datasets.Count();
-    //    count = 0;
-    //  }
-    //}
-
-    for (const auto& dataItem : dataContainer2.Items())
-    {
-      const auto& src = dataItem->Source();
-      const std::wstring& configName = src.ConfigName();
-
-      const auto& datasets = dataItem->Datasets();
-      for (const auto& ds : datasets.Items())
-      {
-        if (const auto ascanDset = dynamic_cast<const AscanDataset*>(ds.get())) {
-          ReadAscanData(ascanDset);
-        }
-        else if (const auto cscanDset = dynamic_cast<const CscanDataset*>(ds.get())) {
-          ReadCscanData(cscanDset);
+        const auto& ascanDset = ascanData->Datasets();
+        for (const auto& ds : ascanDset.Items()) {
+          ReadAscanData(ds);
         }
       }
+      else if (const auto cscanData = dynamic_cast<const CscanData*>(dataItem.get()))
+      {
+        /*for (const auto& ds : datasets.Items())
+        {
+          if (const auto ascanDset = dynamic_cast<const AscanDataset*>(ds.get())) {
+            ReadAscanData(ascanDset);
+          }
+          else if (const auto cscanDset = dynamic_cast<const CscanDataset*>(ds.get())) {
+            ReadCscanData(cscanDset);
+          }
+        }*/
+      }
     }
 
-    //acquiredData.Close(FILENAME_1);
-    ndr.Close();
+    nfr.Close();
 
     //fs.Write();
     //std::vector<int8_t> dataSlice = fs.ReadSliceFpd();

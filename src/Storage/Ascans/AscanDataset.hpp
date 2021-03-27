@@ -126,3 +126,5 @@ private:
   DataDimensions m_chunkDims;
   AscanAttributes m_attributes;
 };
+
+using TAscanDatasetPtr = std::unique_ptr<AscanDataset>;
