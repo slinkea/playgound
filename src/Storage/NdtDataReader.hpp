@@ -16,46 +16,52 @@
 
 
 namespace fs = std::filesystem;
+
+// Supported version
 constexpr char FILE_VERSION_1_2_0[] = "1.2.0";
 
-class NdtData
+class NdtDataReader
 {
 public:
-  NdtData() = default;
-  ~NdtData() = default;
+  NdtDataReader() = default;
+  virtual ~NdtDataReader() {
+    Close();
+  }
+
+  NdtDataReader(const fs::path& filePath_) {
+    Open(filePath_);
+  }
 
   void Open(const fs::path& filePath_)
   {
     H5_RESULT_CHECK(H5Eset_auto(H5E_DEFAULT, NULL, NULL));
-    hid_t fileId = H5Fopen(filePath_.string().c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
-    m_fileMap.emplace(filePath_, fileId);
+    m_fileId = H5Fopen(filePath_.string().c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
 
-    const auto fileVersion = H5Utils::GetFileVersion(fileId);
-    DataContainer container(fileVersion);
+    const auto fileVersion = H5Utils::GetFileVersion(m_fileId);
+    m_dataContainer = DataContainer(fileVersion);
 
-    const auto configIds = H5Utils::GetConfigurations(fileId);
+    const auto configIds = H5Utils::GetConfigurations(m_fileId);
 
     if (VersionUtils::IsEqualOrLess(fileVersion, FILE_VERSION_1_2_0)) {
-      FetchDataVersion120(filePath_, configIds, std::move(container));
+      FetchDataVersion120(filePath_, configIds);
     }
   }
 
-  void Close(const fs::path& filePath_)
+  void Close()
   {
-    m_dataContainers.erase(filePath_);
-    H5_RESULT_CHECK(H5Fclose(m_fileMap[filePath_]));
+    if (m_fileId > 0)
+    {
+      H5_RESULT_CHECK(H5Fclose(m_fileId));
+      m_fileId = 0;
+    }
   }
 
-  const DataContainer& GetDataContainer(const fs::path& filePath_) const {
-    return m_dataContainers.at(filePath_);
-  }
-
-  DataContainer& GetDataContainer(const fs::path& filePath_) {
-    return m_dataContainers.at(filePath_);
+  const DataContainer& Data() const {
+    return m_dataContainer;
   }
 
 private:
-  void FetchDataVersion120(const fs::path& filePath_, const TConfigMap& configIds, DataContainer&& dataContainer)
+  void FetchDataVersion120(const fs::path& filePath_, const TConfigMap& configIds)
   {
     for (const auto& configId : configIds)
     {
@@ -68,21 +74,19 @@ private:
       std::string dataLoc = conv.to_bytes(location.str());
 #pragma warning( pop )
       
-      hid_t configGroupId = H5Gopen(m_fileMap[filePath_], dataLoc.c_str(), H5P_DEFAULT);
+      hid_t configGroupId = H5Gopen(m_fileId, dataLoc.c_str(), H5P_DEFAULT);
       AscanDataSource ascanSource(filePath_,  configId.first, configId.second);
       TAscanDataPtr ascanData = std::make_unique<AscanData>(ascanSource);
       FetchAscanData(configGroupId, ascanData);
-      dataContainer.Add(std::move(ascanData));
+      m_dataContainer.Add(std::move(ascanData));
 
       CscanDataSource cscanSource(filePath_, configId.first, configId.second);
       TCscanDataPtr cscanData = std::make_unique<CscanData>(cscanSource);
       FetchCscanData(configGroupId, cscanData);
-      dataContainer.Add(std::move(cscanData));
+      m_dataContainer.Add(std::move(cscanData));
 
       H5Gclose(configGroupId);
     }
-
-    m_dataContainers.emplace(std::make_pair(filePath_, std::move(dataContainer)));
   }
 
   void FetchAscanData(hid_t configGroupId_, TAscanDataPtr& ascanData_) const
@@ -155,6 +159,6 @@ private:
     }
   }
 
-  TDataContainerMap m_dataContainers;
-  std::map<fs::path, hid_t> m_fileMap;
+  hid_t m_fileId{};
+  DataContainer m_dataContainer;
 };

@@ -13,6 +13,7 @@ class DataContainer : public ONDTLib::Container<IData>
   using TSuper = ONDTLib::Container<IData>;
 
 public:
+  DataContainer() = default;
   DataContainer(const std::string& fileVersion_)
     : m_fileVersion(fileVersion_)
   {
