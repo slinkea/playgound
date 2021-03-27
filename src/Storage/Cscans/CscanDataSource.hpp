@@ -5,8 +5,9 @@
 class CscanDataSource : public DataSource
 {
 public:
-  CscanDataSource(const fs::path& filePath_, size_t configId_, const std::wstring& configName_)
-    : DataSource(filePath_, configId_, configName_)
+  CscanDataSource(const fs::path& filePath_, const TConfigIdPair& configIds_, bool beamDataMerged_)
+    : DataSource(filePath_, configIds_)
+    , m_beamDataMerged(beamDataMerged_)
   {
   }
 
@@ -19,4 +20,7 @@ public:
   bool IsBeamDataMerged() const {
     return false;
   }
+
+private:
+  bool m_beamDataMerged{};
 };

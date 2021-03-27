@@ -41,10 +41,10 @@ public:
     const auto fileVersion = H5Utils::GetFileVersion(m_fileId);
     m_dataContainer = DataContainer(fileVersion);
 
-    const auto configIds = H5Utils::GetConfigurations(m_fileId);
+    const auto configIdsMap = H5Utils::GetConfigurations(m_fileId);
 
     if (VersionUtils::IsEqualOrLess(fileVersion, FILE_VERSION_1_2_0)) {
-      FetchDataVersion120(filePath_, configIds);
+      FetchDataVersion120(filePath_, configIdsMap);
     }
   }
 
@@ -66,12 +66,12 @@ public:
   }
 
 private:
-  void FetchDataVersion120(const fs::path& filePath_, const TConfigMap& configIds)
+  void FetchDataVersion120(const fs::path& filePath_, const TConfigIdsMap& configIdsMap_)
   {
-    for (const auto& configId : configIds)
+    for (const auto& configIds : configIdsMap_)
     {
       std::wstringstream location;
-      location << GROUP_DATA << "/" << configId.second << "/";
+      location << GROUP_DATA << "/" << configIds.second << "/";
 
 #pragma warning( push )
 #pragma warning( disable: 4996 )
@@ -80,36 +80,48 @@ private:
 #pragma warning( pop )
       
       hid_t configGroupId = H5Gopen(m_fileId, dataLoc.c_str(), H5P_DEFAULT);
-      AscanDataSource ascanSource(filePath_,  configId.first, configId.second);
-      TAscanDataPtr ascanData = std::make_unique<AscanData>(ascanSource);
-      FetchAscanData(configGroupId, ascanData);
-      m_dataContainer.Add(std::move(ascanData));
+      
+      FetchAscanData(filePath_, configGroupId, configIds);
 
-      CscanDataSource cscanSource(filePath_, configId.first, configId.second);
+
+      //TODO
+      CscanDataSource cscanSource(filePath_, configIds, false);
       TCscanDataPtr cscanData = std::make_unique<CscanData>(cscanSource);
       FetchCscanData(configGroupId, cscanData);
+
+
       m_dataContainer.Add(std::move(cscanData));
 
       H5Gclose(configGroupId);
     }
   }
 
-  void FetchAscanData(hid_t configGroupId_, TAscanDataPtr& ascanData_) const
+  void FetchAscanData(const fs::path& filePath_, hid_t configGroupId_, const TConfigIdPair& configIds_)
   {
     herr_t status = H5Gget_objinfo(configGroupId_, ASCAN_DATASET, 0, nullptr);
-    if (status == 0) {
-      ascanData_->Datasets().Add(std::make_unique<AscanDataset>(configGroupId_));
+    if (status == 0) 
+    {
+      AscanDataSource ascanSource(filePath_, configIds_, true);
+      TAscanDataPtr ascanData = std::make_unique<AscanData>(ascanSource);
+      ascanData->Datasets().Add(std::make_unique<AscanDataset>(configGroupId_));
+      m_dataContainer.Add(std::move(ascanData));
     }
     else {
       hsize_t beamQty{};
-      if (H5Gget_num_objs(configGroupId_, &beamQty) >= 0) {
+      if (H5Gget_num_objs(configGroupId_, &beamQty) >= 0) 
+      {
+        AscanDataSource ascanSource(filePath_, configIds_, false);
+        TAscanDataPtr ascanData = std::make_unique<AscanData>(ascanSource);
+
         for (size_t beamIdx(1); beamIdx <= beamQty; beamIdx++)
         {
           std::string beamStr(BEAM_PREFIX + std::string(" ") + std::to_string(beamIdx));
           hid_t beamGroupId = H5Gopen(configGroupId_, beamStr.c_str(), H5P_DEFAULT);
-          ascanData_->Datasets().Add(std::make_unique<AscanBeamDataset>(beamGroupId, beamIdx));
+          ascanData->Datasets().Add(std::make_unique<AscanBeamDataset>(beamGroupId, beamIdx));
           H5Gclose(beamGroupId);
         }
+
+        m_dataContainer.Add(std::move(ascanData));
       }
     }
   }

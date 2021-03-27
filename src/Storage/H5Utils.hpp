@@ -2,7 +2,6 @@
 #pragma warning(push, 0)
 #include <hdf5/H5Cpp.h>
 #pragma warning(pop)
-#include <map>
 #include <string>
 #include <cstdlib>
 #include <filesystem>
@@ -14,7 +13,8 @@ constexpr char CONFIG_GROUP[] = "Configurations";
 constexpr char CONFIG_NAME_ATTR[] = "Name";
 constexpr size_t MAX_STRING_LENGTH = 256;
 
-using TConfigMap = std::map<size_t, std::wstring>;
+using TConfigIdPair = std::pair<size_t, std::wstring>;
+using TConfigIdsMap = std::map<size_t, std::wstring>;
 
 //TODO[SVC][Mettre ca dans ONDTLib]
 
@@ -76,10 +76,10 @@ public:
     return std::string(fileVersion);
   }
 
-  static TConfigMap GetConfigurations(hid_t fileId_)
+  static TConfigIdsMap GetConfigurations(hid_t fileId_)
   {
     hsize_t configQty{};
-    TConfigMap configIds;
+    TConfigIdsMap configIdsMap;
     char name[MAX_STRING_LENGTH];
     hid_t configsId = H5Gopen(fileId_, CONFIG_GROUP, H5P_DEFAULT);
     if (H5Gget_num_objs(configsId, &configQty) >= 0)
@@ -91,11 +91,11 @@ public:
         {
           hid_t configId = H5Gopen(configsId, name, H5P_DEFAULT);
           std::wstring configName = ReadAttributeWString(configId, CONFIG_NAME_ATTR);
-          configIds.emplace(std::atoi(name), configName);
+          configIdsMap.emplace(std::atoi(name), configName);
         }
       }
     }
 
-    return configIds;
+    return configIdsMap;
   }
 };

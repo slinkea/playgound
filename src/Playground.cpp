@@ -89,8 +89,6 @@ int main(int argc, char* argv[])
 
     const auto& dataContainer = nfr.Data();
 
-    size_t count = dataContainer.Count();
-
     const auto ascanDataCfg3 = dataContainer.Ascan(3);
     const auto cscanDataCfg3 = dataContainer.Cscan(3);
     const auto& cscanSrc = cscanDataCfg3->Source();
@@ -99,6 +97,8 @@ int main(int argc, char* argv[])
     const auto gateIDset = cscanDatasets.Dataset(0);
     const auto gateIBeamDset = cscanDatasets.BeamDataset(0, 0);
     const auto& cscanAttr = gateIDset->Attributes();
+
+    //
 
     for (const auto& dataItem : dataContainer.Items())
     {
