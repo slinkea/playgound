@@ -2,13 +2,19 @@
 #pragma warning(push, 0)
 #include <hdf5/H5Cpp.h>
 #pragma warning(pop)
+#include <map>
 #include <string>
+#include <cstdlib>
 #include <filesystem>
 
 namespace fs = std::filesystem;
 
 constexpr char FLE_VERSION[] = "File Version";
-constexpr size_t MAX_FILEVERSION_LENGTH = 256;
+constexpr char CONFIG_GROUP[] = "Configurations";
+constexpr char CONFIG_NAME_ATTR[] = "Name";
+constexpr size_t MAX_STRING_LENGTH = 256;
+
+using TConfigMap = std::map<size_t, std::wstring>;
 
 //TODO[SVC][Mettre ca dans ONDTLib]
 
@@ -61,7 +67,7 @@ public:
 
   static std::string GetFileVersion(hid_t fileId_)
   {
-    char fileVersion[MAX_FILEVERSION_LENGTH]{};
+    char fileVersion[MAX_STRING_LENGTH]{};
     hid_t attrId = H5Aopen(fileId_, FLE_VERSION, H5P_DEFAULT);
     hid_t attrType = H5Aget_type(attrId);
     H5Aread(attrId, attrType, fileVersion);
@@ -70,8 +76,26 @@ public:
     return std::string(fileVersion);
   }
 
-  static void GetConfigurations(hid_t fileId_)
+  static TConfigMap GetConfigurations(hid_t fileId_)
   {
+    hsize_t configQty{};
+    TConfigMap configIds;
+    char name[MAX_STRING_LENGTH];
+    hid_t configsId = H5Gopen(fileId_, CONFIG_GROUP, H5P_DEFAULT);
+    if (H5Gget_num_objs(configsId, &configQty) >= 0)
+    {
+      for (hsize_t configIdx(0); configIdx < configQty; configIdx++)
+      {
+        ssize_t nameLength = H5Gget_objname_by_idx(configsId, configIdx, name, MAX_STRING_LENGTH);
+        if (nameLength > 0)
+        {
+          hid_t configId = H5Gopen(configsId, name, H5P_DEFAULT);
+          std::wstring configName = ReadAttributeWString(configId, CONFIG_NAME_ATTR);
+          configIds.emplace(std::atoi(name), configName);
+        }
+      }
+    }
 
+    return configIds;
   }
 };

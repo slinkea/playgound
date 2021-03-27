@@ -7,10 +7,11 @@
 class AscanDataset : public DatasetBase
 {
 public:
-  AscanDataset(const TDatasetKeys& dsetKeys_)
-    : m_datasetKeys(dsetKeys_)
+  AscanDataset(hid_t configGroupId_)
   {
-    m_dataDsetId = m_datasetKeys[0].first;
+    m_dataDsetId = H5Dopen(configGroupId_, ASCAN_DATASET, H5P_DEFAULT);
+    //H5Dopen(configGroupId_, ASCAN_STATUS_DATASET, H5P_DEFAULT);
+
     m_dataType = H5Dget_type(m_dataDsetId);
     m_dataDspaceId = H5Dget_space(m_dataDsetId);
     m_dimQty = H5Sget_simple_extent_ndims(m_dataDspaceId);
@@ -37,9 +38,7 @@ public:
     delete[] m_offset;
     delete[] m_count;
 
-    for (const auto& datasetKey : m_datasetKeys) {
-      H5Dclose(datasetKey.first);
-    }
+    H5Dclose(m_dataDsetId);
   }
 
   AscanDataset() = delete;
@@ -125,6 +124,5 @@ private:
   hsize_t m_pointQty[1]{};
   DataDimensions m_dataDims;
   DataDimensions m_chunkDims;
-  TDatasetKeys m_datasetKeys;
   AscanAttributes m_attributes;
 };

@@ -6,8 +6,8 @@
 class AscanBeamDataset : public AscanDataset
 {
 public:
-  AscanBeamDataset(const TDatasetKeys& dsetKeys_, size_t beamIdx_)
-    : AscanDataset(dsetKeys_)
+  AscanBeamDataset(hid_t beamGroupId_, size_t beamIdx_)
+    : AscanDataset(beamGroupId_)
     , m_beamIdx(beamIdx_)
   {
   }

@@ -22,8 +22,6 @@ constexpr size_t MAX_NAME_LENGTH = 512;
 
 enum class DataType { CHAR, UCHAR, SHORT, USHORT, INT, UINT, FLOAT, DOUBLE };
 
-using TDatasetKey = std::pair<hid_t, std::string>;
-using TDatasetKeys = std::vector<TDatasetKey>;
 using TGateIdentifiers = std::map<size_t, std::wstring>;
 
 struct CscanDataMember1
