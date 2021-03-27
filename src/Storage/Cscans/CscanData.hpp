@@ -1,33 +1,36 @@
 #pragma once
-#include "Storage/IData.h"
+#include "Storage/Data.h"
 #include "CscanDatasetContainer.hpp"
 #include "CscanDataSource.hpp"
 #include "CscanDataset.hpp"
 #include "CscanBeamDataset.hpp"
 
 
-class CscanData : public IData
+class CscanData : public Data
 {
 public:
   CscanData(const CscanDataSource& dataSource_)
-    : m_dataSource(dataSource_)
+    : Data(dataSource_)
+    , m_dataSource(dataSource_)
   {
   }
 
   CscanData(const CscanDataSource& dataSource_, CscanDatasetContainer&& datasets_)
-    : m_dataSource(dataSource_)
+    : Data(dataSource_)
     , m_datasets(std::move(datasets_))
+    , m_dataSource(dataSource_)
   {
   }
 
-  CscanData() = default;
+  CscanData() = delete;
   virtual ~CscanData() = default;
 
   CscanData(const CscanData&) = delete;
   CscanData& operator=(const CscanData&) = delete;
 
   CscanData(CscanData&& other_) noexcept
-    : m_datasets(std::move(other_.m_datasets))
+    : Data(other_.m_dataSource)
+    , m_datasets(std::move(other_.m_datasets))
     , m_dataSource(other_.m_dataSource)
   {
   }

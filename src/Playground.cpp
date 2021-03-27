@@ -90,9 +90,15 @@ int main(int argc, char* argv[])
     const auto& dataContainer = nfr.Data();
 
     const auto ascanDataCfg3 = dataContainer.Ascan(3);
+    const auto& ascanSrc = ascanDataCfg3->Source();
+    bool ascanBeamMerged = ascanSrc.IsBeamDataMerged();
+    const auto& ascanDatasets = ascanDataCfg3->Datasets();
+    const auto beamDset = ascanDatasets.BeamDataset(0);
+    const auto& ascanAttr = beamDset->Attributes();
+
     const auto cscanDataCfg3 = dataContainer.Cscan(3);
     const auto& cscanSrc = cscanDataCfg3->Source();
-    bool merged = cscanSrc.IsBeamDataMerged();
+    bool cscanBeamMerged = cscanSrc.IsBeamDataMerged();
     const auto& cscanDatasets = cscanDataCfg3->Datasets();
     const auto gateIDset = cscanDatasets.Dataset(0);
     const auto gateIBeamDset = cscanDatasets.BeamDataset(0, 0);

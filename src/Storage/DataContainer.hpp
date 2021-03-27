@@ -2,15 +2,15 @@
 #include <map>
 #include <string>
 #include <filesystem>
-#include "IData.h"
+#include "Data.h"
 #include "Container.hpp"
 #include "Ascans/AscanData.hpp"
 #include "Cscans/CscanData.hpp"
 
 
-class DataContainer : public ONDTLib::Container<IData>
+class DataContainer : public ONDTLib::Container<Data>
 {
-  using TSuper = ONDTLib::Container<IData>;
+  using TSuper = ONDTLib::Container<Data>;
 
 public:
   DataContainer() = default;
@@ -25,7 +25,7 @@ public:
   DataContainer& operator=(const DataContainer&) = delete;
 
   DataContainer(DataContainer&& other_) noexcept
-    : Container<IData>(std::move(other_))
+    : Container<Data>(std::move(other_))
     , m_fileVersion(other_.m_fileVersion)
   {
   }
@@ -34,7 +34,7 @@ public:
   {
     if (this != &other_)
     {
-      Container<IData>::operator=(std::move(other_));
+      Container<Data>::operator=(std::move(other_));
       m_fileVersion = other_.m_fileVersion;
     }
 

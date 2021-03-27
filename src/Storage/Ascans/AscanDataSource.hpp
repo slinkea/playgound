@@ -11,10 +11,10 @@ public:
   {
   }
 
+  AscanDataSource() = default;
   AscanDataSource(const AscanDataSource&) = default;
   virtual ~AscanDataSource() = default;
 
-  AscanDataSource() = delete;
   AscanDataSource& operator=(const AscanDataSource&) = delete;
 
   bool IsBeamDataMerged() const {

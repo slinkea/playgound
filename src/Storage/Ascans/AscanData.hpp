@@ -1,33 +1,36 @@
 #pragma once
-#include "Storage/IData.h"
+#include "Storage/Data.h"
 #include "AscanDatasetContainer.hpp"
 #include "AscanDataSource.hpp"
 #include "AscanDataset.hpp"
 #include "AscanBeamDataset.hpp"
 
 
-class AscanData : public IData
+class AscanData : public Data
 {
 public:
   AscanData(const AscanDataSource& dataSource_)
-    : m_dataSource(dataSource_)
+    : Data(dataSource_)
+    , m_dataSource(dataSource_)
   {
   }
 
   AscanData(const AscanDataSource& dataSource_, AscanDatasetContainer&& datasets_)
-    : m_dataSource(dataSource_)
+    : Data(dataSource_)
     , m_datasets(std::move(datasets_))
+    , m_dataSource(dataSource_)
   {
   }
 
-  AscanData() = default;
+  AscanData() = delete;
   virtual ~AscanData() = default;
 
   AscanData(const AscanData&) = delete;
   AscanData& operator=(const AscanData&) = delete;
 
   AscanData(AscanData&& other_) noexcept
-    : m_datasets(std::move(other_.m_datasets))
+    : Data(other_.m_dataSource)
+    , m_datasets(std::move(other_.m_datasets))
     , m_dataSource(other_.m_dataSource)
   {
   }
