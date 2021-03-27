@@ -4,9 +4,9 @@
 #include "CscanBeamDataset.hpp"
 
 
-class CscanDatasetContainer : public ONDTLib::Container<DatasetBase>
+class CscanDatasetContainer : public ONDTLib::Container<CscanDataset>
 {
-  using TSuper = ONDTLib::Container<DatasetBase>;
+  using TSuper = ONDTLib::Container<CscanDataset>;
 
 public:
   CscanDatasetContainer() = default;
@@ -16,7 +16,7 @@ public:
   CscanDatasetContainer& operator=(const CscanDatasetContainer&) = delete;
 
   CscanDatasetContainer(CscanDatasetContainer&& other_) noexcept
-    : ONDTLib::Container<DatasetBase>(std::move(other_))
+    : ONDTLib::Container<CscanDataset>(std::move(other_))
   {
   }
 
@@ -24,7 +24,7 @@ public:
   {
     if (this != &other_)
     {
-      ONDTLib::Container<DatasetBase>::operator=(std::move(other_));
+      ONDTLib::Container<CscanDataset>::operator=(std::move(other_));
     }
 
     return *this;

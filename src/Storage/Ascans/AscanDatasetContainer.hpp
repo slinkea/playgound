@@ -30,10 +30,6 @@ public:
     return *this;
   }
 
-  const TItemPtrs& Items() const {
-    return TSuper::Items();
-  }
-
   const AscanDataset* Dataset() const
   {
     return dynamic_cast<const AscanDataset*>(TSuper::Find(

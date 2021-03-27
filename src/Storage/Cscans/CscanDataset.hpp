@@ -1,5 +1,5 @@
 #pragma once
-#include <string>
+#include <memory>
 #include "Storage/DatasetBase.hpp"
 #include "Storage/DatasetDefinition.h"
 #include "Storage/DatasetProperties.hpp"
@@ -80,3 +80,5 @@ private:
   CscanAttributes m_attributes;
   const TGateIdentifiers m_gateIds;
 };
+
+using TCscanDatasetPtr = std::unique_ptr<CscanDataset>;

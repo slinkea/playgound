@@ -63,8 +63,12 @@ void ReadAscanData(const TAscanDatasetPtr& dset_)
   }
 }
 
-void ReadCscanData(const CscanDataset* dset_)
+void ReadCscanData(const TCscanDatasetPtr& dset_)
 {
+  const CscanAttributes& attributes = dset_->Attributes();
+  const DatasetProperties& props = dset_->Properties();
+  const DataDimensions& dims = dset_->Dimensions();
+
 }
 
 
@@ -104,22 +108,17 @@ int main(int argc, char* argv[])
 
       if (const auto ascanData = dynamic_cast<const AscanData*>(dataItem.get()))
       {
-        const auto& ascanDset = ascanData->Datasets();
-        for (const auto& ds : ascanDset.Items()) {
+        const auto& ascanDsets = ascanData->Datasets();
+        for (const auto& ds : ascanDsets.Items()) {
           ReadAscanData(ds);
         }
       }
       else if (const auto cscanData = dynamic_cast<const CscanData*>(dataItem.get()))
       {
-        /*for (const auto& ds : datasets.Items())
-        {
-          if (const auto ascanDset = dynamic_cast<const AscanDataset*>(ds.get())) {
-            ReadAscanData(ascanDset);
-          }
-          else if (const auto cscanDset = dynamic_cast<const CscanDataset*>(ds.get())) {
-            ReadCscanData(cscanDset);
-          }
-        }*/
+        const auto& cscanDsets = cscanData->Datasets();
+        for (const auto& ds : cscanDsets.Items()) {
+          ReadCscanData(ds);
+        }
       }
     }
 

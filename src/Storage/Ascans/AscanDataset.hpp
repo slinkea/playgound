@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include "Storage/DatasetBase.hpp"
 #include "Storage/DatasetDefinition.h"
 #include "Storage/DatasetProperties.hpp"
