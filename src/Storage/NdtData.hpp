@@ -18,11 +18,11 @@
 namespace fs = std::filesystem;
 constexpr char FILE_VERSION_1_2_0[] = "1.2.0";
 
-class AcquiredData
+class NdtData
 {
 public:
-  AcquiredData() = default;
-  ~AcquiredData() = default;
+  NdtData() = default;
+  ~NdtData() = default;
 
   void Open(const fs::path& filePath_)
   {

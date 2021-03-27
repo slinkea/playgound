@@ -14,7 +14,7 @@
 #pragma warning(pop)
 
 #include "Playground.h"
-#include "Storage/AcquiredData.hpp"
+#include "Storage/NdtData.hpp"
 #include "FileStorage.hpp"
 #include "CudaKernels.cuh"
 
@@ -76,18 +76,18 @@ int main(int argc, char* argv[])
     //fs.ReadBig();
     //fs.CompressFile();
 
-    AcquiredData acquiredData;
+    NdtData ndtData;
 
     size_t fileSize1 = H5Utils::Size(FILENAME_1);
     size_t fileSize2 = H5Utils::Size(FILENAME_2);
 
     //acquiredData.Open(FILENAME_1);
-    acquiredData.Open(FILENAME_2);
+    ndtData.Open(FILENAME_2);
 
     //const auto& dataContainer1 = acquiredData.GetDataContainer(FILENAME_1);
     //const auto& fileVersion = dataContainer1.Version();
 
-    const auto& dataContainer2 = acquiredData.GetDataContainer(FILENAME_2);
+    const auto& dataContainer2 = ndtData.GetDataContainer(FILENAME_2);
 
     for (const auto& dataItem : dataContainer2.Items())
     {
@@ -165,7 +165,7 @@ int main(int argc, char* argv[])
     }
 
     //acquiredData.Close(FILENAME_1);
-    acquiredData.Close(FILENAME_2);
+    ndtData.Close(FILENAME_2);
 
     //fs.Write();
     //std::vector<int8_t> dataSlice = fs.ReadSliceFpd();
