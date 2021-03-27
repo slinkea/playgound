@@ -69,12 +69,12 @@ private:
 #pragma warning( pop )
       
       hid_t configGroupId = H5Gopen(m_fileMap[filePath_], dataLoc.c_str(), H5P_DEFAULT);
-      AscanDataSource ascanSource(filePath_,  configId.first, configId.second); //[TODO[EAB] Utiliser un id provenant de la config.]
+      AscanDataSource ascanSource(filePath_,  configId.first, configId.second);
       TAscanDataPtr ascanData = std::make_unique<AscanData>(ascanSource);
       FetchAscanData(configGroupId, ascanData);
       dataContainer.Add(std::move(ascanData));
 
-      CscanDataSource cscanSource(filePath_, configId.first, configId.second); //[TODO[EAB] Utiliser les ids provenant de la config.]
+      CscanDataSource cscanSource(filePath_, configId.first, configId.second);
       TCscanDataPtr cscanData = std::make_unique<CscanData>(cscanSource);
       FetchCscanData(configGroupId, cscanData);
       dataContainer.Add(std::move(cscanData));

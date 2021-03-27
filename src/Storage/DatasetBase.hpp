@@ -1,5 +1,6 @@
 #pragma once
 #include <hdf5/H5Cpp.h>
+#include "H5Utils.hpp"
 #include "DatasetDefinition.h"
 #include "DatasetProperties.hpp"
 

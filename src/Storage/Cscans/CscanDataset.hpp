@@ -25,6 +25,8 @@ public:
     m_sampleQty[0] = m_dataDims.SizeX;
     m_sampleQty[1] = m_dataDims.SizeY;
     m_selectionId = H5Screate_simple(m_dimQty, m_sampleQty, nullptr);
+
+    ReadAttributes();
   }
 
   CscanDataset(const CscanDataset&) = default;
@@ -58,7 +60,13 @@ public:
   void SelectAll() const
   {
     H5_RESULT_CHECK(H5Sselect_hyperslab(m_dspaceId, H5S_SELECT_SET, nullptr, nullptr, m_count, nullptr));
-  };
+  }
+
+  void ReadAttributes()
+  {
+    double max = H5Utils::ReadAttributeT<int>(m_dsetId, AMP_SAMP_MAX);
+    double min = H5Utils::ReadAttributeT<int>(m_dsetId, AMP_SAMP_MIN);
+  }
 
 private:
   int m_dimQty{};

@@ -45,9 +45,9 @@ public:
   }
 
   template <typename T>
-  static T ReadAttributeT(hid_t id_, const std::string& name_)
+  static T ReadAttributeT(hid_t id_, const char* name_)
   {
-    hid_t attr = H5Aopen(id_, name_.c_str(), H5P_DEFAULT);
+    hid_t attr = H5Aopen(id_, name_, H5P_DEFAULT);
     hid_t attrFtype = H5Aget_type(attr);
     T value;
     herr_t status = H5Aread(attr, attrFtype, &value);

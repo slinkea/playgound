@@ -12,6 +12,8 @@ constexpr char ASCAN_DATASET[] = "Ascan Data";
 constexpr char ASCAN_STATUS_DATASET[] = "Ascan Status";
 constexpr char CSCAN_GROUP[] = "Cscan";
 constexpr char BEAM_PREFIX[] = "Beam";
+constexpr char AMP_SAMP_MIN[] = "AmplitudeSamplingMin";
+constexpr char AMP_SAMP_MAX[] = "AmplitudeSamplingMax";
 
 constexpr size_t MAX_NAME_LENGTH = 512;
 
