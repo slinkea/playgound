@@ -32,6 +32,8 @@ public:
     const auto fileVersion = H5Utils::GetFileVersion(fileId);
     DataContainer container(fileVersion);
 
+    H5Utils::GetConfigurations(fileId);
+
     if (VersionUtils::IsEqualOrLess(fileVersion, FILE_VERSION_1_2_0)) {
       FetchDataVersion120(filePath_, std::move(container));
     }

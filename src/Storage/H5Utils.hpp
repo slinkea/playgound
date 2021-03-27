@@ -69,4 +69,9 @@ public:
 
     return std::string(fileVersion);
   }
+
+  static void GetConfigurations(hid_t fileId_)
+  {
+
+  }
 };

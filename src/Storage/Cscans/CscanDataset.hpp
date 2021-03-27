@@ -20,11 +20,11 @@ public:
     m_dataDims = FetchDataDimensions(m_dspaceId, m_dimQty);
     m_properties = FetchProperties(m_dsetId, m_dimQty);
     m_count = CreateArray(m_dimQty);
-    m_count[0] = m_dataDims.SizeX();
-    m_count[1] = m_dataDims.SizeY();
+    m_count[0] = m_dataDims.SizeX;
+    m_count[1] = m_dataDims.SizeY;
 
-    m_sampleQty[0] = m_dataDims.SizeX();
-    m_sampleQty[1] = m_dataDims.SizeY();
+    m_sampleQty[0] = m_dataDims.SizeX;
+    m_sampleQty[1] = m_dataDims.SizeY;
     m_selectionId = H5Screate_simple(m_dimQty, m_sampleQty, nullptr);
   }
 

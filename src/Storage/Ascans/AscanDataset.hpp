@@ -22,9 +22,9 @@ public:
     m_count = CreateArray(m_dimQty);
     m_count[0] = 1;
     m_count[1] = 1;
-    m_count[2] = m_dataDims.SizeZ();
+    m_count[2] = m_dataDims.SizeZ;
 
-    m_pointQty[0] = m_dataDims.SizeZ();
+    m_pointQty[0] = m_dataDims.SizeZ;
     m_singleId = H5Screate_simple(1, m_pointQty, nullptr);
 
     m_sampleSize = H5Tget_size(m_dataType);

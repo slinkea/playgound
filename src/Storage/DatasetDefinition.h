@@ -11,7 +11,6 @@ constexpr char GROUP_DATA[] = "/Data";
 constexpr char ASCAN_DATASET[] = "Ascan Data";
 constexpr char ASCAN_STATUS_DATASET[] = "Ascan Status";
 constexpr char CSCAN_GROUP[] = "Cscan";
-//constexpr char CSCAN_DATASET[] = "Gate ";
 constexpr char BEAM_PREFIX[] = "Beam";
 
 constexpr size_t MAX_NAME_LENGTH = 512;
@@ -64,11 +63,19 @@ struct CscanDataMember2 : CscanDataMember1
 
 using CscanDataMember = CscanDataMember2;
 
-struct DataAxis
+struct DataRangeFloat
 {
-  double Min{ 0.0 };
-  double Max{ 0.0 };
-  double Resolution{ 0.0 };
+  float Min{ 0.0 };
+  float Max{ 0.0 };
+  float Resolution{ 0.0 };
+  std::string Unit;
+};
+
+struct DataRangeShort
+{
+  short Min{ 0 };
+  short Max{ 0 };
+  short Resolution{ 0 };
   std::string Unit;
 };
 
@@ -76,69 +83,46 @@ struct CscanAttributes
 {
   CscanAttributes() = default;
   
-  int AmpSamplingMin{};
-  int AmpSamplingMax{};
-  unsigned short AmpSamplingResol{};
-  double PositionMax{};
-  double PositionResol{};
-  DataAxis Scan;
-  DataAxis Index;
+  DataRangeFloat Samples;
+  DataRangeFloat X;
+  DataRangeFloat Y;
 };
 
 struct AscanAttributes
 {
   AscanAttributes() = default;
 
-  int AmpSamplingRange[2]{};
-  unsigned short AmpSamplingResol{};  
+  DataRangeShort AmplitudeSampling;
+  DataRangeFloat Ultrasound;
 };
 
-class DataDimensions
+struct DataDimensions
 {
-public:
   DataDimensions() = default;
-  virtual ~DataDimensions() = default;
 
   DataDimensions(size_t sizeX_)
-    : m_sizeX(sizeX_)
-    , m_quantity(1)
+    : SizeX(sizeX_)
+    , Quantity(1)
   {
   }
 
   DataDimensions(size_t sizeX_, size_t sizeY_)
-    : m_sizeX(sizeX_)
-    , m_sizeY(sizeY_)
-    , m_quantity(2)
+    : SizeX(sizeX_)
+    , SizeY(sizeY_)
+    , Quantity(2)
   {
   }
 
   DataDimensions(size_t sizeX_, size_t sizeY_, size_t sizeZ_)
-    : m_sizeX(sizeX_)
-    , m_sizeY(sizeY_)
-    , m_sizeZ(sizeZ_)
-    , m_quantity(3)
+    : SizeX(sizeX_)
+    , SizeY(sizeY_)
+    , SizeZ(sizeZ_)
+    , Quantity(3)
   {
   }
 
-  size_t Quantity() const {
-    return m_quantity;
-  }
-
-  size_t SizeX() const {
-    return m_sizeX;
-  }
-
-  size_t SizeY() const {
-    return m_sizeY;
-  }
-
-  size_t SizeZ() const {
-    return m_sizeZ;
-  }
-
-private:
-  size_t m_sizeX{};
-  size_t m_sizeY{};
-  size_t m_sizeZ{};
-  size_t m_quantity{};
+  size_t SizeX{};
+  size_t SizeY{};
+  size_t SizeZ{};
+  size_t Quantity{};
 };
