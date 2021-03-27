@@ -80,18 +80,8 @@ private:
 #pragma warning( pop )
       
       hid_t configGroupId = H5Gopen(m_fileId, dataLoc.c_str(), H5P_DEFAULT);
-      
       FetchAscanData(filePath_, configGroupId, configIds);
-
-
-      //TODO
-      CscanDataSource cscanSource(filePath_, configIds, false);
-      TCscanDataPtr cscanData = std::make_unique<CscanData>(cscanSource);
-      FetchCscanData(configGroupId, cscanData);
-
-
-      m_dataContainer.Add(std::move(cscanData));
-
+      FetchCscanData(filePath_, configGroupId, configIds);
       H5Gclose(configGroupId);
     }
   }
@@ -152,26 +142,39 @@ private:
     }
   }
 
-  void FetchCscanData(hid_t configGroupId_, TCscanDataPtr& cscanData_) const
+  void FetchCscanData(const fs::path& filePath_, hid_t configGroupId_, const TConfigIdPair& configIds_)
   {
     herr_t status = H5Gget_objinfo(configGroupId_, CSCAN_GROUP, 0, nullptr);
-    if (status == 0) {
+    if (status == 0) 
+    {
+      CscanDataSource cscanSource(filePath_, configIds_, true);
+      TCscanDataPtr cscanData = std::make_unique<CscanData>(cscanSource);
+
       hid_t cscanGroupId = H5Gopen(configGroupId_, CSCAN_GROUP, H5P_DEFAULT);
-      FetchCscanDatasets(cscanGroupId, cscanData_);
+      FetchCscanDatasets(cscanGroupId, cscanData);
       H5Gclose(cscanGroupId);
+
+      m_dataContainer.Add(std::move(cscanData));
     }
-    else {
+    else 
+    {
       hsize_t beamQty{};
-      if (H5Gget_num_objs(configGroupId_, &beamQty) >= 0) {
+      if (H5Gget_num_objs(configGroupId_, &beamQty) >= 0)
+      {
+        CscanDataSource cscanSource(filePath_, configIds_, false);
+        TCscanDataPtr cscanData = std::make_unique<CscanData>(cscanSource);
+
         for (size_t beamIdx(1); beamIdx <= beamQty; beamIdx++)
         {
           std::string beamStr(BEAM_PREFIX + std::string(" ") + std::to_string(beamIdx));
           hid_t beamGroupId = H5Gopen(configGroupId_, beamStr.c_str(), H5P_DEFAULT);
           hid_t cscanGroupId = H5Gopen(beamGroupId, CSCAN_GROUP, H5P_DEFAULT);
-          FetchCscanDatasets(cscanGroupId, cscanData_, beamIdx);
+          FetchCscanDatasets(cscanGroupId, cscanData, beamIdx);
           H5Gclose(cscanGroupId);
           H5Gclose(beamGroupId);
         }
+
+        m_dataContainer.Add(std::move(cscanData));
       }
     }
   }
