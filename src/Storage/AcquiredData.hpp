@@ -74,10 +74,10 @@ private:
       FetchAscanData(configGroupId, ascanData);
       dataContainer.Add(std::move(ascanData));
 
-      //CscanDataSource cscanSource(filePath_, configId.first, configId.second); //[TODO[EAB] Utiliser les ids provenant de la config.]
-      //TCscanDataPtr cscanData = std::make_unique<CscanData>(cscanSource);
-      //FetchCscanData(fileId, name, cscanData);
-      //dataContainer.Add(std::move(cscanData));
+      CscanDataSource cscanSource(filePath_, configId.first, configId.second); //[TODO[EAB] Utiliser les ids provenant de la config.]
+      TCscanDataPtr cscanData = std::make_unique<CscanData>(cscanSource);
+      FetchCscanData(configGroupId, cscanData);
+      dataContainer.Add(std::move(cscanData));
 
       H5Gclose(configGroupId);
     }
@@ -105,97 +105,56 @@ private:
     }
   }
 
-  void FetchCscanData(hid_t fileId_, const std::string& configName_, TCscanDataPtr& cscanData_) const
+  void FetchCscanDatasets(hid_t cscanGroupId_, TCscanDataPtr& cscanData_, size_t beamIdx_ = 0) const
   {
-    std::stringstream configLocation;
-    configLocation << GROUP_DATA << "/" << configName_ << "/";
+    hsize_t gateQty;
+    char dsetName[MAX_NAME_LENGTH];
 
-    std::stringstream cscanLocation;
-    cscanLocation << configLocation.str() << CSCAN_GROUP << "/";
-
-    herr_t status = H5Gget_objinfo(fileId_, cscanLocation.str().c_str(), 0, nullptr);
-    if (status == 0)
-    {
-      hid_t cscanGroupId = H5Gopen(fileId_, cscanLocation.str().c_str(), H5P_DEFAULT);
-      if (cscanGroupId >= 0)
+    if (H5Gget_num_objs(cscanGroupId_, &gateQty) >= 0) {
+      for (size_t gateIdx{}; gateIdx < gateQty; gateIdx++)
       {
-        hsize_t gateQty;
-        if (H5Gget_num_objs(cscanGroupId, &gateQty) >= 0)
+        ssize_t nameLength = H5Gget_objname_by_idx(cscanGroupId_, gateIdx, dsetName, MAX_NAME_LENGTH);
+        if (nameLength > 0)
         {
-          char dsetName[MAX_NAME_LENGTH];
-          for (size_t gateIdx(0); gateIdx < gateQty; gateIdx++)
-          {
-            ssize_t nameLength = H5Gget_objname_by_idx(cscanGroupId, gateIdx, dsetName, MAX_NAME_LENGTH);
-            if (nameLength > 0)
-            {
-              std::string gateName(dsetName);
-              TGateIdentifiers gateIds = { {gateIdx, std::wstring(gateName.begin(), gateName.end())} };
+          std::string gateName(dsetName);
+          TGateIdentifiers gateIds = { {gateIdx, std::wstring(gateName.begin(), gateName.end())} };
+          hid_t dsetId = H5Dopen(cscanGroupId_, dsetName, H5P_DEFAULT);
 
-              std::stringstream dsetLocation;
-              dsetLocation << cscanLocation.str() << gateName;
-              hid_t dsetId = H5Dopen(fileId_, dsetLocation.str().c_str(), H5P_DEFAULT);
-              cscanData_->Datasets().Add(std::make_unique<CscanDataset>(dsetId, dsetLocation.str(), gateIds));
-            }
+          if (beamIdx_ == 0) {
+            cscanData_->Datasets().Add(std::make_unique<CscanDataset>(dsetId, gateIds));
+          }
+          else {
+            cscanData_->Datasets().Add(std::make_unique<CscanBeamDataset>(dsetId, gateIds, beamIdx_));
           }
         }
-
-        H5Gclose(cscanGroupId);
       }
     }
-    else
-    {
-      herr_t status = H5Gget_objinfo(fileId_, configLocation.str().c_str(), 0, nullptr);
-      if (status == 0)
-      {
-        hid_t configGroupId = H5Gopen(fileId_, configLocation.str().c_str(), H5P_DEFAULT);
-        if (configGroupId >= 0)
+  }
+
+  void FetchCscanData(hid_t configGroupId_, TCscanDataPtr& cscanData_) const
+  {
+    herr_t status = H5Gget_objinfo(configGroupId_, CSCAN_GROUP, 0, nullptr);
+    if (status == 0) {
+      hid_t cscanGroupId = H5Gopen(configGroupId_, CSCAN_GROUP, H5P_DEFAULT);
+      FetchCscanDatasets(cscanGroupId, cscanData_);
+      H5Gclose(cscanGroupId);
+    }
+    else {
+      hsize_t beamQty{};
+      if (H5Gget_num_objs(configGroupId_, &beamQty) >= 0) {
+        for (size_t beamIdx(1); beamIdx <= beamQty; beamIdx++)
         {
-          hsize_t beamQty{};
-          if (H5Gget_num_objs(configGroupId, &beamQty) >= 0)
-          {
-            for (size_t beamIdx{}; beamIdx < beamQty; beamIdx++)
-            {
-              std::stringstream cscanLocation;
-              std::string beamStr(BEAM_PREFIX + std::string(" ") + std::to_string(beamIdx + 1));
-              cscanLocation << configLocation.str() << beamStr << "/" << CSCAN_GROUP << "/";
-
-              //
-
-              hid_t cscanId = H5Gopen(fileId_, cscanLocation.str().c_str(), H5P_DEFAULT);
-              if (cscanId >= 0)
-              {
-                hsize_t gateQty;
-                if (H5Gget_num_objs(cscanId, &gateQty) >= 0)
-                {
-                  char dsetName[MAX_NAME_LENGTH];
-                  for (size_t gateIdx(0); gateIdx < gateQty; gateIdx++)
-                  {
-                    ssize_t nameLength = H5Gget_objname_by_idx(cscanId, gateIdx, dsetName, MAX_NAME_LENGTH);
-                    if (nameLength > 0)
-                    {
-                      std::string gateName(dsetName);
-                      TGateIdentifiers gateIds = { {gateIdx, std::wstring(gateName.begin(), gateName.end())} };
-
-                      std::stringstream dsetLocation;
-                      dsetLocation << cscanLocation.str() << gateName;
-                      hid_t dsetId = H5Dopen(fileId_, dsetLocation.str().c_str(), H5P_DEFAULT);
-                      cscanData_->Datasets().Add(std::make_unique<CscanBeamDataset>(dsetId, dsetLocation.str(), beamIdx, gateIds));
-                    }
-                  }
-                }
-
-                H5Gclose(cscanId);
-              }
-            }
-          }
-
-          H5Gclose(configGroupId);
+          std::string beamStr(BEAM_PREFIX + std::string(" ") + std::to_string(beamIdx));
+          hid_t beamGroupId = H5Gopen(configGroupId_, beamStr.c_str(), H5P_DEFAULT);
+          hid_t cscanGroupId = H5Gopen(beamGroupId, CSCAN_GROUP, H5P_DEFAULT);
+          FetchCscanDatasets(cscanGroupId, cscanData_, beamIdx);
+          H5Gclose(cscanGroupId);
+          H5Gclose(beamGroupId);
         }
       }
-    }    
+    }
   }
 
   TDataContainerMap m_dataContainers;
-  using TFileMap = std::map<const fs::path, const hid_t>;
-  TFileMap m_fileMap;
+  std::map<fs::path, hid_t> m_fileMap;
 };

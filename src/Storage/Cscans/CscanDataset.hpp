@@ -8,9 +8,8 @@
 class CscanDataset : public DatasetBase
 {
 public:
-  CscanDataset(hid_t dsetId_, const std::string& location_, const TGateIdentifiers& gateIds_)
+  CscanDataset(hid_t dsetId_, const TGateIdentifiers& gateIds_)
     : m_dsetId(dsetId_)
-    , m_location(location_)
     , m_gateIds(gateIds_)
   {
     m_dspaceId = H5Dget_space(m_dsetId);
@@ -71,6 +70,5 @@ private:
   hsize_t m_sampleQty[2]{};
   DataDimensions m_dataDims;
   CscanAttributes m_attributes;
-  const std::string m_location;
   const TGateIdentifiers m_gateIds;
 };

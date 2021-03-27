@@ -6,8 +6,8 @@
 class CscanBeamDataset : public CscanDataset
 {
 public:
-  CscanBeamDataset(hid_t Id_, const std::string& location_, size_t beamIdx_, const TGateIdentifiers& gateIds_)
-    : CscanDataset(Id_, location_, gateIds_)
+  CscanBeamDataset(hid_t dsetId_, const TGateIdentifiers& gateIds_, size_t beamIdx_)
+    : CscanDataset(dsetId_, gateIds_)
     , m_beamIdx(beamIdx_)
   {
   }
