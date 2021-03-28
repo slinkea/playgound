@@ -103,9 +103,9 @@ private:
         AscanDataSource ascanSource(filePath_, configIds_, false);
         TAscanDataPtr ascanData = std::make_unique<AscanData>(ascanSource);
 
-        for (size_t beamIdx(1); beamIdx <= beamQty; beamIdx++)
+        for (size_t beamIdx{}; beamIdx < beamQty; beamIdx++)
         {
-          std::string beamStr(BEAM_PREFIX + std::string(" ") + std::to_string(beamIdx));
+          std::string beamStr(BEAM_PREFIX + std::string(" ") + std::to_string(beamIdx + 1));
           hid_t beamGroupId = H5Gopen(configGroupId_, beamStr.c_str(), H5P_DEFAULT);
           ascanData->Datasets().Add(std::make_unique<AscanBeamDataset>(beamGroupId, beamIdx));
           H5Gclose(beamGroupId);
@@ -164,9 +164,9 @@ private:
         CscanDataSource cscanSource(filePath_, configIds_, false);
         TCscanDataPtr cscanData = std::make_unique<CscanData>(cscanSource);
 
-        for (size_t beamIdx(1); beamIdx <= beamQty; beamIdx++)
+        for (size_t beamIdx{}; beamIdx < beamQty; beamIdx++)
         {
-          std::string beamStr(BEAM_PREFIX + std::string(" ") + std::to_string(beamIdx));
+          std::string beamStr(BEAM_PREFIX + std::string(" ") + std::to_string(beamIdx + 1));
           hid_t beamGroupId = H5Gopen(configGroupId_, beamStr.c_str(), H5P_DEFAULT);
           hid_t cscanGroupId = H5Gopen(beamGroupId, CSCAN_GROUP, H5P_DEFAULT);
           FetchCscanDatasets(cscanGroupId, cscanData, beamIdx);

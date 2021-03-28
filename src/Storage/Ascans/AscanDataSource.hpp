@@ -18,7 +18,7 @@ public:
   AscanDataSource& operator=(const AscanDataSource&) = delete;
 
   bool IsBeamDataMerged() const {
-    return false;
+    return m_beamDataMerged;
   }
 
 private:

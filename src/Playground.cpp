@@ -89,19 +89,25 @@ int main(int argc, char* argv[])
 
     const auto& dataContainer = nfr.Data();
 
-    const auto ascanDataCfg3 = dataContainer.Ascan(3);
+    const auto ascanDataCfg3 = dataContainer.Ascan(1);
     const auto& ascanSrc = ascanDataCfg3->Source();
     bool ascanBeamMerged = ascanSrc.IsBeamDataMerged();
     const auto& ascanDatasets = ascanDataCfg3->Datasets();
+    size_t ascanDsetCount = ascanDatasets.Count();
     const auto beamDset = ascanDatasets.BeamDataset(0);
+    size_t ascanBeamIdx = beamDset->BeamIndex();
     const auto& ascanAttr = beamDset->Attributes();
 
-    const auto cscanDataCfg3 = dataContainer.Cscan(3);
+    const auto cscanDataCfg3 = dataContainer.Cscan(4);
     const auto& cscanSrc = cscanDataCfg3->Source();
     bool cscanBeamMerged = cscanSrc.IsBeamDataMerged();
-    const auto& cscanDatasets = cscanDataCfg3->Datasets();
-    const auto gateIDset = cscanDatasets.Dataset(0);
-    const auto gateIBeamDset = cscanDatasets.BeamDataset(0, 0);
+    const auto& cscanDsets = cscanDataCfg3->Datasets();
+    size_t cscanDsetCount = ascanDatasets.Count();
+    
+    const auto gateIDset = cscanDsets.Dataset(0);
+
+    const auto gateIBeamDset = cscanDsets.BeamDataset(0, 0);
+    size_t cscanBeamIdx = gateIBeamDset->BeamIndex();
     const auto& cscanAttr = gateIDset->Attributes();
 
     //

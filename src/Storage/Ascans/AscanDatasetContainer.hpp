@@ -40,10 +40,9 @@ public:
   const AscanBeamDataset* BeamDataset(size_t beamIdx_) const
   {
     return dynamic_cast<const AscanBeamDataset*>(TSuper::Find(
-      [&beamIdx_](const TItemPtr& item_)
-      {
+      [&beamIdx_](const TItemPtr& item_) {  
         if (const auto dset = dynamic_cast<const AscanBeamDataset*>(item_.get())) {
-          return dset->BeamIndex() == beamIdx_;
+            return dset->BeamIndex() == beamIdx_;
         }
         else {
           return false;
