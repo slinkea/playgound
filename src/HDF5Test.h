@@ -2,11 +2,11 @@
 #include <gtest/gtest.h>
 
 
-class PlaygroundTest : public testing::Test
+class HDF5Test : public testing::Test
 {
 public:
-	PlaygroundTest();
-	virtual ~PlaygroundTest();
+	HDF5Test();
+	virtual ~HDF5Test();
 
 private:
 
