@@ -77,7 +77,7 @@ uint64_t WebSocketClient::RetrieveClientId()
   std::string message("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getClientId\"}");
   m_client.send(m_hdl, message, websocketpp::frame::opcode::text);
 
-  std::chrono::seconds duration(30);
+  std::chrono::seconds duration(5);
   std::unique_lock<std::mutex> lk(m_mtx);
   m_cv.wait_for(lk, duration, [&] { return !m_payload.empty(); });
 
@@ -91,7 +91,6 @@ uint64_t WebSocketClient::RetrieveClientId()
 
 void WebSocketClient::OnOpen(websocketpp::connection_hdl hdl_)
 {
-  TAsioClient::client::connection_ptr connection = m_client.get_con_from_hdl(hdl_);
   m_cv.notify_all();
 }
 
@@ -109,6 +108,5 @@ void WebSocketClient::OnClose(websocketpp::connection_hdl hdl_)
 void WebSocketClient::OnFail(websocketpp::connection_hdl hdl_)
 {
   TAsioClient::client::connection_ptr connection = m_client.get_con_from_hdl(hdl_);
-  std::string header = connection->get_response_header("Server");
   std::string errorMessage = connection->get_ec().message();
 }

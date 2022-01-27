@@ -29,7 +29,8 @@ add_executable(Playground
 	"src/WebSocketTest.h" "src/WebSocketTest.cpp"
 	"src/WebSocketClient.h" "src/WebSocketClient.cpp"
 	"src/WebSocketServer.h" "src/WebSocketServer.cpp")
-target_link_libraries(Playground debug libhdf5_D debug gtestd debug gtest_maind debug zlibstaticd debug libhdf5_hl_D
-optimized gtest optimized gtest_main optimized libhdf5 optimized zlibstatic optimized libhdf5_hl uSockets)
+target_link_libraries(Playground debug libhdf5_D debug gtestd debug gtest_maind debug zlibstaticd debug libhdf5_hl_D debug log4cplusSUD
+optimized gtest optimized gtest_main optimized libhdf5 optimized zlibstatic optimized libhdf5_hl optimized log4cplusSU
+uSockets)
 
 add_test(Playground Playground)
