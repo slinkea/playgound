@@ -2,11 +2,11 @@
 #include <gtest/gtest.h>
 
 
-class HDF5Test : public testing::Test
+class HDF5AscanTest : public testing::Test
 {
 public:
-	HDF5Test();
-	virtual ~HDF5Test();
+	HDF5AscanTest();
+	virtual ~HDF5AscanTest();
 
 protected:
 	void SetUp() override;
