@@ -14,6 +14,20 @@ WebSocketServer::~WebSocketServer()
 {
 }
 
+void WebSocketServer::Initialize()
+{
+  for (uint64_t clientId{1}; clientId <= MAX_CLIENT; clientId++) {
+    m_webSocketWorkers.emplace(clientId, std::make_unique<WebSocketWorker>(clientId));
+  }
+}
+
+void WebSocketServer::Shutdown()
+{
+  for (auto& webSocketWorker : m_webSocketWorkers) {
+    webSocketWorker.second->Stop();
+  }
+}
+
 void WebSocketServer::Run(size_t portNumber_)
 {
   std::thread([this, portNumber_]() {
@@ -40,43 +54,52 @@ void WebSocketServer::Run(size_t portNumber_)
           context_);
       });
     },
-    .open = [](TWebSocket* webSocket_)
+    .open = [this](TWebSocket* webSocket_)
     {
-      LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "open: " << webSocket_->getUserData()->Id);
+      LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "open");
+      uint64_t clientId = webSocket_->getUserData()->Id;
+      m_webSocketWorkers[clientId]->Socket(webSocket_);
+      m_webSocketWorkers[clientId]->Loop(m_wsLoop);
+      m_webSocketWorkers[clientId]->MessageReceivedEvent().Subscribe(
+        std::bind(&WebSocketServer::OnClientMessageReceived, this, std::placeholders::_1));
+
+      std::stringstream ipv4;
+      std::string_view remoteAddress = webSocket_->getRemoteAddress();
+      if (remoteAddress.length() == 16)
+      {
+        ipv4 << std::to_string(static_cast<uint8_t>(remoteAddress[12])) << ".";
+        ipv4 << std::to_string(static_cast<uint8_t>(remoteAddress[13])) << ".";
+        ipv4 << std::to_string(static_cast<uint8_t>(remoteAddress[14])) << ".";
+        ipv4 << std::to_string(static_cast<uint8_t>(remoteAddress[15]));
+      }
+
+      auto args = ConnectionEventArgs(clientId, ipv4.str());
+      m_openConnectionEvent.Notify(args);
     },
     .message = [this](TWebSocket* webSocket_, std::string_view message_, uWS::OpCode opCode_)
     {
-      LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "message: " << webSocket_->getUserData()->Id);
-
-      webSocket_->cork([&webSocket_]()
-      {
-        LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "message cork: " << webSocket_->getUserData()->Id);
-        std::this_thread::sleep_for(1s);
-
-        rj::StringBuffer buffer;
-        rj::Writer<rj::StringBuffer> writer(buffer);
-        rj::Document document;
-        document.Parse("{\"jsonrpc\":\"2.0\",\"result\":{\"clientId\":0},\"id\":1}");
-        document["result"]["clientId"] = webSocket_->getUserData()->Id;
-        document.Accept(writer);
-
-        LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "message send: " << webSocket_->getUserData()->Id);
-        auto status = webSocket_->send(buffer.GetString(), uWS::TEXT, true);
-        if (status != TWebSocket::SendStatus::SUCCESS) {
-          LOG4CPLUS_ERROR(log4cplus::Logger::getRoot(), "ERROR message send: " << webSocket_->getUserData()->Id);
-        }
-      });
+      LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "message");
+      m_webSocketWorkers[webSocket_->getUserData()->Id]->Notify(message_);
     },
     .drain = [](TWebSocket* webSocket_)
     {
-      LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "drain: " << webSocket_->getUserData()->Id);
+       LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "drain");
     },
-    .close = [](TWebSocket* webSocket_, int code, std::string_view message_)
+    .close = [this](TWebSocket* webSocket_, int code, std::string_view message_)
     {
-      LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "close: " << webSocket_->getUserData()->Id);
+      LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "close");
+      m_webSocketWorkers[webSocket_->getUserData()->Id]->Stop();
 
     }})
-    .listen("", (int)portNumber_, [this, portNumber_](auto* token) { listen_socket = token; }).run();
+    .listen("", (int)portNumber_, [this, portNumber_](auto* token) {      
+      m_wsLoop = uWS::Loop::get();
+      listen_socket = token;
+
+    }).run();
   }).detach();
 }
 
+void WebSocketServer::OnClientMessageReceived(MessageEventArgs& messageEventArgs_)
+{
+  m_messageReceivedEvent.Notify(messageEventArgs_);
+}

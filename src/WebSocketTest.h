@@ -11,7 +11,8 @@ public:
 	WebSocketTest();
 	virtual ~WebSocketTest();
 
-	void Run(WebSocketClient& wsClient, std::atomic<uint64_t>& checksum_);
+	uint64_t ClientContext(WebSocketClient& wsClient);
+	void OnClientMessageReceived(const MessageEventArgs& messageEventArgs_);
 
 protected:
 	void SetUp() override;

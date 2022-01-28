@@ -34,7 +34,7 @@ WebSocketClient::~WebSocketClient()
 void WebSocketClient::Connect()
 {
   websocketpp::lib::error_code ec;
-  TAsioClient::connection_ptr connection = m_client.get_connection("ws://127.0.0.1:1333", ec);
+  TAsioClient::connection_ptr connection = m_client.get_connection("ws://127.0.0.1:1335", ec);
 
   if (!ec)
   {

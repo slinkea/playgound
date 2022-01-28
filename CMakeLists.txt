@@ -23,14 +23,13 @@ set(CMAKE_CXX_FLAGS_RELEASE "/MD /O2 /Ob2 /DNDEBUG"	)
 
 enable_testing()
 add_executable(Playground 
-	"src/HDF5CscanTest.h" "src/HDF5CscanTest.cpp"
-	"src/HDF5AscanTest.h" "src/HDF5AscanTest.cpp"
-	"src/HDF5Test.h" "src/HDF5Test.cpp"
 	"src/WebSocketTest.h" "src/WebSocketTest.cpp"
 	"src/WebSocketClient.h" "src/WebSocketClient.cpp"
-	"src/WebSocketServer.h" "src/WebSocketServer.cpp")
-target_link_libraries(Playground debug libhdf5_D debug gtestd debug gtest_maind debug zlibstaticd debug libhdf5_hl_D debug log4cplusSUD
-optimized gtest optimized gtest_main optimized libhdf5 optimized zlibstatic optimized libhdf5_hl optimized log4cplusSU
+	"src/WebSocketServer.h" "src/WebSocketServer.cpp"
+	"src/WebSocketWorker.h" "src/WebSocketWorker.cpp"
+	"src/Event.hpp" "src/EventArguments.h")
+target_link_libraries(Playground debug gtestd debug gtest_maind debug zlibstaticd debug log4cplusSUD
+optimized gtest optimized gtest_main optimized zlibstatic optimized log4cplusSU
 uSockets)
 
 add_test(Playground Playground)
