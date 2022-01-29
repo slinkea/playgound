@@ -9,14 +9,14 @@ class WebSocketTest : public testing::Test
 {
 public:
 	WebSocketTest();
-	virtual ~WebSocketTest();
+	~WebSocketTest();
 
 	uint64_t ClientContext(WebSocketClient& wsClient);
 	void OnClientMessageReceived(const MessageEventArgs& messageEventArgs_);
 
 protected:
 	void SetUp() override;
-	void TearDown() override;
+	void TearDown() override {}
 
 	WebSocketServer m_server;
 };

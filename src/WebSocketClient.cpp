@@ -9,6 +9,7 @@
 #include "rapidjson/document.h"
 
 namespace rj = rapidjson;
+using namespace std::chrono_literals;
 
 
 WebSocketClient::WebSocketClient()
@@ -25,7 +26,6 @@ WebSocketClient::WebSocketClient()
 WebSocketClient::~WebSocketClient()
 {
   m_client.stop_perpetual();
-
   if (m_thread->joinable()) {
     m_thread->join();
   }
@@ -39,17 +39,14 @@ void WebSocketClient::Connect()
   if (!ec)
   {
     m_hdl = connection->get_handle();
-
     connection->set_open_handler(std::bind(&WebSocketClient::OnOpen, this, std::placeholders::_1));
     connection->set_message_handler(std::bind(&WebSocketClient::OnMessage, this, std::placeholders::_1, std::placeholders::_2));
     connection->set_close_handler(std::bind(&WebSocketClient::OnClose, this, std::placeholders::_1));
     connection->set_fail_handler(std::bind(&WebSocketClient::OnFail, this, std::placeholders::_1));
-
     m_client.connect(connection);
 
-    std::chrono::seconds duration(5);
     std::unique_lock<std::mutex> lk(m_mtx);
-    m_cv.wait_for(lk, duration, [&] {
+    m_cv.wait_for(lk, 5s, [&] {
       return connection->get_state() == websocketpp::session::state::value::open; 
     });
   }
@@ -63,9 +60,8 @@ void WebSocketClient::Disconnect()
     websocketpp::lib::error_code ec;
     m_client.close(m_hdl, websocketpp::close::status::going_away, "", ec);
 
-    std::chrono::seconds duration(5);
     std::unique_lock<std::mutex> lk(m_mtx);
-    m_cv.wait_for(lk, duration, [&] {
+    m_cv.wait_for(lk, 5s, [&] {
       return connection->get_state() == websocketpp::session::state::value::closed;
     });
   }
@@ -73,16 +69,15 @@ void WebSocketClient::Disconnect()
 
 uint64_t WebSocketClient::RetrieveClientId()
 {
-  m_payload.clear();
+  m_message.clear();
   std::string message("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getClientId\"}");
   m_client.send(m_hdl, message, websocketpp::frame::opcode::text);
 
-  std::chrono::seconds duration(5);
   std::unique_lock<std::mutex> lk(m_mtx);
-  m_cv.wait_for(lk, duration, [&] { return !m_payload.empty(); });
+  m_cv.wait_for(lk, 5s, [&] { return !m_message.empty(); });
 
   rj::Document document;
-  if (!document.Parse(m_payload.c_str()).HasParseError()) {
+  if (!document.Parse(m_message.c_str()).HasParseError()) {
     return document["result"]["clientId"].GetUint64();
   }
 
@@ -96,7 +91,7 @@ void WebSocketClient::OnOpen(websocketpp::connection_hdl hdl_)
 
 void WebSocketClient::OnMessage(websocketpp::connection_hdl hdl_, const TClientMessage& message_)
 {
-  m_payload = message_->get_payload();
+  m_message = message_->get_payload();
   m_cv.notify_all();
 }
 

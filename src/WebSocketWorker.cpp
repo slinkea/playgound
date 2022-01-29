@@ -6,7 +6,6 @@
 #include "rapidjson/stringbuffer.h"
 
 namespace rj = rapidjson;
-
 using namespace std::chrono_literals;
 
 
@@ -20,10 +19,8 @@ WebSocketWorker::~WebSocketWorker()
   m_running = false;
   m_cv.notify_all();
 
-  if (m_thread.joinable())
-  {
+  if (m_thread.joinable()) {
     m_thread.join();
-    m_promise.get_future().get();
   }
 }
 
@@ -50,24 +47,23 @@ void WebSocketWorker::Run()
   std::mutex mutex;
   std::unique_lock<std::mutex> newMessageLock(mutex);
   m_running = true;
+  LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "WorkerRun Begin: " << m_clienId.load());
 
   try
   {
     do
     {
       m_cv.wait(newMessageLock);
-      LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "WorkerRun Begin: " << m_clienId.load());
-
-      m_mutexMessages.lock();
-      if (m_running && m_messages.size() > 0)
+      if (m_running)
       {
-        message = m_messages.front();
-        m_messages.pop_back();
-      }
-      m_mutexMessages.unlock();
+        m_mutexMessages.lock();
+        if (m_messages.size() > 0)
+        {
+          message = m_messages.front();
+          m_messages.pop_back();
+        }
+        m_mutexMessages.unlock();
 
-      if (!message.empty())
-      {
         auto args = MessageEventArgs(m_clienId, message);
         m_messageReceivedEvent.Notify(args);
         message.clear();
@@ -91,7 +87,6 @@ void WebSocketWorker::Run()
           });
         });
       }
-
     } while (m_running);
   }
   catch (const std::exception&)
@@ -105,6 +100,5 @@ void WebSocketWorker::Run()
   }
 
   LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "WorkerRun Done: " << m_clienId);
-
   m_cv.notify_all();
 }

@@ -27,8 +27,8 @@ add_executable(Playground
 	"src/WebSocketClient.h" "src/WebSocketClient.cpp"
 	"src/WebSocketServer.h" "src/WebSocketServer.cpp"
 	"src/WebSocketWorker.h" "src/WebSocketWorker.cpp"
-	"src/Event.hpp" "src/EventArguments.h"
-	"src/ThreadPool2.h")
+	"src/Event.hpp" "src/EventArguments.h")
+
 target_link_libraries(Playground debug gtestd debug gtest_maind debug zlibstaticd debug log4cplusSUD
 optimized gtest optimized gtest_main optimized zlibstatic optimized log4cplusSU
 uSockets)

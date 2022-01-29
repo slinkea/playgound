@@ -13,7 +13,7 @@ class WebSocketClient
 {
 public:
 	WebSocketClient();
-	virtual ~WebSocketClient();
+	~WebSocketClient();
 
 	void Connect();
 	void Disconnect();
@@ -24,8 +24,8 @@ private:
 	using TAsioClient = websocketpp::client<websocketpp::config::asio_client>;
 
 	TAsioClient m_client;
-	websocketpp::lib::shared_ptr<websocketpp::lib::thread> m_thread;
 	websocketpp::connection_hdl m_hdl;
+	websocketpp::lib::shared_ptr<websocketpp::lib::thread> m_thread;
 
 	void OnOpen(websocketpp::connection_hdl hdl_);
 	void OnMessage(websocketpp::connection_hdl hdl_, const TClientMessage& message_);
@@ -33,6 +33,6 @@ private:
 	void OnFail(websocketpp::connection_hdl hdl_);
 
 	std::mutex m_mtx;
+	std::string m_message;
 	std::condition_variable m_cv;
-	std::string m_payload;
 };
