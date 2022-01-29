@@ -23,9 +23,8 @@ class WebSocketWorker
 {
 public:
   WebSocketWorker();
-  virtual ~WebSocketWorker();
+  ~WebSocketWorker();
 
-  void Result();
   bool IsRunning() const { return m_running; }
   void Notify(std::string_view message_);
   void Initialize(TWebSocket* webSocket_, uWS::Loop* wsLoop_, uint64_t clientId_);
@@ -41,7 +40,6 @@ private:
   std::mutex m_mutexMessages;
   std::condition_variable m_cv;
   std::atomic<bool> m_running{};
-  std::promise<uint64_t> m_promise;
   std::vector<std::string> m_messages;
   ONDTLib::Event<WebSocketWorker, MessageEventArgs&> m_messageReceivedEvent;
 };

@@ -34,7 +34,6 @@ void WebSocketWorker::Initialize(TWebSocket* webSocket_, uWS::Loop* wsLoop_, uin
   m_wsLoop = wsLoop_;
   m_clienId = clientId_;
   m_webSocket = webSocket_;
-  m_promise = std::promise<uint64_t>();
 }
 
 void WebSocketWorker::Run()
@@ -42,7 +41,6 @@ void WebSocketWorker::Run()
   m_running = true;
   std::mutex mutex;
   std::string message;
-  bool exceptionFound{};  
   std::unique_lock<std::mutex> newMessageLock(mutex);
 
   try
@@ -80,19 +78,9 @@ void WebSocketWorker::Run()
       }
     } while (m_running);
   }
-  catch (const std::exception&)
+  catch (const std::exception& ex_)
   {
     m_running = false;
-    exceptionFound = true;
-    m_promise.set_exception(std::current_exception());
+    LOG4CPLUS_ERROR(log4cplus::Logger::getRoot(), "ERROR: " << ex_.what() << ", " << m_clienId);
   }
-
-  if (!exceptionFound) {
-    m_promise.set_value(m_clienId);
-  }
-}
-
-void WebSocketWorker::Result()
-{
-  m_promise.get_future().get();
 }

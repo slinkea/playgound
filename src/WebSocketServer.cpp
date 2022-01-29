@@ -68,9 +68,7 @@ void WebSocketServer::Run(int portNumber_)
       },
       .message = [this](TWebSocket* webSocket_, std::string_view message_, uWS::OpCode opCode_)
       {
-        uint64_t clientId = webSocket_->getUserData()->Id;
-        LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "message " << clientId);
-        m_webSocketWorkers[clientId]->Notify(message_);
+        m_webSocketWorkers[webSocket_->getUserData()->Id]->Notify(message_);
       },
       .drain = [](TWebSocket* webSocket_)
       {
