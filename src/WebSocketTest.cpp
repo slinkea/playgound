@@ -27,7 +27,8 @@ WebSocketTest::~WebSocketTest()
 
 void WebSocketTest::SetUp()
 {
-  m_server.Initialize();
+  //m_server.RunParallel(1335);
+
   m_server.Run(1335);
 
   m_server.MessageReceivedEvent().Subscribe(std::bind(&WebSocketTest::OnClientMessageReceived, this, std::placeholders::_1));
@@ -40,14 +41,13 @@ void WebSocketTest::SetUp()
 
 void WebSocketTest::TearDown()
 {
-  m_server.Shutdown();
 }
 
 void WebSocketTest::OnClientMessageReceived(const MessageEventArgs& messageEventArgs_)
 {
   uint64_t clientId = messageEventArgs_.Id();
   std::string_view msg = messageEventArgs_.Message();
-  LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "client " << clientId << ", message: " << msg.data());
+  LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "message from " << clientId);
 
   std::this_thread::sleep_for(2s); //Fake long process time.
 }
@@ -63,8 +63,7 @@ uint64_t WebSocketTest::ClientContext(WebSocketClient& wsClient_)
 
   return clientId;
 }
-
-TEST_F(WebSocketTest, Test4)
+TEST_F(WebSocketTest, Test1)
 {
   std::vector<WebSocketClient> wsClients(MAX_CLIENT);
   std::vector<std::future<uint64_t>> connections;
@@ -78,7 +77,22 @@ TEST_F(WebSocketTest, Test4)
     checksum += connection.get();
   }
 
-  EXPECT_EQ(checksum, 55);
+  EXPECT_EQ(checksum, 1);
+}
+
+TEST_F(WebSocketTest, DISABLED_Test2)
+{
+  std::vector<WebSocketClient> wsClients(MAX_CLIENT);
+  std::vector<std::future<uint64_t>> connections;
+
+  for (auto& wsClient : wsClients) {
+    connections.emplace_back(std::async(std::launch::async, &WebSocketTest::ClientContext, this, std::ref(wsClient)));
+  }
+
+  uint64_t checksum{};
+  for (auto& connection : connections) {
+    checksum += connection.get();
+  }
 }
 //TEST_F(WebSocketTest, DISABLED_Test1)
 //{

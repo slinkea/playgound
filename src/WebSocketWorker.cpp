@@ -10,28 +10,12 @@ namespace rj = rapidjson;
 using namespace std::chrono_literals;
 
 
-WebSocketWorker::WebSocketWorker(uint64_t clienId_)
-  : m_clienId(clienId_)
+WebSocketWorker::WebSocketWorker()
 {
-  Start();
-}
-
-WebSocketWorker::~WebSocketWorker()
-{
-  m_running = false;
-  if (m_thread.joinable()) {
-    m_thread.join();
-  }
-}
-
-void WebSocketWorker::Start()
-{
-  m_running = true;
-  m_promise = std::promise<uint64_t>();
   std::thread(&WebSocketWorker::Run, this).swap(m_thread);
 }
 
-void WebSocketWorker::Stop()
+WebSocketWorker::~WebSocketWorker()
 {
   m_running = false;
   m_cv.notify_all();
@@ -49,26 +33,33 @@ void WebSocketWorker::Notify(std::string_view message_)
   m_messages.push_back(message_.data());
   m_mutexMessages.unlock();
 
-  m_cv.notify_all();
+  m_cv.notify_one();
+}
+
+void WebSocketWorker::Initialize(TWebSocket* webSocket_, uWS::Loop* wsLoop_, uint64_t clientId_)
+{
+  m_webSocket = webSocket_;
+  m_wsLoop = wsLoop_;
+  m_clienId = clientId_;
 }
 
 void WebSocketWorker::Run()
 {
-  LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "WorkerRun Begin: " << m_clienId.load());
-
   std::string message;
   bool exceptionFound{};
   std::mutex mutex;
   std::unique_lock<std::mutex> newMessageLock(mutex);
+  m_running = true;
 
   try
   {
     do
     {
       m_cv.wait(newMessageLock);
+      LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "WorkerRun Begin: " << m_clienId.load());
 
       m_mutexMessages.lock();
-      if (m_messages.size() > 0)
+      if (m_running && m_messages.size() > 0)
       {
         message = m_messages.front();
         m_messages.pop_back();
@@ -115,6 +106,5 @@ void WebSocketWorker::Run()
 
   LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "WorkerRun Done: " << m_clienId);
 
-  m_running = false;
   m_cv.notify_all();
 }
