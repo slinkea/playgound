@@ -21,6 +21,7 @@ public:
 	~WebSocketServer() = default;
 
   void Run(int portNumber_);
+  void Send(uint64_t clientId_, const std::string& reply_);
 
   ONDTLib::Event<WebSocketServer, ConnectionEventArgs&>& OpenConnectionEvent() { return m_openConnectionEvent; }
   ONDTLib::Event<WebSocketServer, MessageEventArgs&>& MessageReceivedEvent() { return m_messageReceivedEvent; }
@@ -28,6 +29,7 @@ public:
   void OnClientMessageReceived(MessageEventArgs& messageEventArgs_);
 
 private:
+  uWS::Loop* m_wsLoop{};
   rj::Document m_document;
   std::atomic<uint64_t> m_connectionCounter{};
   std::unordered_map<uint64_t, TWebSocketWorkerPtr> m_webSocketWorkers;

@@ -27,7 +27,8 @@ void WebSocketServer::Run(int portNumber_)
 
       .upgrade = [this](auto* res_, auto* req_, auto* context_)
       {
-        m_webSocketWorkers.emplace(++m_connectionCounter, std::make_unique<WebSocketWorker>());
+        m_connectionCounter++;
+        m_webSocketWorkers.emplace(m_connectionCounter, std::make_unique<WebSocketWorker>(m_connectionCounter));
 
         res_->cork([this, res_, req_, context_]()
         {
@@ -43,13 +44,13 @@ void WebSocketServer::Run(int portNumber_)
       .open = [this](TWebSocket* webSocket_)
       {
         uint64_t clientId = webSocket_->getUserData()->Id;
-        LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "open " << clientId);
+        LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "Open " << clientId);
 
         while (!m_webSocketWorkers[clientId]->IsRunning()) {
           std::this_thread::yield();
         }
 
-        m_webSocketWorkers[clientId]->Initialize(webSocket_, uWS::Loop::get(), clientId);
+        m_webSocketWorkers[clientId]->Socket(webSocket_);
         m_webSocketWorkers[clientId]->MessageReceivedEvent().Subscribe(
           std::bind(&WebSocketServer::OnClientMessageReceived, this, std::placeholders::_1));
 
@@ -72,15 +73,16 @@ void WebSocketServer::Run(int portNumber_)
       },
       .drain = [](TWebSocket* webSocket_)
       {
-        LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "drain " << webSocket_->getUserData()->Id);
+        LOG4CPLUS_WARN(log4cplus::Logger::getRoot(), "Drain " << webSocket_->getUserData()->Id);
       },
       .close = [this](TWebSocket* webSocket_, int code, std::string_view message_)
       {
         uint64_t clientId = webSocket_->getUserData()->Id;
-        LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "close " << clientId);
+        LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "Close " << clientId);
         m_webSocketWorkers.erase(clientId);
       }})
-      .listen("", portNumber_, [](auto* token_) {
+      .listen("", portNumber_, [this](auto* token_) {
+        m_wsLoop = uWS::Loop::get();
       }).run();
   }).detach();
 }
@@ -88,4 +90,20 @@ void WebSocketServer::Run(int portNumber_)
 void WebSocketServer::OnClientMessageReceived(MessageEventArgs& messageEventArgs_)
 {
   m_messageReceivedEvent.Notify(messageEventArgs_);
+}
+
+void WebSocketServer::Send(uint64_t clientId_, const std::string& reply_)
+{
+  m_wsLoop->defer([this, clientId_, reply_]()
+  {
+    auto socket = m_webSocketWorkers[clientId_]->Socket();
+    socket->cork([this, socket , &clientId_, &reply_]()
+    {
+      LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "Send reply: " << clientId_);
+      auto status = socket->send(reply_, uWS::TEXT, true);
+      if (status != TWebSocket::SendStatus::SUCCESS) {
+        LOG4CPLUS_ERROR(log4cplus::Logger::getRoot(), "ERROR sending reply: " << clientId_);
+      }
+    });
+  });
 }

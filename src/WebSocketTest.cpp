@@ -53,23 +53,23 @@ uint64_t WebSocketTest::ClientContext(WebSocketClient& wsClient_)
 void WebSocketTest::OnClientMessageReceived(MessageEventArgs& messageEventArgs_)
 {
   uint64_t clientId = messageEventArgs_.Id();
-  std::string_view request = messageEventArgs_.Request();
+  std::string_view request = messageEventArgs_.Message();
 
-  if (clientId == 1) {
-    std::this_thread::sleep_for(5s);
-  }
-  else if (clientId == 2) {
-    std::this_thread::sleep_for(4s);
-  }
-  else if (clientId == 3) {
-    throw std::exception("KABOOM");
-  }
-  else if (clientId == 4) {
-    std::this_thread::sleep_for(2s);
-  }
-  else if (clientId == 5) {
-    std::this_thread::sleep_for(1s);
-  }
+  //if (clientId == 1) {
+  //  std::this_thread::sleep_for(5s);
+  //}
+  //else if (clientId == 2) {
+  //  std::this_thread::sleep_for(4s);
+  //}
+  //else if (clientId == 3) {
+  //  throw std::exception("KABOOM");
+  //}
+  //else if (clientId == 4) {
+  //  std::this_thread::sleep_for(2s);
+  //}
+  //else if (clientId == 5) {
+  //  std::this_thread::sleep_for(1s);
+  //}
 
   rj::StringBuffer buffer;
   rj::Writer<rj::StringBuffer> writer(buffer);
@@ -78,11 +78,11 @@ void WebSocketTest::OnClientMessageReceived(MessageEventArgs& messageEventArgs_)
   document["result"]["clientId"] = clientId;
   document.Accept(writer);
 
-  messageEventArgs_.Reply(buffer.GetString());
+  m_server.Send(clientId, buffer.GetString());
 }
 TEST_F(WebSocketTest, Test1)
 {
-  const uint64_t MAX_CLIENT(5);
+  const uint64_t MAX_CLIENT(100);
   std::vector<WebSocketClient> wsClients(MAX_CLIENT);
   std::vector<std::future<uint64_t>> connections;
 
@@ -94,4 +94,6 @@ TEST_F(WebSocketTest, Test1)
   for (auto& connection : connections) {
     checksum += connection.get();
   }
+
+  EXPECT_EQ(checksum, 5050); //100 = 5050
 }

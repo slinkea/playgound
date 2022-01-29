@@ -5,7 +5,8 @@
 using namespace std::chrono_literals;
 
 
-WebSocketWorker::WebSocketWorker()
+WebSocketWorker::WebSocketWorker(uint64_t clientId_)
+  : m_clienId(clientId_)
 {
   std::thread(&WebSocketWorker::Run, this).swap(m_thread);
 }
@@ -29,13 +30,6 @@ void WebSocketWorker::Notify(std::string_view message_)
   m_cv.notify_all();
 }
 
-void WebSocketWorker::Initialize(TWebSocket* webSocket_, uWS::Loop* wsLoop_, uint64_t clientId_)
-{
-  m_wsLoop = wsLoop_;
-  m_clienId = clientId_;
-  m_webSocket = webSocket_;
-}
-
 void WebSocketWorker::Run()
 {
   m_running = true;
@@ -50,6 +44,8 @@ void WebSocketWorker::Run()
       m_cv.wait(newMessageLock);
       if (m_running)
       {
+        LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "Receive request " << m_clienId);
+
         m_mutexMessages.lock();
         if (m_messages.size() > 0)
         {
@@ -59,22 +55,7 @@ void WebSocketWorker::Run()
         m_mutexMessages.unlock();
 
         auto args = MessageEventArgs(m_clienId, message);
-        LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "Request received " << m_clienId);
         m_messageReceivedEvent.Notify(args);
-        std::string reply(args.Reply());
-        message.clear();
-
-        m_wsLoop->defer([this, reply]()
-        {
-          m_webSocket->cork([this, &reply]()
-          {
-            LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "Send reply: " << m_clienId);
-            auto status = m_webSocket->send(reply, uWS::TEXT, true);
-            if (status != TWebSocket::SendStatus::SUCCESS) {
-              LOG4CPLUS_ERROR(log4cplus::Logger::getRoot(), "ERROR sending reply: " << m_clienId);
-            }
-          });
-        });
       }
     } while (m_running);
   }

@@ -22,12 +22,15 @@ using TWebSocket = uWS::WebSocket<false, true, PerSocketData>;
 class WebSocketWorker
 {
 public:
-  WebSocketWorker();
+  WebSocketWorker() = delete;
+  WebSocketWorker(uint64_t clientId_);
   ~WebSocketWorker();
 
-  bool IsRunning() const { return m_running; }
   void Notify(std::string_view message_);
-  void Initialize(TWebSocket* webSocket_, uWS::Loop* wsLoop_, uint64_t clientId_);
+  bool IsRunning() const { return m_running; }
+  TWebSocket* Socket() const { return m_webSocket; }
+  void Socket(TWebSocket* socket_) { m_webSocket = socket_; }
+  
   ONDTLib::Event<WebSocketWorker, MessageEventArgs&>& MessageReceivedEvent() { return m_messageReceivedEvent; }
 
 private:
@@ -35,7 +38,6 @@ private:
 
   uint64_t m_clienId{};
   std::thread m_thread;
-  uWS::Loop* m_wsLoop{};
   TWebSocket* m_webSocket{};
   std::mutex m_mutexMessages;
   std::condition_variable m_cv;
