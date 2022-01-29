@@ -12,7 +12,7 @@ public:
 	~WebSocketTest();
 
 	uint64_t ClientContext(WebSocketClient& wsClient);
-	void OnClientMessageReceived(const MessageEventArgs& messageEventArgs_);
+	void OnClientMessageReceived(MessageEventArgs& messageEventArgs_);
 
 protected:
 	void SetUp() override;

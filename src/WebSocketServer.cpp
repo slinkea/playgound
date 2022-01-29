@@ -27,8 +27,7 @@ void WebSocketServer::Run(int portNumber_)
 
       .upgrade = [this](auto* res_, auto* req_, auto* context_)
       {
-      LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "upgrade: " << ++m_connectionCounter);
-        m_webSocketWorkers.emplace(m_connectionCounter, std::make_unique<WebSocketWorker>());
+        m_webSocketWorkers.emplace(++m_connectionCounter, std::make_unique<WebSocketWorker>());
 
         res_->cork([this, res_, req_, context_]()
         {

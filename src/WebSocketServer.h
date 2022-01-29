@@ -29,7 +29,6 @@ public:
 
 private:
   rj::Document m_document;
-  std::vector<std::thread*> m_threads;
   std::atomic<uint64_t> m_connectionCounter{};
   std::unordered_map<uint64_t, TWebSocketWorkerPtr> m_webSocketWorkers;
   ONDTLib::Event<WebSocketServer, ConnectionEventArgs&> m_openConnectionEvent;

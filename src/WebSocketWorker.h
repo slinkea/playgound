@@ -25,6 +25,7 @@ public:
   WebSocketWorker();
   virtual ~WebSocketWorker();
 
+  void Result();
   bool IsRunning() const { return m_running; }
   void Notify(std::string_view message_);
   void Initialize(TWebSocket* webSocket_, uWS::Loop* wsLoop_, uint64_t clientId_);
@@ -33,14 +34,14 @@ public:
 private:
   void Run();
 
+  uint64_t m_clienId{};
   std::thread m_thread;
-  std::promise<uint64_t> m_promise;
+  uWS::Loop* m_wsLoop{};
+  TWebSocket* m_webSocket{};
+  std::mutex m_mutexMessages;
   std::condition_variable m_cv;
   std::atomic<bool> m_running{};
-  TWebSocket* m_webSocket{};
-  std::atomic<uint64_t> m_clienId{};
-  uWS::Loop* m_wsLoop{};
-  std::mutex m_mutexMessages;
+  std::promise<uint64_t> m_promise;
   std::vector<std::string> m_messages;
   ONDTLib::Event<WebSocketWorker, MessageEventArgs&> m_messageReceivedEvent;
 };

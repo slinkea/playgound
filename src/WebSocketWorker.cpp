@@ -1,11 +1,7 @@
 #include "WebSocketWorker.h"
 
 #include <log4cplus/loggingmacros.h>
-#include "rapidjson/document.h"
-#include "rapidjson/prettywriter.h"
-#include "rapidjson/stringbuffer.h"
 
-namespace rj = rapidjson;
 using namespace std::chrono_literals;
 
 
@@ -30,24 +26,24 @@ void WebSocketWorker::Notify(std::string_view message_)
   m_messages.push_back(message_.data());
   m_mutexMessages.unlock();
 
-  m_cv.notify_one();
+  m_cv.notify_all();
 }
 
 void WebSocketWorker::Initialize(TWebSocket* webSocket_, uWS::Loop* wsLoop_, uint64_t clientId_)
 {
-  m_webSocket = webSocket_;
   m_wsLoop = wsLoop_;
   m_clienId = clientId_;
+  m_webSocket = webSocket_;
+  m_promise = std::promise<uint64_t>();
 }
 
 void WebSocketWorker::Run()
 {
-  std::string message;
-  bool exceptionFound{};
-  std::mutex mutex;
-  std::unique_lock<std::mutex> newMessageLock(mutex);
   m_running = true;
-  LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "WorkerRun Begin: " << m_clienId.load());
+  std::mutex mutex;
+  std::string message;
+  bool exceptionFound{};  
+  std::unique_lock<std::mutex> newMessageLock(mutex);
 
   try
   {
@@ -65,24 +61,19 @@ void WebSocketWorker::Run()
         m_mutexMessages.unlock();
 
         auto args = MessageEventArgs(m_clienId, message);
+        LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "Request received " << m_clienId);
         m_messageReceivedEvent.Notify(args);
+        std::string reply(args.Reply());
         message.clear();
 
-        m_wsLoop->defer([this]()
+        m_wsLoop->defer([this, reply]()
         {
-          rj::StringBuffer buffer;
-          rj::Writer<rj::StringBuffer> writer(buffer);
-          rj::Document document;
-          document.Parse("{\"jsonrpc\":\"2.0\",\"result\":{\"clientId\":0},\"id\":1}");
-          document["result"]["clientId"] = m_clienId.load();
-          document.Accept(writer);
-
-          LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "send: " << m_clienId);
-          m_webSocket->cork([this, &buffer]()
+          m_webSocket->cork([this, &reply]()
           {
-            auto status = m_webSocket->send(buffer.GetString(), uWS::TEXT, true);
+            LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "Send reply: " << m_clienId);
+            auto status = m_webSocket->send(reply, uWS::TEXT, true);
             if (status != TWebSocket::SendStatus::SUCCESS) {
-              LOG4CPLUS_ERROR(log4cplus::Logger::getRoot(), "ERROR message send: " << m_clienId);
+              LOG4CPLUS_ERROR(log4cplus::Logger::getRoot(), "ERROR sending reply: " << m_clienId);
             }
           });
         });
@@ -91,6 +82,7 @@ void WebSocketWorker::Run()
   }
   catch (const std::exception&)
   {
+    m_running = false;
     exceptionFound = true;
     m_promise.set_exception(std::current_exception());
   }
@@ -98,7 +90,9 @@ void WebSocketWorker::Run()
   if (!exceptionFound) {
     m_promise.set_value(m_clienId);
   }
+}
 
-  LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "WorkerRun Done: " << m_clienId);
-  m_cv.notify_all();
+void WebSocketWorker::Result()
+{
+  m_promise.get_future().get();
 }

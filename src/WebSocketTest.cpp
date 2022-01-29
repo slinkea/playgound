@@ -5,6 +5,8 @@
 #include <future>
 #include <filesystem>
 #include <rapidjson/document.h>
+#include <rapidjson/prettywriter.h>
+#include <rapidjson/stringbuffer.h>
 #include <log4cplus/log4cplus.h>
 
 namespace rj = rapidjson;
@@ -36,17 +38,6 @@ void WebSocketTest::SetUp()
   });
 }
 
-void WebSocketTest::OnClientMessageReceived(const MessageEventArgs& messageEventArgs_)
-{
-  uint64_t clientId = messageEventArgs_.Id();
-  std::string_view msg = messageEventArgs_.Message();
-  LOG4CPLUS_INFO(log4cplus::Logger::getRoot(), "message event " << clientId);
-
-  //if (clientId == 50) {
-  //  std::this_thread::sleep_for(1s); //Fake long process time.
-  //}
-}
-
 uint64_t WebSocketTest::ClientContext(WebSocketClient& wsClient_)
 {
   wsClient_.Connect();
@@ -58,9 +49,40 @@ uint64_t WebSocketTest::ClientContext(WebSocketClient& wsClient_)
 
   return clientId;
 }
+
+void WebSocketTest::OnClientMessageReceived(MessageEventArgs& messageEventArgs_)
+{
+  uint64_t clientId = messageEventArgs_.Id();
+  std::string_view request = messageEventArgs_.Request();
+
+  if (clientId == 1) {
+    std::this_thread::sleep_for(5s);
+  }
+  else if (clientId == 2) {
+    std::this_thread::sleep_for(4s);
+  }
+  else if (clientId == 3) {
+    throw std::exception("KABOOM");
+  }
+  else if (clientId == 4) {
+    std::this_thread::sleep_for(2s);
+  }
+  else if (clientId == 5) {
+    std::this_thread::sleep_for(1s);
+  }
+
+  rj::StringBuffer buffer;
+  rj::Writer<rj::StringBuffer> writer(buffer);
+  rj::Document document;
+  document.Parse("{\"jsonrpc\":\"2.0\",\"result\":{\"clientId\":0},\"id\":1}");
+  document["result"]["clientId"] = clientId;
+  document.Accept(writer);
+
+  messageEventArgs_.Reply(buffer.GetString());
+}
 TEST_F(WebSocketTest, Test1)
 {
-  const uint64_t MAX_CLIENT(100);
+  const uint64_t MAX_CLIENT(5);
   std::vector<WebSocketClient> wsClients(MAX_CLIENT);
   std::vector<std::future<uint64_t>> connections;
 
@@ -72,6 +94,4 @@ TEST_F(WebSocketTest, Test1)
   for (auto& connection : connections) {
     checksum += connection.get();
   }
-
-  EXPECT_EQ(checksum, 5050);
 }
