@@ -8,7 +8,7 @@ include_directories(components/include/asio/include)
 add_definitions(-D_WIN32_WINNT=_WIN32_WINNT_WIN10)
 add_definitions(-DASIO_STANDALONE -DASIO_SEPARATE_COMPILATION)
 add_definitions(-D_WEBSOCKETPP_CPP11_TYPE_TRAITS_ -D_WEBSOCKETPP_CPP11_INTERNAL_)
-
+#add_definitions(-DRAPIDJSON_HAS_STDSTRING=1)
 
 if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
 	link_directories(components/lib/vc16/debug)

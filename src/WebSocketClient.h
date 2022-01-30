@@ -17,7 +17,7 @@ public:
 
 	void Connect();
 	void Disconnect();
-	uint64_t RetrieveClientId();
+	uint64_t RetrieveConnectionId();
 
 private:
 	using TClientMessage = websocketpp::config::asio_client::message_type::ptr;

@@ -11,7 +11,7 @@ public:
 	WebSocketTest();
 	~WebSocketTest();
 
-	uint64_t ClientContext(WebSocketClient& wsClient);
+	uint64_t MokeClient(WebSocketClient& client_);
 	void OnClientMessageReceived(MessageEventArgs& messageEventArgs_);
 
 protected:

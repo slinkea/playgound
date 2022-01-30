@@ -67,16 +67,27 @@ void WebSocketClient::Disconnect()
   }
 }
 
-uint64_t WebSocketClient::RetrieveClientId()
+uint64_t WebSocketClient::RetrieveConnectionId()
 {
   m_message.clear();
   std::string message("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getClientId\"}");
+
+  rj::Document document;
+  if (!document.Parse(message.c_str()).HasParseError())
+  {
+    if (document["method"].GetString() == "getClientId")
+    {
+      bool x{};
+      x = true;
+    }
+  }
+
   m_client.send(m_hdl, message, websocketpp::frame::opcode::text);
 
   std::unique_lock<std::mutex> lk(m_mtx);
   m_cv.wait_for(lk, 7s, [&] { return !m_message.empty(); });
 
-  rj::Document document;
+  //rj::Document document;
   if (!document.Parse(m_message.c_str()).HasParseError()) {
     return document["result"]["clientId"].GetUint64();
   }
