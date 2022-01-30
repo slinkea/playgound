@@ -41,11 +41,13 @@ void WebSocketTest::SetUp()
 uint64_t WebSocketTest::ClientContext(WebSocketClient& wsClient_)
 {
   wsClient_.Connect();
-
   uint64_t clientId = wsClient_.RetrieveClientId();
-  //clientId = wsClient_.RetrieveClientId();
-
+  //clientId = wsClient_.RetrieveClientId();  
   wsClient_.Disconnect();
+
+  //wsClient_.Connect();
+  //clientId += wsClient_.RetrieveClientId();  
+  //wsClient_.Disconnect();
 
   return clientId;
 }
