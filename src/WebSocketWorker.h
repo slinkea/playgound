@@ -40,13 +40,13 @@ private:
 
   std::string m_ipv4;
   std::thread m_thread;
+  std::string m_message;
   rj::Document m_document;
   TWebSocket* m_webSocket{};
   uint64_t m_connectionId{};
   std::mutex m_mutexMessages;
   std::condition_variable m_cv;
   std::atomic<bool> m_running{};
-  std::vector<std::string> m_messages;
   ONDTLib::Event<WebSocketWorker, MessageEventArgs&> m_messageReceivedEvent;
 };
 using TWebSocketWorkerPtr = std::unique_ptr<WebSocketWorker>;

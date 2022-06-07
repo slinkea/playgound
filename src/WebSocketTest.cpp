@@ -30,7 +30,6 @@ WebSocketTest::~WebSocketTest()
 void WebSocketTest::SetUp()
 {
   m_server.Run(1335);
-  m_server.MessageReceivedEvent().Subscribe(std::bind(&WebSocketTest::OnClientMessageReceived, this, std::placeholders::_1));
 
   m_server.OpenConnectionEvent().Subscribe([](ConnectionEventArgs& openConnectionEventArgs_) {
     uint64_t connectionId = openConnectionEventArgs_.Id();
@@ -39,9 +38,11 @@ void WebSocketTest::SetUp()
   m_server.CloseConnectionEvent().Subscribe([](ConnectionEventArgs& openConnectionEventArgs_) {
     uint64_t connectionId = openConnectionEventArgs_.Id();
   });
+
+  m_server.MessageReceivedEvent().Subscribe(std::bind(&WebSocketTest::OnClientMessageReceived, this, std::placeholders::_1));
 }
 
-uint64_t WebSocketTest::MokeClient(WebSocketClient& client_)
+uint64_t WebSocketTest::MockClient(WebSocketClient& client_)
 {
   client_.Connect();
   uint64_t connectionId = client_.RetrieveConnectionId();
@@ -63,8 +64,6 @@ void WebSocketTest::OnClientMessageReceived(MessageEventArgs& messageEventArgs_)
   uint64_t connectionId = messageEventArgs_.Id();
   std::string_view request = messageEventArgs_.Message();
 
-  std::this_thread::sleep_for(1s);
-
   //if (connectionId == 1) {
   //  std::this_thread::sleep_for(2s);
   //}
@@ -81,9 +80,9 @@ void WebSocketTest::OnClientMessageReceived(MessageEventArgs& messageEventArgs_)
   //  std::this_thread::sleep_for(1s);
   //}
 
+  rj::Document document;
   rj::StringBuffer buffer;
   rj::Writer<rj::StringBuffer> writer(buffer);
-  rj::Document document;
   document.Parse("{\"jsonrpc\":\"2.0\",\"result\":{\"clientId\":0},\"id\":1}");
   document["result"]["clientId"] = connectionId;
   document.Accept(writer);
@@ -92,18 +91,18 @@ void WebSocketTest::OnClientMessageReceived(MessageEventArgs& messageEventArgs_)
 }
 TEST_F(WebSocketTest, Test1)
 {
-  const uint64_t MAX_CLIENT(1);
-  std::vector<std::future<uint64_t>> mokeClients;
+  const uint64_t MAX_CLIENT(100);
+  std::vector<std::future<uint64_t>> mockClients;
   std::vector<WebSocketClient> clients(MAX_CLIENT);
 
   for (auto& client : clients) {
-    mokeClients.emplace_back(std::async(std::launch::async, &WebSocketTest::MokeClient, this, std::ref(client)));
+    mockClients.emplace_back(std::async(std::launch::async, &WebSocketTest::MockClient, this, std::ref(client)));
   }
 
   uint64_t checksum{};
-  for (auto& mokeClient : mokeClients) {
-    checksum += mokeClient.get();
+  for (auto& mockClient : mockClients) {
+    checksum += mockClient.get();
   }
 
-  EXPECT_EQ(checksum, 1); //100 = 5050
+  EXPECT_EQ(checksum, 5050); //100 = 5050
 }
